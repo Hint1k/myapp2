@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Account Page</title>
+</head>
+<body>
+<h1>Account Details</h1>
+<table>
+    <tr>
+        <td>Account Number:</td>
+        <td th:text="${account.accountNumber}"></td>
+    </tr>
+    <tr>
+        <td>Balance:</td>
+        <td th:text="${account.balance}"></td>
+    </tr>
+    <tr>
+        <td>Currency:</td>
+        <td th:text="${account.currency}"></td>
+    </tr>
+    <tr>
+        <td>Account Type:</td>
+        <td th:text="${account.accountType}"></td>
+    </tr>
+    <tr>
+        <td>Account Status:</td>
+        <td th:text="${account.status}"></td>
+    </tr>
+    <tr>
+        <td>Open Date:</td>
+        <td th:text="${account.openDate}"></td>
+    </tr>
+</table>
+</body>
+</html>
