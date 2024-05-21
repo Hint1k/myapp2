@@ -6,3 +6,5 @@ Project plan:
 5) Spring Boot 3.2.5
 6) Microservice architecture
 7) Multi-threading or/and asynchronous programming
+8) Event-driven approach
+9) Message broker Kafka
