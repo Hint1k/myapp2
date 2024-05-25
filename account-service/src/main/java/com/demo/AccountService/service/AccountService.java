@@ -4,5 +4,6 @@ import com.demo.AccountService.entity.Account;
 
 public interface AccountService {
 
-    Account createAccount(Account account);
+    Account saveAccount(Account account);
+    Account findAccountById(Long id);
 }

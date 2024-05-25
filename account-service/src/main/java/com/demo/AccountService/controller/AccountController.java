@@ -23,7 +23,7 @@ public class AccountController {
 
     // Temp method to retrieve account details - replace later with access to database
     private Account getAccountDetails() {
-        return new Account(1L, "1234567890", BigDecimal.valueOf(1000.00),
+        return new Account(1L, 1234567890L, BigDecimal.valueOf(1000.00),
                 Currency.USD, AccountType.SAVINGS, AccountStatus.ACTIVE,
                 LocalDate.now(), null, 1L);
     }

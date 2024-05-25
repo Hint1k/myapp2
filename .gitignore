@@ -8,6 +8,3 @@ build/
 *.iml
 *.ipr
 out/
-
-#
-compose.yaml

@@ -23,7 +23,7 @@ public class Account {
     private Long id;
 
     @Column(name = "account_number", nullable = false)
-    private String accountNumber;
+    private Long accountNumber;
 
     @Column(name = "balance", nullable = false)
     private BigDecimal balance;
@@ -35,7 +35,7 @@ public class Account {
     private AccountType accountType;
 
     @Column(name = "status", nullable = false)
-    private AccountStatus status;
+    private AccountStatus accountStatus;
 
     @Column(name = "open_date", nullable = false)
     private LocalDate openDate;
@@ -48,4 +48,19 @@ public class Account {
 
     @Column(name = "user_id")
     private Long userId;
+
+    public Account(Long accountNumber, BigDecimal balance,
+                   Currency currency, AccountType accountType,
+                   AccountStatus accountStatus, LocalDate openDate,
+                   List<TransactionHistory> transactionHistories,
+                   Long userId) {
+        this.accountNumber = accountNumber;
+        this.balance = balance;
+        this.currency = currency;
+        this.accountType = accountType;
+        this.accountStatus = accountStatus;
+        this.openDate = openDate;
+        this.transactionHistories = transactionHistories;
+        this.userId = userId;
+    }
 }
