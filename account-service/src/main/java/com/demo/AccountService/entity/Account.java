@@ -28,12 +28,15 @@ public class Account {
     @Column(name = "balance", nullable = false)
     private BigDecimal balance;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "currency", nullable = false)
     private Currency currency;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "account_type", nullable = false)
     private AccountType accountType;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
     private AccountStatus accountStatus;
 

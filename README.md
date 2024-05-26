@@ -1,10 +1,10 @@
 Project plan:
 1) Banking app
-2) PostgreSQL
-3) Gradle
-4) Java 21 
-5) Spring Boot 3.2.5
-6) Microservice architecture
-7) Multi-threading or/and asynchronous programming
-8) Event-driven approach
-9) Message broker Kafka
+2) Java 21
+3) Spring Boot 3.2.5
+4) PostgreSQL
+5) Gradle
+6) Kafka
+7) Microservice architecture
+8) Multi-threading and asynchronous programming
+9) Event-driven approach

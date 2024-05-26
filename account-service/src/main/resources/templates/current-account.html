@@ -1,12 +1,18 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns="http://www.w3.org/1999/html">
 <head>
     <meta charset="UTF-8">
-    <title>Account Page</title>
+    <title>Account Form</title>
 </head>
 <body>
 <h1>Account Details</h1>
 <table>
+    <tr>
+        <td>Account Id:</td>
+        <td th:text="${account.id}"></td>
+    </tr>
     <tr>
         <td>Account Number:</td>
         <td th:text="${account.accountNumber}"></td>
@@ -25,11 +31,15 @@
     </tr>
     <tr>
         <td>Account Status:</td>
-        <td th:text="${account.status}"></td>
+        <td th:text="${account.accountStatus}"></td>
     </tr>
     <tr>
         <td>Open Date:</td>
         <td th:text="${account.openDate}"></td>
+    </tr>
+    <tr>
+        <td>User Id:</td>
+        <td th:text="${account.userId}"></td>
     </tr>
 </table>
 </body>

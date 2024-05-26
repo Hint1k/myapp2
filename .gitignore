@@ -1,8 +1,10 @@
+# my
 HELP.md
 .gradle
 build/
+app.log
 
-### IntelliJ IDEA ###
+# IntelliJ IDEA
 .idea
 *.iws
 *.iml

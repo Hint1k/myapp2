@@ -27,6 +27,7 @@ public class AccountServiceImpl implements AccountService {
     @Override
     @Transactional
     public Account saveAccount(Account account) {
+        log.info("Saving account: {}", account);
         Account savedAccount = accountRepository.save(account);
         accountEventPublisher.publishAccountCreatedEvent(savedAccount);
         log.info("Account created: {}", savedAccount);
