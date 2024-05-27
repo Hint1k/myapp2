@@ -26,7 +26,7 @@ create table account
     account_type   varchar(255) not null,
     status         varchar(255) not null,
     open_date      date         not null,
-    user_id        bigint,
+    customer_id    bigint       not null,
     constraint account_number_unique unique (account_number)
 );
 
@@ -40,5 +40,5 @@ create table transaction
     constraint fk_account foreign key (account_id) references account (id)
 );
 
-insert into account (id, account_number, balance, currency, account_type, status, open_date, user_id)
-values (1, 1, 0.00, 'USD', 'SAVINGS', 'ACTIVE', '2024-05-24', 1);
+insert into account (account_number, balance, currency, account_type, status, open_date, customer_id)
+values (1, 0.00, 'USD', 'SAVINGS', 'ACTIVE', '2024-05-24', 1);

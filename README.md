@@ -6,5 +6,5 @@ Project plan:
 5) Gradle
 6) Kafka
 7) Microservice architecture
-8) Multi-threading and asynchronous programming
-9) Event-driven approach
+8) Event-driven approach
+9) Multi-threading and asynchronous programming
