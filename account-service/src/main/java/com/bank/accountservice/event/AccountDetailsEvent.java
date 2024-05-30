@@ -13,7 +13,7 @@ import java.time.LocalDate;
 @Data // getters, setters, hashcode, equals, toString
 @NoArgsConstructor
 @AllArgsConstructor
-public class AccountCreatedEvent {
+public class AccountDetailsEvent {
     private Long id;
     private Long accountNumber;
     private BigDecimal balance;
@@ -23,7 +23,7 @@ public class AccountCreatedEvent {
     private LocalDate openDate;
     private Long customerId;
 
-    public AccountCreatedEvent(Long accountNumber, BigDecimal balance,
+    public AccountDetailsEvent(Long accountNumber, BigDecimal balance,
                                Currency currency, AccountType accountType,
                                AccountStatus accountStatus, LocalDate openDate,
                                Long customerId) {

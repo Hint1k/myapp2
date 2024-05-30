@@ -66,4 +66,17 @@ public class Account {
         this.transactionHistories = transactionHistories;
         this.customerId = customerId;
     }
+
+    public Account(Long accountNumber, BigDecimal balance,
+                   Currency currency, AccountType accountType,
+                   AccountStatus accountStatus, LocalDate openDate,
+                   Long customerId) {
+        this.accountNumber = accountNumber;
+        this.balance = balance;
+        this.currency = currency;
+        this.accountType = accountType;
+        this.accountStatus = accountStatus;
+        this.openDate = openDate;
+        this.customerId = customerId;
+    }
 }

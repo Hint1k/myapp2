@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Loading Account Details</title>
-    <meta http-equiv="refresh" content="5;url=/api/accounts/account?accountId=${accountId}">
+    <meta th:attr="http-equiv='refresh', content='5;url=/api/accounts/account?accountId=' + ${accountId}">
 </head>
 <body>
 <h1>Loading Account Details</h1>

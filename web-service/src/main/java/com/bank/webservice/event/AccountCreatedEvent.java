@@ -1,8 +1,8 @@
-package com.bank.webservice.dto;
+package com.bank.webservice.event;
 
-import com.bank.webservice.util.Currency;
 import com.bank.webservice.util.AccountStatus;
 import com.bank.webservice.util.AccountType;
+import com.bank.webservice.util.Currency;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -10,10 +10,10 @@ import lombok.NoArgsConstructor;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
-@Data
+@Data // getters, setters, hashcode, equals, toString
 @NoArgsConstructor
 @AllArgsConstructor
-public class AccountDTO {
+public class AccountCreatedEvent {
     private Long id;
     private Long accountNumber;
     private BigDecimal balance;
@@ -23,10 +23,10 @@ public class AccountDTO {
     private LocalDate openDate;
     private Long customerId;
 
-    public AccountDTO(Long accountNumber, BigDecimal balance,
-                      Currency currency, AccountType accountType,
-                      AccountStatus accountStatus, LocalDate openDate,
-                      Long customerId) {
+    public AccountCreatedEvent(Long accountNumber, BigDecimal balance,
+                               Currency currency, AccountType accountType,
+                               AccountStatus accountStatus, LocalDate openDate,
+                               Long customerId) {
         this.accountNumber = accountNumber;
         this.balance = balance;
         this.currency = currency;

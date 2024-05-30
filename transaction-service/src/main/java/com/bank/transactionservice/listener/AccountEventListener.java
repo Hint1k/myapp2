@@ -15,7 +15,7 @@ public class AccountEventListener {
     @Autowired
     private TransactionServiceImpl transactionServiceImpl;
 
-    @KafkaListener(topics = "account-created", groupId = "transaction-service")
+    @KafkaListener(topics = "account-saved", groupId = "transaction-service")
     public void handleAccountCreatedEvent(AccountCreatedEventDTO event) {
         log.info("Received AccountCreatedEvent: {}", event);
         try {

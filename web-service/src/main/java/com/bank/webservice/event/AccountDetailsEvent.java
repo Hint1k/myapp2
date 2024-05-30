@@ -1,8 +1,8 @@
-package com.bank.accountservice.event;
+package com.bank.webservice.event;
 
-import com.bank.accountservice.util.AccountStatus;
-import com.bank.accountservice.util.AccountType;
-import com.bank.accountservice.util.Currency;
+import com.bank.webservice.util.AccountStatus;
+import com.bank.webservice.util.AccountType;
+import com.bank.webservice.util.Currency;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -13,7 +13,7 @@ import java.time.LocalDate;
 @Data // getters, setters, hashcode, equals, toString
 @NoArgsConstructor
 @AllArgsConstructor
-public class AccountCreatedEvent {
+public class AccountDetailsEvent {
     private Long id;
     private Long accountNumber;
     private BigDecimal balance;
@@ -23,7 +23,7 @@ public class AccountCreatedEvent {
     private LocalDate openDate;
     private Long customerId;
 
-    public AccountCreatedEvent(Long accountNumber, BigDecimal balance,
+    public AccountDetailsEvent(Long accountNumber, BigDecimal balance,
                                Currency currency, AccountType accountType,
                                AccountStatus accountStatus, LocalDate openDate,
                                Long customerId) {

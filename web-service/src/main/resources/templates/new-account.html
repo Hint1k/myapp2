@@ -8,10 +8,10 @@
 </head>
 <body>
 <h1>Account Details</h1>
-<form method="post" action="/api/accounts" th:object="${account}" th:action="@{/api/accounts/new}">
+<form method="post" action="/api/accounts" th:object="${account}" th:action="@{/api/accounts}">
     <table>
         <tbody>
-<!--        <input type="hidden" id="id" name="id" th:field="*{id}"/>-->
+        <input type="hidden" id="id" name="id" th:field="*{id}"/>
         <tr>
             <td><label>Account Number:</label></td>
             <td>

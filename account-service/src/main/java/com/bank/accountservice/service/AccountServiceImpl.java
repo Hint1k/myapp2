@@ -27,10 +27,9 @@ public class AccountServiceImpl implements AccountService {
     @Override
     @Transactional
     public Account saveAccount(Account account) {
-        log.info("Saving account: {}", account);
         Account savedAccount = accountRepository.save(account);
         accountEventPublisher.publishAccountCreatedEvent(savedAccount);
-        log.info("Account created: {}", savedAccount);
+        log.info("Account saved: {}", savedAccount);
         return savedAccount;
     }
 
@@ -38,6 +37,8 @@ public class AccountServiceImpl implements AccountService {
     @Transactional
     public Account findAccountById(Long id) {
         Account account = accountRepository.getReferenceById(id);
+        accountEventPublisher.publishAccountDetailsEvent(account);
+        log.info("Retrieved account by id: {}", id);
         return account;
     }
 }
