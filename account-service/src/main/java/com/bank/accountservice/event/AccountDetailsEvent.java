@@ -21,6 +21,7 @@ public class AccountDetailsEvent {
     private AccountType accountType;
     private AccountStatus accountStatus;
     private LocalDate openDate;
+    // TODO need to add transaction history her later, so this is different from AccountCreatedEvent
     private Long customerId;
 
     public AccountDetailsEvent(Long accountNumber, BigDecimal balance,

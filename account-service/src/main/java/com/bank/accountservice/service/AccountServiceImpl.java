@@ -9,6 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.bank.accountservice.entity.Account;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @Slf4j
 public class AccountServiceImpl implements AccountService {
@@ -40,5 +42,14 @@ public class AccountServiceImpl implements AccountService {
         accountEventPublisher.publishAccountDetailsEvent(account);
         log.info("Retrieved account by id: {}", id);
         return account;
+    }
+
+    @Override
+    @Transactional
+    public List<Account> findAllAccounts() {
+        List<Account> accounts = accountRepository.findAll();
+        accountEventPublisher.publishAllAccountsEvent(accounts);
+        log.info("Retrieved {} accounts", accounts.size());
+        return accounts;
     }
 }

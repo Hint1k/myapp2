@@ -7,8 +7,10 @@
 <body>
 <h1>Welcome</h1>
 <br>
-<a th:href="@{/current-account}"><button>Your current account</button></a>
-<br>
+<a th:href="@{/api/accounts/all}"><button>List all accounts</button></a>
+<br><br>
+<a th:href="@{/account-details}"><button>Check the account by Id</button></a>
+<br><br>
 <a th:href="@{/api/accounts/new}"><button>Create new Account</button></a>
 </body>
 </html>

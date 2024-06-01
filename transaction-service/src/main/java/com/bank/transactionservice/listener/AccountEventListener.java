@@ -15,7 +15,7 @@ public class AccountEventListener {
     @Autowired
     private TransactionServiceImpl transactionServiceImpl;
 
-    @KafkaListener(topics = "account-saved", groupId = "transaction-service")
+    @KafkaListener(topics = "account-created", groupId = "transaction-service")
     public void handleAccountCreatedEvent(AccountCreatedEventDTO event) {
         log.info("Received AccountCreatedEvent: {}", event);
         try {
@@ -23,7 +23,7 @@ public class AccountEventListener {
             log.info("Created initial transaction for account: {}", account.getAccountNumber());
         } catch (Exception exception) {
             log.error("Failed to handle account creation event", exception);
-            // Handle exception here later
+            // TODO Handle exception here later
         }
     }
 }

@@ -2,11 +2,15 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Loading Account Details</title>
-    <meta th:attr="http-equiv='refresh', content='5;url=/api/accounts/account?accountId=' + ${accountId}">
+    <title th:if="${accountId != null}">Loading Account Details</title>
+    <title th:unless="${accountId != null}">Loading All Accounts</title>
+    <meta th:if="${accountId != null}" th:attr="http-equiv='refresh', content='5;url=/api/accounts/account?accountId=' + ${accountId}">
+    <meta th:unless="${accountId != null}" http-equiv="refresh" content="5;url=/api/accounts/all">
 </head>
 <body>
-<h1>Loading Account Details</h1>
-<p>Please wait, account details are loading from the database...</p>
+<h1 th:if="${accountId != null}">Loading Account Details</h1>
+<h1 th:unless="${accountId != null}">Loading All Accounts</h1>
+<p th:if="${accountId != null}">Please wait, account details are loading from the database...</p>
+<p th:unless="${accountId != null}">Please wait, all accounts are loading from the database...</p>
 </body>
 </html>

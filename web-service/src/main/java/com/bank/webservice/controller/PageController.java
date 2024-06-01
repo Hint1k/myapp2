@@ -11,8 +11,8 @@ public class PageController {
         return "index";
     }
 
-    @GetMapping("/current-account")
+    @GetMapping("/account-details")
     public String showCurrentAccountPage() {
-        return "current-account";
+        return "account-details";
     }
 }

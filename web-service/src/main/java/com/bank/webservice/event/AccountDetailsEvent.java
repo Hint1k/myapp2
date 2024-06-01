@@ -21,6 +21,7 @@ public class AccountDetailsEvent {
     private AccountType accountType;
     private AccountStatus accountStatus;
     private LocalDate openDate;
+
     private Long customerId;
 
     public AccountDetailsEvent(Long accountNumber, BigDecimal balance,
