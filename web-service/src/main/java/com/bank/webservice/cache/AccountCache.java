@@ -54,4 +54,14 @@ public class AccountCache {
     public void deleteAccountFromCacheById(Long accountId) {
         redisTemplate.delete(accountId.toString());
     }
+
+    public void updateAccountFromCacheById(Long accountId, Account account) {
+        String key = accountId.toString();
+        if (Boolean.TRUE.equals(redisTemplate.hasKey(key))) {
+            redisTemplate.opsForValue().set(key, account);
+        } else {
+            throw new IllegalArgumentException("Account with ID " + accountId
+                    + " does not exist in the cache.");
+        }
+    }
 }

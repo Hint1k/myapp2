@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns="http://www.w3.org/1999/html">
+<head>
+    <meta charset="UTF-8">
+    <title>Account Page</title>
+</head>
+<body>
+<h1>Account Details</h1>
+<form method="post" action="/api/accounts/account" th:object="${account}" th:action="@{/api/accounts/account}">
+    <table>
+        <tbody>
+        <input type="hidden" id="accountId" name="accountId" th:field="*{accountId}"/>
+        <tr>
+            <td><label>Account Number:</label></td>
+            <td>
+                <input type="text" id="accountNumber" name="accountNumber" th:field="*{accountNumber}"
+                       class="form-control"/>
+            </td>
+        </tr>
+        <tr>
+            <td><label>Balance:</label></td>
+            <td>
+                <input type="text" id="balance" name="balance" th:field="*{balance}" class="form-control"/>
+            </td>
+        </tr>
+        <tr>
+            <td><label>Currency:</label></td>
+            <td>
+                <input type="text" id="currency" name="currency" th:field="*{currency}" class="form-control"
+                       placeholder="USD, EUR, RUB"/>
+            </td>
+        </tr>
+        <tr>
+            <td><label>Account Type:</label></td>
+            <td>
+                <input type="text" id="accountType" name="accountType" th:field="*{accountType}" class="form-control"
+                       placeholder="SAVINGS, CHECKING, CREDIT"/>
+            </td>
+        </tr>
+        <tr>
+            <td><label>Status:</label></td>
+            <td>
+                <input type="text" id="accountStatus" name="accountStatus" th:field="*{accountStatus}"
+                       class="form-control" placeholder="ACTIVE, INACTIVE, CLOSED, LOCKED"/>
+            </td>
+        </tr>
+        <tr>
+            <td><label>Open Date:</label></td>
+            <td>
+                <input type="text" id="openDate" name="openDate" th:field="*{openDate}" class="form-control"
+                       placeholder="yyyy-MM-dd"/>
+            </td>
+        </tr>
+        <tr>
+            <td><label>User ID:</label></td>
+            <td>
+                <input type="text" id="userId" name="userId" th:field="*{customerId}" class="form-control"/>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <input type="submit" value="Save Account" class="save"/>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</form>
+</body>
+</html>

@@ -34,7 +34,7 @@ public class AccountController {
         dataBinder.registerCustomEditor(String.class, stringTrimmerEditor);
     }
 
-    @GetMapping("/accounts/account")
+    @GetMapping("/accounts/account-details")
     public String getAccountById(@RequestParam("accountId")
                                  Long accountId,
                                  Model model) {
@@ -51,10 +51,10 @@ public class AccountController {
         }
     }
 
-    @GetMapping("/accounts/new")
-    private String addAccount(Model model) {
+    @GetMapping("/accounts/new-account")
+    private String showCreateAccountForm(Model model) {
         model.addAttribute("account", new Account());
-        return "account-form";
+        return "new-account";
     }
 
     @PostMapping("/accounts")
@@ -65,13 +65,13 @@ public class AccountController {
         if (bindingResult.hasErrors()) {
             log.error("Account saving failed due to validation errors: {}",
                     bindingResult.getAllErrors());
-            return "account-form";
+            return "new-account";
         }
         publisher.publishAccountCreatedEvent(account);
         return "redirect:/index";
     }
 
-    @GetMapping("/accounts/all")
+    @GetMapping("/accounts/all-accounts")
     public String getAllAccounts(Model model) {
         List<Account> accounts = new ArrayList<>();
         publisher.publishAllAccountsEvent(accounts);
@@ -87,15 +87,27 @@ public class AccountController {
     @DeleteMapping("/accounts/{accountId}")
     public String deleteAccountById(@PathVariable("accountId") Long accountId) {
         publisher.publishAccountDeletedEvent(accountId);
-        return "redirect:/api/accounts/all";
+        return "redirect:/index";
     }
 
-//    @PutMapping("/accounts/{accountId}")
-//    public String updateAccountById(@PathVariable("accountId")
-//                                    Long accountId,
-//                                    Model model) {
-//        Account account = cache.getFromCacheById(accountId);
-//        model.addAttribute("account", account);
-//        return "account-form";
-//    }
+    @PutMapping("/accounts/{accountId}")
+    public String showUpdateAccountForm(@PathVariable("accountId")
+                                    Long accountId,
+                                    Model model) {
+        Account account = cache.getFromCacheById(accountId);
+        model.addAttribute("account", account);
+        return "account-update";
+    }
+
+    @PostMapping("/accounts/account")
+    public String updateAccount(@ModelAttribute("account") Account account,
+                                    BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            log.error("Account update failed due to validation errors: {}",
+                    bindingResult.getAllErrors());
+            return "account-update";
+        }
+        publisher.publishAccountUpdatedEvent(account);
+        return "redirect:/index";
+    }
 }

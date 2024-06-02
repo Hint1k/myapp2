@@ -65,16 +65,21 @@ public class AccountEventPublisher {
         // add check later with CompletableFuture
     }
 
-//    public void publishAccountUpdatedEvent(Account account) {
-//        AccountUpdatedEvent event = new AccountUpdatedEvent(
-//                account.getAccountId(),
-//                account.getBalance(),
-//                account.getCurrency(),
-//                account.getAccountStatus()
-//        );
-//        kafkaTemplate.send("account-update-requested", event);
-//        log.info("Published account-update-requested event for account id: {}",
-//                event.getAccountId());
-//        // add check later with CompletableFuture
-//    }
+    public void publishAccountUpdatedEvent(Account account) {
+        AccountUpdatedEvent event = new AccountUpdatedEvent(
+                // TODO remove fields that can't be updated later
+                account.getAccountId(),
+                account.getAccountNumber(),
+                account.getBalance(),
+                account.getCurrency(),
+                account.getAccountType(),
+                account.getAccountStatus(),
+                account.getOpenDate(),
+                account.getCustomerId()
+        );
+        kafkaTemplate.send("account-update-requested", event);
+        log.info("Published account-update-requested event for account id: {}",
+                event.getAccountId());
+        // add check later with CompletableFuture
+    }
 }

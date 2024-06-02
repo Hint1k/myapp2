@@ -1,10 +1,7 @@
 package com.bank.accountservice.publisher;
 
 import com.bank.accountservice.entity.Account;
-import com.bank.accountservice.event.AccountCreatedEvent;
-import com.bank.accountservice.event.AccountDeletedEvent;
-import com.bank.accountservice.event.AccountDetailsEvent;
-import com.bank.accountservice.event.AllAccountsEvent;
+import com.bank.accountservice.event.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -63,6 +60,23 @@ public class AccountEventPublisher {
         AccountDeletedEvent event = new AccountDeletedEvent(accountId);
         kafkaTemplate.send("account-deleted", event);
         log.info("Published account-deleted event for account id: {}", event.getAccountId());
+        // TODO add check later with completableFuture
+    }
+
+    public void publishAccountUpdatedEvent(Account account) {
+        AccountUpdatedEvent event = new AccountUpdatedEvent(
+                // TODO remove fields that cannot be updated later
+                account.getAccountId(),
+                account.getAccountNumber(),
+                account.getBalance(),
+                account.getCurrency(),
+                account.getAccountType(),
+                account.getAccountStatus(),
+                account.getOpenDate(),
+                account.getCustomerId()
+        );
+        kafkaTemplate.send("account-updated", event);
+        log.info("Published account-updated event for account id: {}", event.getAccountId());
         // TODO add check later with completableFuture
     }
 }

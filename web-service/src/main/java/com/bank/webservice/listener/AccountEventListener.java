@@ -2,10 +2,7 @@ package com.bank.webservice.listener;
 
 import com.bank.webservice.cache.AccountCache;
 import com.bank.webservice.dto.Account;
-import com.bank.webservice.event.AccountCreatedEvent;
-import com.bank.webservice.event.AccountDeletedEvent;
-import com.bank.webservice.event.AccountDetailsEvent;
-import com.bank.webservice.event.AllAccountsEvent;
+import com.bank.webservice.event.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.KafkaListener;
@@ -69,6 +66,25 @@ public class AccountEventListener {
         Long accountId = event.getAccountId();
         log.info("Received account-deleted event for account id: {}", accountId);
         cache.deleteAccountFromCacheById(accountId);
+        acknowledgment.acknowledge(); // commit offset after successfully added to cache
+    }
+
+    @KafkaListener(topics = "account-updated", groupId = "web-service")
+    public void handleAccountUpdatedEvent(AccountUpdatedEvent event, Acknowledgment acknowledgment) {
+        Account account = new Account(
+                // TODO remove fields that cannot be updated later
+                event.getAccountId(),
+                event.getAccountNumber(),
+                event.getBalance(),
+                event.getCurrency(),
+                event.getAccountType(),
+                event.getAccountStatus(),
+                event.getOpenDate(),
+                event.getCustomerId()
+        );
+        Long accountId = event.getAccountId();
+        log.info("Received account-updated event for account id: {}", accountId);
+        cache.updateAccountFromCacheById(accountId, account);
         acknowledgment.acknowledge(); // commit offset after successfully added to cache
     }
 }

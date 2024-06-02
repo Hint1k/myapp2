@@ -64,8 +64,9 @@ public class AccountServiceImpl implements AccountService {
     @Override
     @Transactional
     public void updateAccountById(Account account){
-//        accountRepository.save(account); // JPA repository should merge it internally
-//        accountEventPublisher.publishAccountUpdatedEvent(accountId);
-//        log.info("Account with id: {} updated", accountId);
+        // JPA repository should merge instead of save
+        accountRepository.save(account);
+        accountEventPublisher.publishAccountUpdatedEvent(account);
+        log.info("Account with id: {} updated", account.getAccountId());
     }
 }

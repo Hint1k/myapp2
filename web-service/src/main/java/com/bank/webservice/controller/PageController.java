@@ -10,4 +10,9 @@ public class PageController {
     public String showIndexPage() {
         return "index";
     }
+
+    @GetMapping("/account-details")
+    public String showAccountDetailsPage() {
+        return "account-details";
+    }
 }

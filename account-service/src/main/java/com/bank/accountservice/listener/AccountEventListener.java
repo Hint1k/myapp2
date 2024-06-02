@@ -82,16 +82,26 @@ public class AccountEventListener {
         }
     }
 
-//    @KafkaListener(topics = "account-update-requested", groupId = "account-service")
-//    public void handleAccountUpdatedEvent(AccountUpdatedEvent event, Acknowledgment acknowledgment) {
-//        Long accountId = event.getAccountId();
-//        log.info("Received account-update-requested event for account id: {}", accountId);
-//        try {
-//            accountService.updateAccountById(account);
-//            acknowledgment.acknowledge();
-//        } catch (Exception e) {
-//            log.error("Error updating account by id: {}", e.getMessage());
-//            // TODO implement error handling later
-//        }
-//    }
+    @KafkaListener(topics = "account-update-requested", groupId = "account-service")
+    public void handleAccountUpdatedEvent(AccountUpdatedEvent event, Acknowledgment acknowledgment) {
+        Account account = new Account(
+                event.getAccountNumber(),
+                event.getBalance(),
+                event.getCurrency(),
+                event.getAccountType(),
+                event.getAccountStatus(),
+                event.getOpenDate(),
+                event.getCustomerId()
+        );
+        Long accountId = event.getAccountId();
+        account.setAccountId(accountId);
+        log.info("Received account-update-requested event for account id: {}", accountId);
+        try {
+            accountService.updateAccountById(account);
+            acknowledgment.acknowledge();
+        } catch (Exception e) {
+            log.error("Error updating account by id: {}", e.getMessage());
+            // TODO implement error handling later
+        }
+    }
 }
