@@ -1,7 +1,7 @@
 package com.bank.transactionservice.listener;
 
-import com.bank.transactionservice.dto.AccountCreatedEventDTO;
-import com.bank.transactionservice.dto.AccountDTO;
+import com.bank.transactionservice.dto.AccountCreatedEvent;
+import com.bank.transactionservice.dto.Account;
 import com.bank.transactionservice.service.TransactionServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,10 +16,10 @@ public class AccountEventListener {
     private TransactionServiceImpl transactionServiceImpl;
 
     @KafkaListener(topics = "account-created", groupId = "transaction-service")
-    public void handleAccountCreatedEvent(AccountCreatedEventDTO event) {
-        log.info("Received AccountCreatedEvent: {}", event);
+    public void handleAccountCreatedEvent(AccountCreatedEvent event) {
+        log.info("Received account-created event: {}", event);
         try {
-            AccountDTO account = transactionServiceImpl.createInitialTransaction(event);
+            Account account = transactionServiceImpl.createInitialTransaction(event);
             log.info("Created initial transaction for account: {}", account.getAccountNumber());
         } catch (Exception exception) {
             log.error("Failed to handle account creation event", exception);

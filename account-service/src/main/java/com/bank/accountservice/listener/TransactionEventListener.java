@@ -1,6 +1,6 @@
 package com.bank.accountservice.listener;
 
-import com.bank.accountservice.dto.TransactionCreatedEventDTO;
+import com.bank.accountservice.dto.TransactionCreatedEvent;
 import com.bank.accountservice.service.AccountService;
 import com.bank.accountservice.entity.Account;
 import lombok.extern.slf4j.Slf4j;
@@ -18,7 +18,7 @@ public class TransactionEventListener {
     private AccountService accountService;
 
     @KafkaListener(topics = "transaction-created", groupId = "account-service")
-    public void handleTransactionCreatedEvent(TransactionCreatedEventDTO event) {
+    public void handleTransactionCreatedEvent(TransactionCreatedEvent event) {
         log.info("Received TransactionCreatedEvent: {}", event);
 
         // get new balance

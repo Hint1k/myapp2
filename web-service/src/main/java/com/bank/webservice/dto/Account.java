@@ -15,7 +15,7 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Account implements Serializable {
-    private Long id;
+    private Long accountId;
     private Long accountNumber;
     private BigDecimal balance;
     private Currency currency;

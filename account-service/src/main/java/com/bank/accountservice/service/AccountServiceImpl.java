@@ -37,10 +37,10 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     @Transactional
-    public Account findAccountById(Long id) {
-        Account account = accountRepository.getReferenceById(id);
+    public Account findAccountById(Long accountId) {
+        Account account = accountRepository.getReferenceById(accountId);
         accountEventPublisher.publishAccountDetailsEvent(account);
-        log.info("Retrieved account by id: {}", id);
+        log.info("Retrieved account with id: {}", accountId);
         return account;
     }
 
@@ -51,5 +51,21 @@ public class AccountServiceImpl implements AccountService {
         accountEventPublisher.publishAllAccountsEvent(accounts);
         log.info("Retrieved {} accounts", accounts.size());
         return accounts;
+    }
+
+    @Override
+    @Transactional
+    public void deleteAccountById(Long accountId){
+        accountRepository.deleteById(accountId);
+        accountEventPublisher.publishAccountDeletedEvent(accountId);
+        log.info("Account with id: {} deleted", accountId);
+    }
+
+    @Override
+    @Transactional
+    public void updateAccountById(Account account){
+//        accountRepository.save(account); // JPA repository should merge it internally
+//        accountEventPublisher.publishAccountUpdatedEvent(accountId);
+//        log.info("Account with id: {} updated", accountId);
     }
 }

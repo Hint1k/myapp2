@@ -9,7 +9,7 @@ import java.math.BigDecimal;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class AccountCreatedEventDTO {
+public class Account {
     private Long accountNumber;
     private BigDecimal balance;
 }

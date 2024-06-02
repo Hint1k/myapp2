@@ -1,8 +1,6 @@
 package com.bank.webservice.controller;
 
-import com.bank.webservice.cache.AccountCreatedCache;
-import com.bank.webservice.cache.AccountDetailsCache;
-import com.bank.webservice.cache.AllAccountsCache;
+import com.bank.webservice.cache.AccountCache;
 import com.bank.webservice.dto.Account;
 import com.bank.webservice.publisher.AccountEventPublisher;
 import lombok.extern.slf4j.Slf4j;
@@ -25,14 +23,8 @@ public class AccountController {
     @Autowired
     private AccountEventPublisher publisher;
 
-    @Autowired // TODO make it just one cache field
-    private AccountDetailsCache cache1;
-
     @Autowired
-    private AllAccountsCache cache2;
-
-    @Autowired
-    private AccountCreatedCache cache3;
+    private AccountCache cache;
 
     // cutting off the spaces entered by user to avoid errors
     @InitBinder
@@ -47,10 +39,9 @@ public class AccountController {
                                  Long accountId,
                                  Model model) {
         Account account = new Account();
-        account.setId(accountId);
-        publisher.publishAccountDetailsRequestedEvent(account);
-
-        account = cache1.getAccountDetails(accountId);
+        account.setAccountId(accountId);
+        publisher.publishAccountDetailsEvent(account);
+        account = cache.getFromCacheById(accountId);
         if (account != null) {
             model.addAttribute("account", account);
             return "account-details";
@@ -63,7 +54,7 @@ public class AccountController {
     @GetMapping("/accounts/new")
     private String addAccount(Model model) {
         model.addAttribute("account", new Account());
-        return "new-account";
+        return "account-form";
     }
 
     @PostMapping("/accounts")
@@ -74,10 +65,9 @@ public class AccountController {
         if (bindingResult.hasErrors()) {
             log.error("Account saving failed due to validation errors: {}",
                     bindingResult.getAllErrors());
-            return "new-account";
+            return "account-form";
         }
         publisher.publishAccountCreatedEvent(account);
-        cache3.getAccount(account.getAccountNumber());
         return "redirect:/index";
     }
 
@@ -85,7 +75,7 @@ public class AccountController {
     public String getAllAccounts(Model model) {
         List<Account> accounts = new ArrayList<>();
         publisher.publishAllAccountsEvent(accounts);
-        accounts = cache2.getAllAccounts();
+        accounts = cache.getAllAccountsFromCache();
         if (accounts != null && !accounts.isEmpty()) {
             model.addAttribute("accounts", accounts);
             return "all-accounts";
@@ -93,4 +83,19 @@ public class AccountController {
             return "loading-page";
         }
     }
+
+    @DeleteMapping("/accounts/{accountId}")
+    public String deleteAccountById(@PathVariable("accountId") Long accountId) {
+        publisher.publishAccountDeletedEvent(accountId);
+        return "redirect:/api/accounts/all";
+    }
+
+//    @PutMapping("/accounts/{accountId}")
+//    public String updateAccountById(@PathVariable("accountId")
+//                                    Long accountId,
+//                                    Model model) {
+//        Account account = cache.getFromCacheById(accountId);
+//        model.addAttribute("account", account);
+//        return "account-form";
+//    }
 }

@@ -1,7 +1,7 @@
 package com.bank.transactionservice.service;
 
-import com.bank.transactionservice.dto.AccountDTO;
-import com.bank.transactionservice.dto.AccountCreatedEventDTO;
+import com.bank.transactionservice.dto.Account;
+import com.bank.transactionservice.dto.AccountCreatedEvent;
 import com.bank.transactionservice.publisher.TransactionEventPublisher;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,8 +17,8 @@ public class TransactionServiceImpl implements TransactionService {
     private TransactionEventPublisher eventPublisher;
 
     @Override
-    public AccountDTO createInitialTransaction(AccountCreatedEventDTO event) {
-        AccountDTO account = new AccountDTO(
+    public Account createInitialTransaction(AccountCreatedEvent event) {
+        Account account = new Account(
                 event.getAccountNumber(),
                 event.getBalance() // it should be zero for new account
         );

@@ -20,7 +20,7 @@ public class Account {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    private Long id;
+    private Long accountId;
 
     @Column(name = "account_number", nullable = false)
     private Long accountNumber;
@@ -52,6 +52,7 @@ public class Account {
     @Column(name = "customer_id")
     private Long customerId;
 
+    // no accountId
     public Account(Long accountNumber, BigDecimal balance,
                    Currency currency, AccountType accountType,
                    AccountStatus accountStatus, LocalDate openDate,
@@ -67,6 +68,7 @@ public class Account {
         this.customerId = customerId;
     }
 
+    // no accountId and no transactionHistories
     public Account(Long accountNumber, BigDecimal balance,
                    Currency currency, AccountType accountType,
                    AccountStatus accountStatus, LocalDate openDate,

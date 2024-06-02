@@ -1,8 +1,6 @@
 package com.bank.webservice.publisher;
 
-import com.bank.webservice.event.AccountCreatedEvent;
-import com.bank.webservice.event.AccountDetailsEvent;
-import com.bank.webservice.event.AllAccountsEvent;
+import com.bank.webservice.event.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -29,14 +27,14 @@ public class AccountEventPublisher {
                 account.getCustomerId()
         );
         kafkaTemplate.send("account-creation-requested", event);
-        log.info("Published account created event for account number: {}",
+        log.info("Published account-creation-requested event for account number: {}",
                 event.getAccountNumber());
         // add check later with CompletableFuture
     }
 
-    public void publishAccountDetailsRequestedEvent(Account account) {
+    public void publishAccountDetailsEvent(Account account) {
         AccountDetailsEvent event = new AccountDetailsEvent(
-                account.getId(),
+                account.getAccountId(),
                 null,
                 null,
                 null,
@@ -47,15 +45,36 @@ public class AccountEventPublisher {
         );
 
         kafkaTemplate.send("account-details-requested", event);
-        log.info("Published account details request for account id: {}",
-                event.getId());
+        log.info("Published account-details-requested event for account id: {}",
+                event.getAccountId());
         // add check later with CompletableFuture
     }
 
     public void publishAllAccountsEvent(List<Account> accounts) {
         AllAccountsEvent event = new AllAccountsEvent(accounts);
         kafkaTemplate.send("all-accounts-requested", event);
-        log.info("Published all accounts request");
+        log.info("Published all-accounts-requested event");
         // add check later with CompletableFuture
     }
+
+    public void publishAccountDeletedEvent(Long accountId) {
+        AccountDeletedEvent event = new AccountDeletedEvent(accountId);
+        kafkaTemplate.send("account-deletion-requested", event);
+        log.info("Published account-deletion-requested event for account id: {}",
+                event.getAccountId());
+        // add check later with CompletableFuture
+    }
+
+//    public void publishAccountUpdatedEvent(Account account) {
+//        AccountUpdatedEvent event = new AccountUpdatedEvent(
+//                account.getAccountId(),
+//                account.getBalance(),
+//                account.getCurrency(),
+//                account.getAccountStatus()
+//        );
+//        kafkaTemplate.send("account-update-requested", event);
+//        log.info("Published account-update-requested event for account id: {}",
+//                event.getAccountId());
+//        // add check later with CompletableFuture
+//    }
 }

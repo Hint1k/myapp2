@@ -11,7 +11,7 @@
 <form method="post" action="/api/accounts" th:object="${account}" th:action="@{/api/accounts}">
     <table>
         <tbody>
-        <input type="hidden" id="id" name="id" th:field="*{id}"/>
+        <input type="hidden" id="accountId" name="accountId" th:field="*{accountId}"/>
         <tr>
             <td><label>Account Number:</label></td>
             <td>

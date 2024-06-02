@@ -1,9 +1,7 @@
 package com.bank.accountservice.listener;
 
 import com.bank.accountservice.entity.Account;
-import com.bank.accountservice.event.AccountCreatedEvent;
-import com.bank.accountservice.event.AccountDetailsEvent;
-import com.bank.accountservice.event.AllAccountsEvent;
+import com.bank.accountservice.event.*;
 import com.bank.accountservice.service.AccountService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +21,7 @@ public class AccountEventListener {
 
     @KafkaListener(topics = "account-creation-requested", groupId = "account-service")
     public void handleAccountCreatedEvent(AccountCreatedEvent event, Acknowledgment acknowledgment) {
-        log.info("Received account created event: {}", event);
+        log.info("Received account-creation-requested event for account number: {}", event.getAccountNumber());
         Account account = new Account(
                 event.getAccountNumber(),
                 event.getBalance(),
@@ -46,14 +44,14 @@ public class AccountEventListener {
 
     @KafkaListener(topics = "account-details-requested", groupId = "account-service")
     public void handleAccountDetailsEvent(AccountDetailsEvent event, Acknowledgment acknowledgment) {
-        Long accountId = event.getId();
-        log.info("Requested account details event for account id: {}", accountId);
+        Long accountId = event.getAccountId();
+        log.info("Received account-details-requested event for account id: {}", accountId);
         log.debug("Deserialized AccountDetailsEvent: {}", event);
         try {
             accountService.findAccountById(accountId);
             acknowledgment.acknowledge(); // Commit offset after the account found
         } catch (Exception e) {
-            log.error("Error processing AccountDetailsEvent: {}", e.getMessage());
+            log.error("Error finding account by id: {}", e.getMessage());
             // TODO implement error handling later
         }
     }
@@ -61,13 +59,39 @@ public class AccountEventListener {
     @KafkaListener(topics = "all-accounts-requested", groupId = "account-service")
     public void handleAllAccountsEvent(AllAccountsEvent event, Acknowledgment acknowledgment) {
         List<Account> accounts = event.getAccounts();
-        log.info("Received request to fetch all accounts");
+        log.info("Received all-accounts-requested event");
         try {
             accounts = accountService.findAllAccounts();
             acknowledgment.acknowledge(); // Commit offset after all accounts found
         } catch (Exception e) {
-            log.error("Error processing AllAccountsEvent: {}", e.getMessage());
+            log.error("Error finding all accounts: {}", e.getMessage());
             // TODO implement error handling later
         }
     }
+
+    @KafkaListener(topics = "account-deletion-requested", groupId = "account-service")
+    public void handleAccountDeletedEvent(AccountDeletedEvent event, Acknowledgment acknowledgment) {
+        Long accountId = event.getAccountId();
+        log.info("Received account-deletion-requested event for account id: {}", accountId);
+        try {
+            accountService.deleteAccountById(accountId);
+            acknowledgment.acknowledge();
+        } catch (Exception e) {
+            log.error("Error deleting account by id: {}", e.getMessage());
+            // TODO implement error handling later
+        }
+    }
+
+//    @KafkaListener(topics = "account-update-requested", groupId = "account-service")
+//    public void handleAccountUpdatedEvent(AccountUpdatedEvent event, Acknowledgment acknowledgment) {
+//        Long accountId = event.getAccountId();
+//        log.info("Received account-update-requested event for account id: {}", accountId);
+//        try {
+//            accountService.updateAccountById(account);
+//            acknowledgment.acknowledge();
+//        } catch (Exception e) {
+//            log.error("Error updating account by id: {}", e.getMessage());
+//            // TODO implement error handling later
+//        }
+//    }
 }

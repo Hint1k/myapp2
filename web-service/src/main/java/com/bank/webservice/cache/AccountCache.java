@@ -10,18 +10,31 @@ import java.util.List;
 import java.util.Set;
 
 @Component
-public class AllAccountsCache {
+public class AccountCache {
 
     @Autowired
     private RedisTemplate<String, Object> redisTemplate;
 
-    public void addAllAccounts(List<Account> accounts) {
+    public void addAccountToCache(Long accountId, Account account) {
+        redisTemplate.opsForValue().set(accountId.toString(), account);
+    }
+
+    public void addAllAccountsToCache(List<Account> accounts) {
         for (Account account : accounts) {
-            redisTemplate.opsForValue().set(account.getId().toString(), account);
+            redisTemplate.opsForValue().set(account.getAccountId().toString(), account);
         }
     }
 
-    public List<Account> getAllAccounts() {
+    public Account getFromCacheById(Long accountId) {
+        return (Account) redisTemplate.opsForValue().get(accountId.toString());
+    }
+
+      // temp unused method
+//    public Account getFromCacheByAccountNumber(Long accountNumber) {
+//        return (Account) redisTemplate.opsForValue().get(accountNumber.toString());
+//    }
+
+    public List<Account> getAllAccountsFromCache() {
         //Retrieve all keys from Redis
         Set<String> keys = redisTemplate.keys("*");
 
@@ -36,5 +49,9 @@ public class AllAccountsCache {
             }
         }
         return accounts;
+    }
+
+    public void deleteAccountFromCacheById(Long accountId) {
+        redisTemplate.delete(accountId.toString());
     }
 }

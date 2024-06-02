@@ -1,10 +1,9 @@
 package com.bank.webservice.listener;
 
-import com.bank.webservice.cache.AccountCreatedCache;
-import com.bank.webservice.cache.AccountDetailsCache;
-import com.bank.webservice.cache.AllAccountsCache;
+import com.bank.webservice.cache.AccountCache;
 import com.bank.webservice.dto.Account;
 import com.bank.webservice.event.AccountCreatedEvent;
+import com.bank.webservice.event.AccountDeletedEvent;
 import com.bank.webservice.event.AccountDetailsEvent;
 import com.bank.webservice.event.AllAccountsEvent;
 import lombok.extern.slf4j.Slf4j;
@@ -19,20 +18,14 @@ import java.util.List;
 @Slf4j
 public class AccountEventListener {
 
-    @Autowired // TODO make it just one cache field
-    private AccountDetailsCache cache1;
-
     @Autowired
-    private AllAccountsCache cache2;
-
-    @Autowired
-    private AccountCreatedCache cache3;
+    private AccountCache cache;
 
     @KafkaListener(topics = "account-created", groupId = "web-service")
     public void handleAccountCreatedEvent(AccountCreatedEvent event, Acknowledgment acknowledgment) {
-        log.info("Received account created event for account id: {}", event.getId());
+        log.info("Received account-created event for account id: {}", event.getAccountId());
         Account account = new Account(
-                event.getId(),
+                event.getAccountId(),
                 event.getAccountNumber(),
                 event.getBalance(),
                 event.getCurrency(),
@@ -41,34 +34,41 @@ public class AccountEventListener {
                 event.getOpenDate(),
                 event.getCustomerId()
         );
-        cache3.addAccount(account.getId(), account);
+        cache.addAccountToCache(account.getAccountId(), account);
         acknowledgment.acknowledge();
     }
 
-
     @KafkaListener(topics = "account-details-received", groupId = "web-service")
     public void handleAccountDetailsEvent(AccountDetailsEvent event, Acknowledgment acknowledgment) {
-        log.info("Received account details for account number: {}",
-                event.getAccountNumber());
+        log.info("Received account-details-received event for account id: {}", event.getAccountId());
         Account account = new Account(
-                event.getId(),
+                event.getAccountId(),
                 event.getAccountNumber(),
                 event.getBalance(),
                 event.getCurrency(),
                 event.getAccountType(),
                 event.getAccountStatus(),
                 event.getOpenDate(),
+                // TODO add account history
                 event.getCustomerId()
         );
-        cache1.addAccountDetails(account.getId(), account);
+        cache.addAccountToCache(account.getAccountId(), account);
         acknowledgment.acknowledge(); // commit offset after successfully added to cache
     }
 
     @KafkaListener(topics = "all-accounts-received", groupId = "web-service")
     public void handleAllAccountsEvent(AllAccountsEvent event, Acknowledgment acknowledgment) {
         List<Account> accounts = event.getAccounts();
-        log.info("Received {} accounts", accounts.size());
-        cache2.addAllAccounts(accounts);
+        log.info("Received all-accounts-received event with {} accounts", accounts.size());
+        cache.addAllAccountsToCache(accounts);
+        acknowledgment.acknowledge(); // commit offset after successfully added to cache
+    }
+
+    @KafkaListener(topics = "account-deleted", groupId = "web-service")
+    public void handleAccountDeletedEvent(AccountDeletedEvent event, Acknowledgment acknowledgment) {
+        Long accountId = event.getAccountId();
+        log.info("Received account-deleted event for account id: {}", accountId);
+        cache.deleteAccountFromCacheById(accountId);
         acknowledgment.acknowledge(); // commit offset after successfully added to cache
     }
 }

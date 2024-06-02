@@ -9,7 +9,7 @@ import java.math.BigDecimal;
 @Data // getters, setters, hashcode, equals, toString
 @NoArgsConstructor
 @AllArgsConstructor
-public class TransactionCreatedEventDTO {
+public class TransactionCreatedEvent {
     private BigDecimal amount;
     private Long accountId;
 }

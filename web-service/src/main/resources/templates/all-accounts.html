@@ -16,15 +16,25 @@
         <th>Balance</th>
         <th>Currency</th>
         <th>Customer ID</th>
+        <th>Action</th>
     </tr>
     </thead>
     <tbody>
     <tr th:each="account : ${accounts}">
-        <td th:text="${account.id}"></td>
+        <td th:text="${account.getAccountId}"></td>
         <td th:text="${account.accountNumber}"></td>
         <td th:text="${account.balance}"></td>
         <td th:text="${account.currency}"></td>
         <td th:text="${account.customerId}"></td>
+        <td>
+            <form action="#" th:action="@{/api/accounts/{accountId}(accountId=${account.accountId})}" th:method="put">
+                <button type="submit">Update</button>
+            </form>
+            <form action="#" th:action="@{/api/accounts/{accountId}(accountId=${account.accountId})}" th:method="delete"
+                  onclick="if(!(confirm('Are you sure to delete this account?'))) return false">
+                <button type="submit">Delete</button>
+            </form>
+        </td>
     </tr>
     </tbody>
 </table>
