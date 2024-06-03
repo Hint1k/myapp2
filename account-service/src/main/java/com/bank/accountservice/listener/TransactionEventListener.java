@@ -1,41 +1,39 @@
 package com.bank.accountservice.listener;
 
-import com.bank.accountservice.dto.TransactionCreatedEvent;
+import com.bank.accountservice.event.InitialTransactionEvent;
 import com.bank.accountservice.service.AccountService;
 import com.bank.accountservice.entity.Account;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.KafkaListener;
-import org.springframework.stereotype.Service;
+import org.springframework.kafka.support.Acknowledgment;
+import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
 
-@Service
+@Component
 @Slf4j // logger
 public class TransactionEventListener {
 
     @Autowired
     private AccountService accountService;
 
-    @KafkaListener(topics = "transaction-created", groupId = "account-service")
-    public void handleTransactionCreatedEvent(TransactionCreatedEvent event) {
-        log.info("Received TransactionCreatedEvent: {}", event);
+    @KafkaListener(topics = "initial-transaction-made", groupId = "account-service")
+    public void handleInitialTransactionEvent(InitialTransactionEvent event, Acknowledgment acknowledgment) {
+        log.info("Received initial transaction event for account number: {}", event.getAccountNumber());
+        Long accountNumber = event.getAccountNumber();
+        BigDecimal newBalance = event.getBalance();
 
-        // get new balance
-        BigDecimal amount = event.getAmount();
+        try {
+            Account account = accountService.findAccountByNumber(accountNumber);
+            BigDecimal currentBalance = account.getBalance();
+            account.setBalance(currentBalance.add(newBalance));
 
-        // get accountId
-        Long accountId = event.getAccountId();
-
-        // get account
-        Account account = accountService.findAccountById(accountId);
-
-        // change balance
-        BigDecimal balance = account.getBalance();
-        balance = balance.add(amount);
-        account.setBalance(balance);
-
-        // save account with new balance
-        accountService.saveAccount(account);
+            accountService.updateAccount(account);
+            acknowledgment.acknowledge();
+        } catch (Exception e) {
+            log.error("Error saving initial transaction: {}", e.getMessage());
+            // TODO implement error handling later
+        }
     }
 }

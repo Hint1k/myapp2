@@ -1,8 +1,9 @@
-package com.bank.accountservice.entity;
+package com.bank.transactionservice.entity;
 
-import com.bank.accountservice.util.Currency;
-import com.bank.accountservice.util.AccountStatus;
-import com.bank.accountservice.util.AccountType;
+import com.bank.transactionservice.util.AccountStatus;
+import com.bank.transactionservice.util.AccountType;
+import com.bank.transactionservice.util.Currency;
+
 import jakarta.persistence.*;
 import lombok.*;
 

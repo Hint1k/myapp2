@@ -1,7 +1,7 @@
 package com.bank.transactionservice.service;
 
-import com.bank.transactionservice.dto.Account;
-import com.bank.transactionservice.dto.AccountCreatedEvent;
+import com.bank.transactionservice.entity.Account;
+import com.bank.transactionservice.event.AccountCreatedEvent;
 import com.bank.transactionservice.publisher.TransactionEventPublisher;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +20,7 @@ public class TransactionServiceImpl implements TransactionService {
     public Account createInitialTransaction(AccountCreatedEvent event) {
         Account account = new Account(
                 event.getAccountNumber(),
-                event.getBalance() // it should be zero for new account
+                event.getBalance()
         );
 
         // temp code to give a new customer their money
@@ -30,8 +30,8 @@ public class TransactionServiceImpl implements TransactionService {
         account.setBalance(newBalance);
 
         // publishing event with new balance
-        eventPublisher.publishTransactionCreatedEvent(account);
-        log.info("New transaction for account {} has been made", account);
+        eventPublisher.publishInitialTransactionEvent(account);
+        log.info("New transaction for account number {} has been made", account.getAccountId());
 
         return account;
     }

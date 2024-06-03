@@ -49,8 +49,9 @@ public class Account implements Serializable {
     @Digits(integer = MAX_VALUE, fraction = 0)
     private Long customerId;
 
-    { // sets account open date = current date
+    { // sets account open date = current date and initial balance to zero
         this.openDate = LocalDate.now();
+        this.balance = BigDecimal.ZERO;
     }
 
     public Account(Long accountNumber, BigDecimal balance,
@@ -64,5 +65,10 @@ public class Account implements Serializable {
         this.accountStatus = accountStatus;
         this.openDate = openDate;
         this.customerId = customerId;
+    }
+
+    public Account(Long accountNumber, BigDecimal balance) {
+        this.accountNumber = accountNumber;
+        this.balance = balance;
     }
 }

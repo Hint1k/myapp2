@@ -5,6 +5,7 @@
 <head>
     <meta charset="UTF-8">
     <title>All Accounts Page</title>
+    <link rel="stylesheet" th:href="@{/styles.css}">
 </head>
 <body>
 <h1>All Accounts</h1>
@@ -27,16 +28,20 @@
         <td th:text="${account.currency}"></td>
         <td th:text="${account.customerId}"></td>
         <td>
-            <form action="#" th:action="@{/api/accounts/{accountId}(accountId=${account.accountId})}" th:method="get">
-                <button type="submit">Check</button>
-            </form>
-            <form action="#" th:action="@{/api/accounts/{accountId}(accountId=${account.accountId})}" th:method="put">
-                <button type="submit">Update</button>
-            </form>
-            <form action="#" th:action="@{/api/accounts/{accountId}(accountId=${account.accountId})}"
-                  th:method="delete" onclick="if(!(confirm('Are you sure to delete this account?'))) return false">
-                <button type="submit">Delete</button>
-            </form>
+            <div class="button-container">
+                <form action="#" th:action="@{/api/accounts/{accountId}(accountId=${account.accountId})}"
+                      th:method="get">
+                    <button type="submit">Check</button>
+                </form>
+                <form action="#" th:action="@{/api/accounts/{accountId}(accountId=${account.accountId})}"
+                      th:method="put">
+                    <button type="submit">Update</button>
+                </form>
+                <form action="#" th:action="@{/api/accounts/{accountId}(accountId=${account.accountId})}"
+                      th:method="delete" onclick="if(!(confirm('Are you sure to delete this account?'))) return false">
+                    <button type="submit">Delete</button>
+                </form>
+            </div>
         </td>
     </tr>
     </tbody>

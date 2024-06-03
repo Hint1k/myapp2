@@ -1,4 +1,4 @@
-package com.bank.transactionservice.event;
+package com.bank.webservice.event;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -9,7 +9,7 @@ import java.math.BigDecimal;
 @Data // getters, setters, hashcode, equals, toString
 @NoArgsConstructor
 @AllArgsConstructor
-public class TransactionCreatedEvent {
-    private BigDecimal amount;
-    private Long accountId;
+public class InitialTransactionEvent {
+    private Long accountNumber;
+    private BigDecimal balance;
 }

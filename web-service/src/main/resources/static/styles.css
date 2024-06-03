@@ -1,0 +1,22 @@
+.button-container {
+    display: flex; /* Flexbox for horizontal arrangement */
+    justify-content: space-between; /* Distribute buttons evenly */
+}
+
+.button-container button {
+    margin: 0 5px; /* Add some spacing between buttons */
+}
+
+table {
+    border: 1px solid #ddd; /* Solid border, 1px wide, light gray color */
+    border-collapse: collapse; /* Ensures borders between cells collapse */
+}
+
+th, td {
+    border: 1px solid #ddd; /* Add borders to table headers and cells */
+    padding: 5px; /* Add some padding for better readability */
+}
+
+.error {
+    color: red;
+}

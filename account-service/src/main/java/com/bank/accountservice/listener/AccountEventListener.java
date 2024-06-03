@@ -7,12 +7,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.support.Acknowledgment;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@Service
+@Component
 @Slf4j // logger
 public class AccountEventListener {
 
@@ -97,7 +97,7 @@ public class AccountEventListener {
         account.setAccountId(accountId);
         log.info("Received account-update-requested event for account id: {}", accountId);
         try {
-            accountService.updateAccountById(account);
+            accountService.updateAccount(account);
             acknowledgment.acknowledge();
         } catch (Exception e) {
             log.error("Error updating account by id: {}", e.getMessage());

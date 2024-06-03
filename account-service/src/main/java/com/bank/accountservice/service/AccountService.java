@@ -10,9 +10,11 @@ public interface AccountService {
 
     Account findAccountById(Long accountId);
 
+    Account findAccountByNumber(Long accountNumber);
+
     List<Account> findAllAccounts();
 
     void deleteAccountById(Long accountId);
 
-    void updateAccountById(Account account);
+    void updateAccount(Account account);
 }

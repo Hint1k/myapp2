@@ -1,9 +1,9 @@
 version: '3.8'
 
 services:
-  postgres:
+  postgres-account:
     image: postgres:16
-    container_name: postgres
+    container_name: postgres-account
     environment:
       POSTGRES_USER: user
       POSTGRES_PASSWORD: 123
@@ -19,18 +19,36 @@ services:
       retries: 5
     restart: unless-stopped
 
+  postgres-transaction:
+    image: postgres:16
+    container_name: postgres-transaction
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: 123
+      POSTGRES_DB: myapp2
+    ports:
+      - "5433:5432"
+    volumes:
+      - ./account-service/src/main/resources/sql-scripts/init.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U user" ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    restart: unless-stopped
+
   account-service:
     build:
       context: ./account-service
       dockerfile: Dockerfile
     container_name: account-service
     environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/myapp2
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-account:5432/myapp2
       SPRING_DATASOURCE_USERNAME: user
       SPRING_DATASOURCE_PASSWORD: 123
       KAFKA_BOOTSTRAP_SERVERS: kafka:9092
     depends_on:
-      - postgres
+      - postgres-account
       - kafka
     ports:
       - "8081:8080"
@@ -47,12 +65,12 @@ services:
       dockerfile: Dockerfile
     container_name: transaction-service
     environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/myapp2
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-transaction:5432/myapp2
       SPRING_DATASOURCE_USERNAME: user
       SPRING_DATASOURCE_PASSWORD: 123
       KAFKA_BOOTSTRAP_SERVERS: kafka:9092
     depends_on:
-      - postgres
+      - postgres-transaction
       - kafka
     ports:
       - "8082:8080"
@@ -99,13 +117,7 @@ services:
       context: ./web-service
       dockerfile: Dockerfile
     container_name: web-service
-    environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/myapp2
-      SPRING_DATASOURCE_USERNAME: user
-      SPRING_DATASOURCE_PASSWORD: 123
-      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
     depends_on:
-      - postgres
       - kafka
     ports:
       - "8080:8080"
