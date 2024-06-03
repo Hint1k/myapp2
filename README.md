@@ -1,17 +1,13 @@
 <ins>Project plan:</ins>
 - Banking app <br>
-- Java 21 <br>
-- Spring Boot 3.2.5 <br>
-- PostgreSQL <br>
-- Gradle <br>
-- Kafka <br>
 - Microservice architecture <br>
 - Event-driven approach <br>
-- Multi-threading and asynchronous programming 
+- Multi-threading and asynchronous programming <br>
+- Secure API Gateway <br>
 
 <ins>The current state of the app:</ins> <br>
 - The web-service is responsible for handling web-pages <br> 
-- The account-service is for communicating with the database
+- The account-service is for communicating with the database <br>
 
 <ins> 5 actions available: </ins> <br> 
 (without field validation and error handling) <br>

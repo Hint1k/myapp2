@@ -4,7 +4,7 @@
       xmlns="http://www.w3.org/1999/html">
 <head>
     <meta charset="UTF-8">
-    <title>All Accounts</title>
+    <title>All Accounts Page</title>
 </head>
 <body>
 <h1>All Accounts</h1>
@@ -27,16 +27,23 @@
         <td th:text="${account.currency}"></td>
         <td th:text="${account.customerId}"></td>
         <td>
+            <form action="#" th:action="@{/api/accounts/{accountId}(accountId=${account.accountId})}" th:method="get">
+                <button type="submit">Check</button>
+            </form>
             <form action="#" th:action="@{/api/accounts/{accountId}(accountId=${account.accountId})}" th:method="put">
                 <button type="submit">Update</button>
             </form>
-            <form action="#" th:action="@{/api/accounts/{accountId}(accountId=${account.accountId})}" th:method="delete"
-                  onclick="if(!(confirm('Are you sure to delete this account?'))) return false">
+            <form action="#" th:action="@{/api/accounts/{accountId}(accountId=${account.accountId})}"
+                  th:method="delete" onclick="if(!(confirm('Are you sure to delete this account?'))) return false">
                 <button type="submit">Delete</button>
             </form>
         </td>
     </tr>
     </tbody>
 </table>
+<hr>
+<a th:href="@{/index}">
+    <button type="button" class="update-button">Return to index page</button>
+</a>
 </body>
 </html>

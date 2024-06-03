@@ -4,15 +4,10 @@
       xmlns="http://www.w3.org/1999/html">
 <head>
     <meta charset="UTF-8">
-    <title>Account Form</title>
+    <title>Account Details Page</title>
 </head>
 <body>
 <h1>Account Details</h1>
-<form th:action="@{/api/accounts/account-details}" method="get">
-    <label for="accountId">Enter Account ID:</label>
-    <input type="text" id="accountId" name="accountId"/>
-    <button type="submit">Get Account Details</button>
-</form>
 <table th:if="${account}">
     <tr>
         <td>Account Id:</td>
@@ -47,5 +42,11 @@
         <td th:text="${account.customerId}"></td>
     </tr>
 </table>
+<hr>
+<button type="button" onclick="history.go(-1)" class="go-button"> Go to previous page </button>
+<br><br>
+<a th:href="@{/index}">
+    <button type="button" class="update-button">Return to index page</button>
+</a>
 </body>
 </html>

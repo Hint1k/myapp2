@@ -27,8 +27,7 @@ public class AccountEventPublisher {
                 account.getCustomerId()
         );
         kafkaTemplate.send("account-creation-requested", event);
-        log.info("Published account-creation-requested event for account number: {}",
-                event.getAccountNumber());
+        log.info("Published account-creation-requested event for account number: {}", event.getAccountNumber());
         // add check later with CompletableFuture
     }
 
@@ -45,8 +44,7 @@ public class AccountEventPublisher {
         );
 
         kafkaTemplate.send("account-details-requested", event);
-        log.info("Published account-details-requested event for account id: {}",
-                event.getAccountId());
+        log.info("Published account-details-requested event for account id: {}", event.getAccountId());
         // add check later with CompletableFuture
     }
 
@@ -60,8 +58,7 @@ public class AccountEventPublisher {
     public void publishAccountDeletedEvent(Long accountId) {
         AccountDeletedEvent event = new AccountDeletedEvent(accountId);
         kafkaTemplate.send("account-deletion-requested", event);
-        log.info("Published account-deletion-requested event for account id: {}",
-                event.getAccountId());
+        log.info("Published account-deletion-requested event for account id: {}", event.getAccountId());
         // add check later with CompletableFuture
     }
 
@@ -78,8 +75,7 @@ public class AccountEventPublisher {
                 account.getCustomerId()
         );
         kafkaTemplate.send("account-update-requested", event);
-        log.info("Published account-update-requested event for account id: {}",
-                event.getAccountId());
+        log.info("Published account-update-requested event for account id: {}", event.getAccountId());
         // add check later with CompletableFuture
     }
 }

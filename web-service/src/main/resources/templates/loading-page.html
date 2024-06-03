@@ -4,7 +4,8 @@
     <meta charset="UTF-8">
     <title th:if="${accountId != null}">Loading Account Details</title>
     <title th:unless="${accountId != null}">Loading All Accounts</title>
-    <meta th:if="${accountId != null}" th:attr="http-equiv='refresh', content='5;url=/api/accounts/account?accountId=' + ${accountId}">
+    <meta th:if="${accountId != null}" th:attr="http-equiv='refresh',
+    content='5;url=/api/accounts/account?accountId=' + ${accountId}">
     <meta th:unless="${accountId != null}" http-equiv="refresh" content="5;url=/api/accounts/all">
 </head>
 <body>

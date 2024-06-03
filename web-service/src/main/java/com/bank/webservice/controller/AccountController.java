@@ -3,6 +3,7 @@ package com.bank.webservice.controller;
 import com.bank.webservice.cache.AccountCache;
 import com.bank.webservice.dto.Account;
 import com.bank.webservice.publisher.AccountEventPublisher;
+import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.propertyeditors.StringTrimmerEditor;
@@ -34,10 +35,8 @@ public class AccountController {
         dataBinder.registerCustomEditor(String.class, stringTrimmerEditor);
     }
 
-    @GetMapping("/accounts/account-details")
-    public String getAccountById(@RequestParam("accountId")
-                                 Long accountId,
-                                 Model model) {
+    @GetMapping("/accounts/{accountId}")
+    public String getAccountById(@PathVariable("accountId") Long accountId, Model model) {
         Account account = new Account();
         account.setAccountId(accountId);
         publisher.publishAccountDetailsEvent(account);
@@ -53,15 +52,13 @@ public class AccountController {
 
     @GetMapping("/accounts/new-account")
     private String showCreateAccountForm(Model model) {
-        model.addAttribute("account", new Account());
+        Account account = new Account();
+        model.addAttribute("account", account);
         return "new-account";
     }
 
     @PostMapping("/accounts")
-    public String createAccount(
-//          @Valid // temp turned off
-            @ModelAttribute("account") Account account,
-            BindingResult bindingResult) {
+    public String createAccount(@Valid @ModelAttribute("account") Account account, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             log.error("Account saving failed due to validation errors: {}",
                     bindingResult.getAllErrors());
@@ -91,17 +88,14 @@ public class AccountController {
     }
 
     @PutMapping("/accounts/{accountId}")
-    public String showUpdateAccountForm(@PathVariable("accountId")
-                                    Long accountId,
-                                    Model model) {
+    public String showUpdateAccountForm(@PathVariable("accountId") Long accountId, Model model) {
         Account account = cache.getFromCacheById(accountId);
         model.addAttribute("account", account);
         return "account-update";
     }
 
     @PostMapping("/accounts/account")
-    public String updateAccount(@ModelAttribute("account") Account account,
-                                    BindingResult bindingResult) {
+    public String updateAccountById(@Valid @ModelAttribute("account") Account account, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             log.error("Account update failed due to validation errors: {}",
                     bindingResult.getAllErrors());

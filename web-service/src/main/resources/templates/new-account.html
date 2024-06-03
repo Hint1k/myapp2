@@ -4,7 +4,12 @@
       xmlns="http://www.w3.org/1999/html">
 <head>
     <meta charset="UTF-8">
-    <title>Account Page</title>
+    <title>New Account Page</title>
+    <style>
+        .error {
+            color: red;
+        }
+    </style>
 </head>
 <body>
 <h1>Account Details</h1>
@@ -16,13 +21,24 @@
             <td><label>Account Number:</label></td>
             <td>
                 <input type="text" id="accountNumber" name="accountNumber" th:field="*{accountNumber}"
-                       class="form-control"/>
+                       class="form-control"  placeholder="1, 2, 3, etc"/>
+            </td>
+            <td>
+                <span th:if="${#fields.hasErrors('accountNumber')}" class="error" th:errors="*{accountNumber}">
+                    Account Number is invalid
+                </span>
             </td>
         </tr>
         <tr>
             <td><label>Balance:</label></td>
             <td>
-                <input type="text" id="balance" name="balance" th:field="*{balance}" class="form-control"/>
+                <input type="text" id="balance" name="balance" th:field="*{balance}" class="form-control"
+                       placeholder="0"/>
+            </td>
+            <td>
+                <span th:if="${#fields.hasErrors('balance')}" class="error" th:errors="*{balance}">
+                    Balance is invalid
+                </span>
             </td>
         </tr>
         <tr>
@@ -31,32 +47,58 @@
                 <input type="text" id="currency" name="currency" th:field="*{currency}" class="form-control"
                        placeholder="USD, EUR, RUB"/>
             </td>
+            <td>
+                <span th:if="${#fields.hasErrors('currency')}" class="error" th:errors="*{currency}">
+                    Currency is invalid
+                </span>
+            </td>
         </tr>
         <tr>
             <td><label>Account Type:</label></td>
             <td>
-                <input type="text" id="accountType" name="accountType" th:field="*{accountType}" class="form-control"
-                placeholder="SAVINGS, CHECKING, CREDIT"/>
+                <input type="text" id="accountType" name="accountType" th:field="*{accountType}"
+                       class="form-control" placeholder="SAVINGS, CHECKING, CREDIT"/>
+            </td>
+            <td>
+                <span th:if="${#fields.hasErrors('accountType')}" class="error" th:errors="*{accountType}">
+                    Account Type is invalid
+                </span>
             </td>
         </tr>
         <tr>
-            <td><label>Status:</label></td>
+            <td><label>Account Status:</label></td>
             <td>
                 <input type="text" id="accountStatus" name="accountStatus" th:field="*{accountStatus}"
                        class="form-control" placeholder="ACTIVE, INACTIVE, CLOSED, LOCKED"/>
+            </td>
+            <td>
+                <span th:if="${#fields.hasErrors('accountStatus')}" class="error" th:errors="*{accountStatus}">
+                    Account Status is invalid
+                </span>
             </td>
         </tr>
         <tr>
             <td><label>Open Date:</label></td>
             <td>
                 <input type="text" id="openDate" name="openDate" th:field="*{openDate}" class="form-control"
-                       placeholder="yyyy-MM-dd"/>
+                       placeholder="yyyy-MM-dd" disabled="disabled"/>
+            </td>
+            <td>
+                <span th:if="${#fields.hasErrors('openDate')}" class="error" th:errors="*{openDate}">
+                    Open Date is invalid
+                </span>
             </td>
         </tr>
         <tr>
             <td><label>User ID:</label></td>
             <td>
-                <input type="text" id="userId" name="userId" th:field="*{customerId}" class="form-control"/>
+                <input type="text" id="userId" name="userId" th:field="*{customerId}" class="form-control"
+                       placeholder="1, 2, 3, etc"/>
+            </td>
+            <td>
+                <span th:if="${#fields.hasErrors('customerId')}" class="error" th:errors="*{customerId}">
+                    User ID is invalid
+                </span>
             </td>
         </tr>
         <tr>
@@ -67,5 +109,11 @@
         </tbody>
     </table>
 </form>
+<hr>
+<button type="button" onclick="history.go(-1)" class="go-button"> Go to previous page </button>
+<br><br>
+<a th:href="@{/index}">
+    <button type="button" class="update-button">Return to index page</button>
+</a>
 </body>
 </html>

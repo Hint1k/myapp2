@@ -11,8 +11,8 @@ public class PageController {
         return "index";
     }
 
-    @GetMapping("/account-details")
-    public String showAccountDetailsPage() {
-        return "account-details";
+    @GetMapping("/error")
+    public String showErrorPage() {
+        return "error";
     }
 }
