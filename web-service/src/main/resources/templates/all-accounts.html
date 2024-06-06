@@ -9,6 +9,8 @@
 </head>
 <body>
 <h1>All Accounts</h1>
+<a th:href="@{/api/accounts/new-account}"><button>Create new account</button></a>
+<br>
 <table>
     <thead>
     <tr>
@@ -31,7 +33,7 @@
             <div class="button-container">
                 <form action="#" th:action="@{/api/accounts/{accountId}(accountId=${account.accountId})}"
                       th:method="get">
-                    <button type="submit">Check</button>
+                    <button type="submit">Show</button>
                 </form>
                 <form action="#" th:action="@{/api/accounts/{accountId}(accountId=${account.accountId})}"
                       th:method="put">

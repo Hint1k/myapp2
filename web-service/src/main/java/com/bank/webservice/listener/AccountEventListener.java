@@ -2,7 +2,7 @@ package com.bank.webservice.listener;
 
 import com.bank.webservice.cache.AccountCache;
 import com.bank.webservice.dto.Account;
-import com.bank.webservice.event.*;
+import com.bank.webservice.event.account.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.KafkaListener;

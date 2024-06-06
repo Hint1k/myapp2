@@ -1,10 +1,10 @@
-package com.bank.webservice.event;
+package com.bank.webservice.event.account;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Data // getters, setters, hashcode, equals, toString
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class AccountDeletedEvent {

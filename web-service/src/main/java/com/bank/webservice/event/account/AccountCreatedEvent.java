@@ -1,4 +1,4 @@
-package com.bank.webservice.event;
+package com.bank.webservice.event.account;
 
 import com.bank.webservice.util.AccountStatus;
 import com.bank.webservice.util.AccountType;
@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
-@Data // getters, setters, hashcode, equals, toString
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class AccountCreatedEvent {

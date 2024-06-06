@@ -4,7 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Data // getters, setters, hashcode, equals, toString
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class AccountDeletedEvent {

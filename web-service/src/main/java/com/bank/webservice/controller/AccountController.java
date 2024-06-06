@@ -17,8 +17,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Controller
-@RequestMapping("/api")
 @Slf4j
+@RequestMapping("/api")
 public class AccountController {
 
     @Autowired
@@ -51,7 +51,7 @@ public class AccountController {
     }
 
     @GetMapping("/accounts/new-account")
-    private String showCreateAccountForm(Model model) {
+    private String showNewAccountForm(Model model) {
         Account account = new Account();
         model.addAttribute("account", account);
         return "new-account";

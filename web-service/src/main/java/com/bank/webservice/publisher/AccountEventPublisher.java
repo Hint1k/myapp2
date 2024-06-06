@@ -1,6 +1,6 @@
 package com.bank.webservice.publisher;
 
-import com.bank.webservice.event.*;
+import com.bank.webservice.event.account.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.core.KafkaTemplate;

@@ -1,4 +1,4 @@
-package com.bank.webservice.event;
+package com.bank.webservice.event.transaction;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -6,7 +6,8 @@ import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 
-@Data // getters, setters, hashcode, equals, toString
+// TODO remove this class later, when the manual transaction process works
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class InitialTransactionEvent {

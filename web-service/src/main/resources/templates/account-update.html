@@ -40,8 +40,11 @@
         <tr>
             <td><label>Currency:</label></td>
             <td>
-                <input type="text" id="currency" name="currency" th:field="*{currency}" class="form-control"
-                       placeholder="USD, EUR, RUB"/>
+                <select id="currency" name="currency" th:field="*{currency}" class="form-control">
+                    <option th:each="currency : ${T(com.bank.webservice.util.Currency).values()}"
+                            th:value="${currency}" th:text="${currency}">Currency
+                    </option>
+                </select>
             </td>
             <td>
                 <span th:if="${#fields.hasErrors('currency')}" class="error" th:errors="*{currency}">
@@ -52,8 +55,11 @@
         <tr>
             <td><label>Account Type:</label></td>
             <td>
-                <input type="text" id="accountType" name="accountType" th:field="*{accountType}"
-                       class="form-control" placeholder="SAVINGS, CHECKING, CREDIT"/>
+                <select id="accountType" name="accountType" th:field="*{accountType}" class="form-control">
+                    <option th:each="type : ${T(com.bank.webservice.util.AccountType).values()}"
+                            th:value="${type}" th:text="${type}">Account Type
+                    </option>
+                </select>
             </td>
             <td>
                 <span th:if="${#fields.hasErrors('accountType')}" class="error" th:errors="*{accountType}">
@@ -64,8 +70,11 @@
         <tr>
             <td><label>Account Status:</label></td>
             <td>
-                <input type="text" id="accountStatus" name="accountStatus" th:field="*{accountStatus}"
-                       class="form-control" placeholder="ACTIVE, INACTIVE, CLOSED, LOCKED"/>
+                <select id="accountStatus" name="accountStatus" th:field="*{accountStatus}" class="form-control">
+                    <option th:each="status : ${T(com.bank.webservice.util.AccountStatus).values()}"
+                            th:value="${status}" th:text="${status}">Account Status
+                    </option>
+                </select>
             </td>
             <td>
                 <span th:if="${#fields.hasErrors('accountStatus')}" class="error" th:errors="*{accountStatus}">

@@ -10,7 +10,7 @@ import org.springframework.kafka.support.Acknowledgment;
 import org.springframework.stereotype.Component;
 
 @Component
-@Slf4j // logger
+@Slf4j
 public class AccountEventListener {
 
     @Autowired

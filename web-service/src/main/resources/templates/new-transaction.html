@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns="http://www.w3.org/1999/html">
+<head>
+    <meta charset="UTF-8">
+    <title>New Transaction Page</title>
+    <link rel="stylesheet" th:href="@{/styles.css}">
+</head>
+<body>
+<h1>Transaction Details</h1>
+<form method="post" action="/api/transactions" th:object="${transaction}" th:action="@{/api/transactions}">
+    <table>
+        <tbody>
+        <input type="hidden" id="transactionId" name="transactionId" th:field="*{transactionId}"/>
+        <tr>
+            <td><label>Transaction Amount:</label></td>
+            <td>
+                <input type="text" id="amount" name="amount" th:field="*{amount}" class="form-control"
+                       placeholder="0.00"/>
+            </td>
+            <td>
+                <span th:if="${#fields.hasErrors('amount')}" class="error" th:errors="*{amount}">
+                    Transaction Amount is invalid
+                </span>
+            </td>
+        </tr>
+        <tr>
+            <td><label>Transaction time:</label></td>
+            <td>
+                <input type="text" id="transactionTime" name="transactionTime" th:field="*{transactionTime}"
+                       class="form-control" placeholder="dd-MM-yyyy HH:mm:ss" disabled="disabled"/>
+            </td>
+            <td>
+                <span th:if="${#fields.hasErrors('transactionTime')}" class="error" th:errors="*{transactionTime}">
+                    Transaction time is invalid
+                </span>
+            </td>
+        </tr>
+        <tr>
+            <td><label>Transaction Type:</label></td>
+            <td>
+                <select id="transactionType" name="transactionType" th:field="*{transactionType}" class="form-control">
+                    <option value="">Select Transaction Type</option>
+                    <option th:each="type : ${T(com.bank.webservice.util.TransactionType).values()}"
+                            th:value="${type.name()}" th:text="${type.name()}">
+                    </option>
+                </select>
+            </td>
+            <td>
+                <span th:if="${#fields.hasErrors('transactionType')}" class="error" th:errors="*{transactionType}">
+                    Transaction Type is required
+                </span>
+            </td>
+        </tr>
+        <tr>
+            <td><label>Account Number:</label></td>
+            <td>
+                <input type="text" id="accountNumber" name="accountNumber" th:field="*{accountNumber}"
+                       class="form-control" placeholder="1, 2, 3, etc"/>
+            </td>
+            <td>
+                <span th:if="${#fields.hasErrors('accountNumber')}" class="error" th:errors="*{accountNumber}">
+                    Account Number is required
+                </span>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <br>
+    <input type="submit" value="Submit Transaction" class="save"/>
+</form>
+<hr>
+<button type="button" onclick="history.go(-1)" class="go-button"> Go to previous page</button>
+<br><br>
+<a th:href="@{/index}">
+    <button type="button" class="update-button">Return to index page</button>
+</a>
+</body>
+</html>

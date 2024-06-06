@@ -13,7 +13,7 @@ import java.util.List;
 
 @Entity
 @Table(name = "account")
-@Data // getters, setters, hashcode, equals, toString
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class Account {

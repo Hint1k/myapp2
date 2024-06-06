@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 import java.math.BigDecimal;
 
 @Component
-@Slf4j // logger
+@Slf4j
 public class TransactionEventListener {
 
     @Autowired

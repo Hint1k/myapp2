@@ -20,6 +20,7 @@ import static java.lang.Integer.MAX_VALUE;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Account implements Serializable {
+
     private Long accountId;
 
     @NotNull(message = "Account number is required")
@@ -49,8 +50,10 @@ public class Account implements Serializable {
     @Digits(integer = MAX_VALUE, fraction = 0)
     private Long customerId;
 
-    { // sets account open date = current date and initial balance to zero
+    {
+        // sets account open date = current date
         this.openDate = LocalDate.now();
+        // sets initial balance to zero
         this.balance = BigDecimal.ZERO;
     }
 

@@ -1,4 +1,4 @@
-package com.bank.webservice.event;
+package com.bank.webservice.event.account;
 
 import com.bank.webservice.dto.Account;
 import lombok.AllArgsConstructor;

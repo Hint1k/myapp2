@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Component
-@Slf4j // logger
+@Slf4j
 public class AccountEventListener {
 
     @Autowired
@@ -35,7 +35,7 @@ public class AccountEventListener {
         try {
             accountService.saveAccount(account);
             log.info("Saved account number: {}", account.getAccountNumber());
-            acknowledgment.acknowledge(); // Commit offset after successful save
+            acknowledgment.acknowledge();
         } catch (Exception e) {
             log.error("Error saving account: {}", e.getMessage());
             // TODO implement error handling later
@@ -49,7 +49,7 @@ public class AccountEventListener {
         log.debug("Deserialized AccountDetailsEvent: {}", event);
         try {
             accountService.findAccountById(accountId);
-            acknowledgment.acknowledge(); // Commit offset after the account found
+            acknowledgment.acknowledge();
         } catch (Exception e) {
             log.error("Error finding account by id: {}", e.getMessage());
             // TODO implement error handling later
@@ -62,7 +62,7 @@ public class AccountEventListener {
         log.info("Received all-accounts-requested event");
         try {
             accounts = accountService.findAllAccounts();
-            acknowledgment.acknowledge(); // Commit offset after all accounts found
+            acknowledgment.acknowledge();
         } catch (Exception e) {
             log.error("Error finding all accounts: {}", e.getMessage());
             // TODO implement error handling later
