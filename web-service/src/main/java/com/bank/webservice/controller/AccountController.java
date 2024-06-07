@@ -50,7 +50,7 @@ public class AccountController {
             return "account-details";
         } else {
             model.addAttribute("accountId", accountId);
-            return "loading-page";
+            return "loading-accounts";
         }
     }
 
@@ -81,7 +81,7 @@ public class AccountController {
             model.addAttribute("accounts", accounts);
             return "all-accounts";
         } else {
-            return "loading-page";
+            return "loading-accounts";
         }
     }
 

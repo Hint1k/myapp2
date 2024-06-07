@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns="http://www.w3.org/1999/html">
+<head>
+    <meta charset="UTF-8">
+    <title>All Transactions Page</title>
+    <link rel="stylesheet" th:href="@{/styles.css}">
+</head>
+<body>
+<h1>All Transactions</h1>
+<a th:href="@{/api/transactions/new-transaction}">
+    <button>Create new transaction</button>
+</a>
+<br><br>
+<table>
+    <thead>
+    <tr>
+        <th>Transaction ID</th>
+        <th>Amount</th>
+        <th>Transaction Time</th>
+        <th>Transaction Type</th>
+        <th>Account Number</th>
+        <th>Action</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="transaction : ${transactions}">
+        <td th:text="${transaction.transactionId}"></td>
+        <td th:text="${transaction.amount}"></td>
+        <td th:text="${transaction.transactionTime}"></td>
+        <td th:text="${transaction.transactionType}"></td>
+        <td th:text="${transaction.account.accountNumber}"></td>
+        <td>
+            <div class="button-container">
+                <form action="#"
+                      th:action="@{/api/transactions/{transactionId}(transactionId=${transaction.transactionId})}"
+                      th:method="get">
+                    <button type="submit">Show</button>
+                </form>
+                <form action="#"
+                      th:action="@{/api/transactions/{transactionId}(transactionId=${transaction.transactionId})}"
+                      th:method="put">
+                    <button type="submit">Update</button>
+                </form>
+                <form action="#"
+                      th:action="@{/api/transactions/{transactionId}(transactionId=${transaction.transactionId})}"
+                      th:method="delete"
+                      onclick="if(!(confirm('Are you sure to delete this transaction?'))) return false">
+                    <button type="submit">Delete</button>
+                </form>
+            </div>
+        </td>
+    </tr>
+    </tbody>
+</table>
+<hr>
+<a th:href="@{/index}">
+    <button type="button" class="update-button">Return to index page</button>
+</a>
+</body>
+</html>

@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:if="${transactionId != null}">Loading Transaction Details</title>
+    <title th:unless="${transactionId != null}">Loading All Transactions</title>
+    <meta th:if="${transactionId != null}" th:attr="http-equiv='refresh',
+    content='5;url=/api/transactions/transaction?transactionId=' + ${transactionId}">
+    <meta th:unless="${transactionId != null}" http-equiv="refresh" content="5;url=/api/transactions/all-transactions">
+</head>
+<body>
+<h1 th:if="${transactionId != null}">Loading Transaction Details</h1>
+<h1 th:unless="${transactionId != null}">Loading All Transactions</h1>
+<p th:if="${transactionId != null}">Please wait, transaction details are loading from the database...</p>
+<p th:unless="${transactionId != null}">Please wait, all transactions are loading from the database...</p>
+</body>
+</html>

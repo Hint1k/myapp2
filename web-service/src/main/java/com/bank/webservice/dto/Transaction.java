@@ -29,8 +29,8 @@ public class Transaction {
     @NotNull(message = "Transaction type is required")
     private TransactionType transactionType;
 
-    @NotNull(message = "Account Number is required")
-    // TODO add custom annotation for account number later
+    @NotNull(message = "Account Id is required")
+    // TODO add custom annotation for account id later
     private Account account;
 
     {

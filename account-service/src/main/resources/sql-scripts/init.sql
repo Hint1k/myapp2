@@ -28,16 +28,16 @@ create table account
     constraint account_number_unique unique (account_number)
 );
 
-drop table if exists transaction;
-create table transaction
-(
-    id               bigserial primary key,
-    amount           numeric,
-    transaction_time timestamp,
-    transaction_type varchar(50) not null,
-    account_number   bigint      not null,
-    constraint fk_account foreign key (account_number) references account (account_number)
-);
+-- drop table if exists transaction;
+-- create table transaction
+-- (
+--     id               bigserial primary key,
+--     amount           numeric,
+--     transaction_time timestamp,
+--     transaction_type varchar(50) not null,
+--     account_id       bigint      not null,
+--     constraint fk_account foreign key (account_id) references account (id)
+-- );
 
 insert into account (account_number, balance, currency, account_type, status, open_date, customer_id)
 values (1, 0.00, 'USD', 'SAVINGS', 'ACTIVE', '2024-05-24', 1);
