@@ -21,11 +21,15 @@ import java.util.List;
 @RequestMapping("/api")
 public class AccountController {
 
-    @Autowired
-    private AccountEventPublisher publisher;
+    private final AccountEventPublisher publisher;
+
+    private final AccountCache cache;
 
     @Autowired
-    private AccountCache cache;
+    public AccountController(AccountEventPublisher publisher, AccountCache cache) {
+        this.publisher = publisher;
+        this.cache = cache;
+    }
 
     // cutting off the spaces entered by user to avoid errors
     @InitBinder

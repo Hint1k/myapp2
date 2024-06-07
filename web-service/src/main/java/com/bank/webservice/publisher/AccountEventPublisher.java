@@ -13,8 +13,12 @@ import java.util.List;
 @Slf4j
 public class AccountEventPublisher {
 
+    private final KafkaTemplate<String, Object> kafkaTemplate;
+
     @Autowired
-    private KafkaTemplate<String, Object> kafkaTemplate;
+    public AccountEventPublisher(KafkaTemplate<String, Object> kafkaTemplate) {
+        this.kafkaTemplate = kafkaTemplate;
+    }
 
     public void publishAccountCreatedEvent(Account account) {
         AccountCreatedEvent event = new AccountCreatedEvent(
@@ -24,6 +28,7 @@ public class AccountEventPublisher {
                 account.getAccountType(),
                 account.getAccountStatus(),
                 account.getOpenDate(),
+                account.getTransactions(),
                 account.getCustomerId()
         );
         kafkaTemplate.send("account-creation-requested", event);
@@ -72,6 +77,7 @@ public class AccountEventPublisher {
                 account.getAccountType(),
                 account.getAccountStatus(),
                 account.getOpenDate(),
+                account.getTransactions(),
                 account.getCustomerId()
         );
         kafkaTemplate.send("account-update-requested", event);

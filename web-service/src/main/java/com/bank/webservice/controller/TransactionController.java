@@ -18,11 +18,15 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api")
 public class TransactionController {
 
-    @Autowired
-    private TransactionEventPublisher publisher;
+    private final TransactionEventPublisher publisher;
+
+    private final TransactionCache cache;
 
     @Autowired
-    private TransactionCache cache;
+    public TransactionController(TransactionEventPublisher publisher, TransactionCache cache) {
+        this.publisher = publisher;
+        this.cache = cache;
+    }
 
     // cutting off the spaces entered by user to avoid errors
     @InitBinder

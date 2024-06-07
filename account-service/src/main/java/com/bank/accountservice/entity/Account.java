@@ -45,9 +45,15 @@ public class Account {
 
     /// bidirectional relationship, referencing side
     @OneToMany(mappedBy = "account",
-            cascade = CascadeType.ALL,
-            fetch = FetchType.LAZY)
-    private List<TransactionHistory> transactionHistories;
+            fetch = FetchType.EAGER,
+            targetEntity = Transaction.class,
+            cascade = {
+                    CascadeType.DETACH,
+                    CascadeType.MERGE,
+                    CascadeType.PERSIST,
+                    CascadeType.REFRESH})
+    @ToString.Exclude // to avoid loop error between account and transaction
+    private List<Transaction> transactions;
 
     @Column(name = "customer_id")
     private Long customerId;
@@ -56,7 +62,7 @@ public class Account {
     public Account(Long accountNumber, BigDecimal balance,
                    Currency currency, AccountType accountType,
                    AccountStatus accountStatus, LocalDate openDate,
-                   List<TransactionHistory> transactionHistories,
+                   List<Transaction> transactions,
                    Long customerId) {
         this.accountNumber = accountNumber;
         this.balance = balance;
@@ -64,11 +70,11 @@ public class Account {
         this.accountType = accountType;
         this.accountStatus = accountStatus;
         this.openDate = openDate;
-        this.transactionHistories = transactionHistories;
+        this.transactions = transactions;
         this.customerId = customerId;
     }
 
-    // no accountId and no transactionHistories
+    // no accountId and no transactions
     public Account(Long accountNumber, BigDecimal balance,
                    Currency currency, AccountType accountType,
                    AccountStatus accountStatus, LocalDate openDate,

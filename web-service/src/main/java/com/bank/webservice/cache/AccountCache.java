@@ -1,6 +1,7 @@
 package com.bank.webservice.cache;
 
 import com.bank.webservice.dto.Account;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
@@ -10,10 +11,15 @@ import java.util.List;
 import java.util.Set;
 
 @Component
+@Slf4j
 public class AccountCache {
 
+    private final RedisTemplate<String, Object> redisTemplate;
+
     @Autowired
-    private RedisTemplate<String, Object> redisTemplate;
+    public AccountCache(RedisTemplate<String, Object> redisTemplate) {
+        this.redisTemplate = redisTemplate;
+    }
 
     public void addAccountToCache(Long accountId, Account account) {
         redisTemplate.opsForValue().set(accountId.toString(), account);

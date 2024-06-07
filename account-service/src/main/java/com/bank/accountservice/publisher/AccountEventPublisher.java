@@ -1,7 +1,7 @@
 package com.bank.accountservice.publisher;
 
 import com.bank.accountservice.entity.Account;
-import com.bank.accountservice.event.*;
+import com.bank.accountservice.event.account.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -13,8 +13,12 @@ import java.util.List;
 @Slf4j
 public class AccountEventPublisher {
 
+    private final KafkaTemplate<String, Object> kafkaTemplate;
+
     @Autowired
-    private KafkaTemplate<String, Object> kafkaTemplate;
+    public AccountEventPublisher(KafkaTemplate<String, Object> kafkaTemplate) {
+        this.kafkaTemplate = kafkaTemplate;
+    }
 
     public void publishAccountCreatedEvent(Account account) {
         AccountCreatedEvent event = new AccountCreatedEvent(
@@ -25,6 +29,7 @@ public class AccountEventPublisher {
                 account.getAccountType(),
                 account.getAccountStatus(),
                 account.getOpenDate(),
+                account.getTransactions(),
                 account.getCustomerId()
         );
         kafkaTemplate.send("account-created", event);
@@ -41,7 +46,7 @@ public class AccountEventPublisher {
                 account.getAccountType(),
                 account.getAccountStatus(),
                 account.getOpenDate(),
-                // TODO add account history
+                account.getTransactions(),
                 account.getCustomerId()
         );
         kafkaTemplate.send("account-details-received", event);
@@ -73,6 +78,7 @@ public class AccountEventPublisher {
                 account.getAccountType(),
                 account.getAccountStatus(),
                 account.getOpenDate(),
+                account.getTransactions(),
                 account.getCustomerId()
         );
         kafkaTemplate.send("account-updated", event);

@@ -2,6 +2,7 @@
 - Banking app <br>
 - Microservice architecture <br>
 - Event-driven approach <br>
+- Maximum microservices decoupling (no shared libraries)
 - Multi-threading and asynchronous programming <br>
 - Secure API Gateway <br>
 

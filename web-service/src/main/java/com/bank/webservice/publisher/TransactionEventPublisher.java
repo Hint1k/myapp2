@@ -11,18 +11,23 @@ import org.springframework.stereotype.Component;
 @Slf4j
 public class TransactionEventPublisher {
 
+    private final KafkaTemplate<String, Object> kafkaTemplate;
+
     @Autowired
-    private KafkaTemplate<String, Object> kafkaTemplate;
+    public TransactionEventPublisher(KafkaTemplate<String, Object> kafkaTemplate) {
+        this.kafkaTemplate = kafkaTemplate;
+    }
 
     public void publishTransactionCreatedEvent(Transaction transaction) {
         TransactionCreatedEvent event = new TransactionCreatedEvent(
                 transaction.getAmount(),
                 transaction.getTransactionTime(),
                 transaction.getTransactionType(),
-                transaction.getAccountNumber()
+                transaction.getAccount()
         );
         kafkaTemplate.send("transaction-creation-requested", event);
-        log.info("Published transaction-creation-requested event for account number: {}", event.getAccountNumber());
+        log.info("Published transaction-creation-requested event for account number: {}",
+                event.getAccount().getAccountNumber());
         // add check later with CompletableFuture
     }
 }

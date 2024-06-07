@@ -29,10 +29,9 @@ public class Transaction {
     @NotNull(message = "Transaction type is required")
     private TransactionType transactionType;
 
-    @NotNull(message = "Account ID is required")
-    @Min(value = 1)
-    @Digits(integer = MAX_VALUE, fraction = 0)
-    private Long accountNumber;
+    @NotNull(message = "Account Number is required")
+    // TODO add custom annotation for account number later
+    private Account account;
 
     {
         // sets transaction time = current time
@@ -40,10 +39,10 @@ public class Transaction {
     }
 
     public Transaction(BigDecimal amount, LocalDateTime transactionTime,
-                       TransactionType transactionType, Long accountNumber) {
+                       TransactionType transactionType, Account account) {
         this.amount = amount;
         this.transactionTime = transactionTime;
         this.transactionType = transactionType;
-        this.accountNumber = accountNumber;
+        this.account = account;
     }
 }

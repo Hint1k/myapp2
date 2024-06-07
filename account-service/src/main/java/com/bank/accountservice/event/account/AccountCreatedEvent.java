@@ -1,9 +1,9 @@
-package com.bank.webservice.event.account;
+package com.bank.accountservice.event.account;
 
-import com.bank.webservice.dto.Transaction;
-import com.bank.webservice.util.AccountStatus;
-import com.bank.webservice.util.AccountType;
-import com.bank.webservice.util.Currency;
+import com.bank.accountservice.entity.Transaction;
+import com.bank.accountservice.util.AccountStatus;
+import com.bank.accountservice.util.AccountType;
+import com.bank.accountservice.util.Currency;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -29,15 +29,15 @@ public class AccountCreatedEvent {
     // no id
     public AccountCreatedEvent(Long accountNumber, BigDecimal balance,
                                Currency currency, AccountType accountType,
-                               AccountStatus accountStatus, LocalDate openDate,
-                               List<Transaction> transactions, Long customerId) {
+                               AccountStatus accountStatus, List<Transaction> transactions,
+                               LocalDate openDate, Long customerId) {
         this.accountNumber = accountNumber;
         this.balance = balance;
         this.currency = currency;
         this.accountType = accountType;
         this.accountStatus = accountStatus;
-        this.openDate = openDate;
         this.transactions = transactions;
+        this.openDate = openDate;
         this.customerId = customerId;
     }
 }

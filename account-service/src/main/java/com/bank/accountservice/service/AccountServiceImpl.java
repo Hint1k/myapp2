@@ -15,22 +15,22 @@ import java.util.List;
 @Slf4j
 public class AccountServiceImpl implements AccountService {
 
-    private final AccountEventPublisher accountEventPublisher;
+    private final AccountEventPublisher publisher;
 
-    private final AccountRepository accountRepository;
+    private final AccountRepository repository;
 
     @Autowired
-    public AccountServiceImpl(AccountRepository accountRepository,
-                              AccountEventPublisher accountEventPublisher) {
-        this.accountRepository = accountRepository;
-        this.accountEventPublisher = accountEventPublisher;
+    public AccountServiceImpl(AccountRepository repository,
+                              AccountEventPublisher publisher) {
+        this.repository = repository;
+        this.publisher = publisher;
     }
 
     @Override
     @Transactional
     public Account saveAccount(Account account) {
-        Account savedAccount = accountRepository.save(account);
-        accountEventPublisher.publishAccountCreatedEvent(savedAccount);
+        Account savedAccount = repository.save(account);
+        publisher.publishAccountCreatedEvent(savedAccount);
         log.info("Account saved: {}", savedAccount);
         return savedAccount;
     }
@@ -38,8 +38,8 @@ public class AccountServiceImpl implements AccountService {
     @Override
     @Transactional
     public Account findAccountById(Long accountId) {
-        Account account = accountRepository.getReferenceById(accountId);
-        accountEventPublisher.publishAccountDetailsEvent(account);
+        Account account = repository.findById(accountId).orElse(null);
+        publisher.publishAccountDetailsEvent(account);
         log.info("Retrieved account with id: {}", accountId);
         return account;
     }
@@ -47,8 +47,8 @@ public class AccountServiceImpl implements AccountService {
     @Override
     @Transactional
     public Account findAccountByNumber(Long accountNumber) {
-        Account account = accountRepository.findAccountByNumber(accountNumber);
-        accountEventPublisher.publishAccountDetailsEvent(account);
+        Account account = repository.findAccountByNumber(accountNumber);
+        publisher.publishAccountDetailsEvent(account);
         log.info("Retrieved account with number: {}", accountNumber);
         return account;
     }
@@ -56,8 +56,8 @@ public class AccountServiceImpl implements AccountService {
     @Override
     @Transactional
     public List<Account> findAllAccounts() {
-        List<Account> accounts = accountRepository.findAll();
-        accountEventPublisher.publishAllAccountsEvent(accounts);
+        List<Account> accounts = repository.findAll();
+        publisher.publishAllAccountsEvent(accounts);
         log.info("Retrieved {} accounts", accounts.size());
         return accounts;
     }
@@ -65,8 +65,8 @@ public class AccountServiceImpl implements AccountService {
     @Override
     @Transactional
     public void deleteAccountById(Long accountId){
-        accountRepository.deleteById(accountId);
-        accountEventPublisher.publishAccountDeletedEvent(accountId);
+        repository.deleteById(accountId);
+        publisher.publishAccountDeletedEvent(accountId);
         log.info("Account with id: {} deleted", accountId);
     }
 
@@ -74,8 +74,8 @@ public class AccountServiceImpl implements AccountService {
     @Transactional
     public void updateAccount(Account account){
         // JPA repository should merge instead of save
-        accountRepository.save(account);
-        accountEventPublisher.publishAccountUpdatedEvent(account);
+        repository.save(account);
+        publisher.publishAccountUpdatedEvent(account);
         log.info("Account with id: {} updated", account.getAccountId());
     }
 }

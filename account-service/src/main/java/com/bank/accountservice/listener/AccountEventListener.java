@@ -1,7 +1,7 @@
 package com.bank.accountservice.listener;
 
 import com.bank.accountservice.entity.Account;
-import com.bank.accountservice.event.*;
+import com.bank.accountservice.event.account.*;
 import com.bank.accountservice.service.AccountService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,15 +9,18 @@ import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.support.Acknowledgment;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Component
 @Slf4j
 public class AccountEventListener {
 
+    private final AccountService accountService;
+
     @Autowired
-    private AccountService accountService;
+    public AccountEventListener(AccountService accountService) {
+        this.accountService = accountService;
+    }
 
     @KafkaListener(topics = "account-creation-requested", groupId = "account-service")
     public void handleAccountCreatedEvent(AccountCreatedEvent event, Acknowledgment acknowledgment) {
@@ -29,9 +32,9 @@ public class AccountEventListener {
                 event.getAccountType(),
                 event.getAccountStatus(),
                 event.getOpenDate(),
+                event.getTransactions(),
                 event.getCustomerId()
         );
-        account.setTransactionHistories(new ArrayList<>());
         try {
             accountService.saveAccount(account);
             log.info("Saved account number: {}", account.getAccountNumber());
@@ -91,6 +94,7 @@ public class AccountEventListener {
                 event.getAccountType(),
                 event.getAccountStatus(),
                 event.getOpenDate(),
+                event.getTransactions(),
                 event.getCustomerId()
         );
         Long accountId = event.getAccountId();

@@ -1,10 +1,8 @@
-package com.bank.transactionservice.entity;
+package com.bank.accountservice.entity;
 
-import com.bank.transactionservice.util.TransactionType;
+import com.bank.accountservice.util.TransactionType;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;

@@ -1,7 +1,7 @@
-package com.bank.webservice.event.transaction;
+package com.bank.transactionservice.event.transaction;
 
-import com.bank.webservice.dto.Account;
-import com.bank.webservice.util.TransactionType;
+import com.bank.transactionservice.entity.Account;
+import com.bank.transactionservice.util.TransactionType;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

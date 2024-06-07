@@ -1,7 +1,7 @@
 package com.bank.transactionservice.publisher;
 
-import com.bank.transactionservice.entity.Account;
-import com.bank.transactionservice.event.InitialTransactionEvent;
+import com.bank.transactionservice.entity.Transaction;
+import com.bank.transactionservice.event.transaction.TransactionCreatedEvent;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -11,15 +11,22 @@ import org.springframework.stereotype.Component;
 @Slf4j
 public class TransactionEventPublisher {
 
-    @Autowired
-    private KafkaTemplate<String, InitialTransactionEvent> kafkaTemplate;
+    private final KafkaTemplate<String, TransactionCreatedEvent> kafkaTemplate;
 
-    public void publishInitialTransactionEvent(Account account) {
-        InitialTransactionEvent event = new InitialTransactionEvent(
-                account.getAccountNumber(),
-                account.getBalance()
+    @Autowired
+    public TransactionEventPublisher(KafkaTemplate<String, TransactionCreatedEvent> kafkaTemplate) {
+        this.kafkaTemplate = kafkaTemplate;
+    }
+
+    public void publishTransactionCreatedEvent(Transaction transaction) {
+        TransactionCreatedEvent event = new TransactionCreatedEvent(
+                transaction.getAmount(),
+                transaction.getTransactionTime(),
+                transaction.getTransactionType(),
+                transaction.getAccount()
         );
-        kafkaTemplate.send("initial-transaction-made", event);
-        log.info("Published initial transaction event for account number: {}", event.getAccountNumber());
+        kafkaTemplate.send("transaction-creation-completed", event);
+        log.info("Published transaction completed event for account number: {}",
+                event.getAccount().getAccountNumber());
     }
 }

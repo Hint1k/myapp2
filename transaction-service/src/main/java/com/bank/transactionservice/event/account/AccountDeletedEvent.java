@@ -1,15 +1,12 @@
-package com.bank.accountservice.dto;
+package com.bank.transactionservice.event.account;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.math.BigDecimal;
-
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class TransactionCreatedEvent {
-    private BigDecimal amount;
+public class AccountDeletedEvent {
     private Long accountId;
 }

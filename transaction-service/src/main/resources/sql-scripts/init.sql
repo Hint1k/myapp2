@@ -18,13 +18,13 @@ drop table if exists account;
 create table account
 (
     id             bigserial primary key,
-    account_number bigint       not null,
-    balance        numeric      not null,
-    currency       varchar(255) not null,
-    account_type   varchar(255) not null,
-    status         varchar(255) not null,
-    open_date      date         not null,
-    customer_id    bigint       not null,
+    account_number bigint      not null,
+    balance        numeric     not null,
+    currency       varchar(50) not null,
+    account_type   varchar(50) not null,
+    status         varchar(50) not null,
+    open_date      date        not null,
+    customer_id    bigint      not null,
     constraint account_number_unique unique (account_number)
 );
 
@@ -34,8 +34,9 @@ create table transaction
     id               bigserial primary key,
     amount           numeric,
     transaction_time timestamp,
-    account_id       bigint not null,
-    constraint fk_account foreign key (account_id) references account (id)
+    transaction_type varchar(50) not null,
+    account_number   bigint      not null,
+    constraint fk_account foreign key (account_number) references account (account_number)
 );
 
 insert into account (account_number, balance, currency, account_type, status, open_date, customer_id)

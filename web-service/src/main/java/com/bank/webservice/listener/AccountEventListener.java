@@ -15,8 +15,12 @@ import java.util.List;
 @Slf4j
 public class AccountEventListener {
 
+    private final AccountCache cache;
+
     @Autowired
-    private AccountCache cache;
+    public AccountEventListener(AccountCache cache) {
+        this.cache = cache;
+    }
 
     @KafkaListener(topics = "account-created", groupId = "web-service")
     public void handleAccountCreatedEvent(AccountCreatedEvent event, Acknowledgment acknowledgment) {
@@ -29,6 +33,7 @@ public class AccountEventListener {
                 event.getAccountType(),
                 event.getAccountStatus(),
                 event.getOpenDate(),
+                event.getTransactions(),
                 event.getCustomerId()
         );
         cache.addAccountToCache(account.getAccountId(), account);
@@ -46,7 +51,7 @@ public class AccountEventListener {
                 event.getAccountType(),
                 event.getAccountStatus(),
                 event.getOpenDate(),
-                // TODO add account history
+                event.getTransactions(),
                 event.getCustomerId()
         );
         cache.addAccountToCache(account.getAccountId(), account);
@@ -80,6 +85,7 @@ public class AccountEventListener {
                 event.getAccountType(),
                 event.getAccountStatus(),
                 event.getOpenDate(),
+                event.getTransactions(),
                 event.getCustomerId()
         );
         Long accountId = event.getAccountId();

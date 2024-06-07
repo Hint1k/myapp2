@@ -1,5 +1,6 @@
 package com.bank.webservice.event.account;
 
+import com.bank.webservice.dto.Transaction;
 import com.bank.webservice.util.AccountStatus;
 import com.bank.webservice.util.AccountType;
 import com.bank.webservice.util.Currency;
@@ -9,6 +10,7 @@ import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -21,19 +23,21 @@ public class AccountDetailsEvent {
     private AccountType accountType;
     private AccountStatus accountStatus;
     private LocalDate openDate;
-    // TODO need to add transaction history her later, so this is different from AccountCreatedEvent
+    private List<Transaction> transactions;
     private Long customerId;
 
+    // no id
     public AccountDetailsEvent(Long accountNumber, BigDecimal balance,
                                Currency currency, AccountType accountType,
                                AccountStatus accountStatus, LocalDate openDate,
-                               Long customerId) {
+                               List<Transaction> transactions, Long customerId) {
         this.accountNumber = accountNumber;
         this.balance = balance;
         this.currency = currency;
         this.accountType = accountType;
         this.accountStatus = accountStatus;
         this.openDate = openDate;
+        this.transactions = transactions;
         this.customerId = customerId;
     }
 }

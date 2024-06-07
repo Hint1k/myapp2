@@ -8,8 +8,12 @@ import org.springframework.stereotype.Component;
 @Component
 public class TransactionCache {
 
+    private final RedisTemplate<String, Object> redisTemplate;
+
     @Autowired
-    private RedisTemplate<String, Object> redisTemplate;
+    public TransactionCache(RedisTemplate<String, Object> redisTemplate) {
+        this.redisTemplate = redisTemplate;
+    }
 
     public void addTransactionToCache(Long transactionId, Transaction transaction) {
         redisTemplate.opsForValue().set(transactionId.toString(), transaction);
