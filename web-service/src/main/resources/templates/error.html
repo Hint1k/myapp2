@@ -5,10 +5,11 @@
 <head>
     <meta charset="UTF-8">
     <title>Error page</title>
+    <link rel="stylesheet" th:href="@{/styles.css}">
 </head>
 <body>
 <h1>An error occurred</h1>
-<p th:text="${errorMessage}" style="color: red;"></p>
+<p th:text="${errorMessage}" class="error"></p>
 <p> We are unable to process your request at this time.<br>
     Please try again later.
 </p>

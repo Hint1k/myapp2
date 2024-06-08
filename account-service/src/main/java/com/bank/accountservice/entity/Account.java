@@ -8,7 +8,6 @@ import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.List;
 
 @Entity
 @Table(name = "account")
@@ -43,38 +42,10 @@ public class Account {
     @Column(name = "open_date", nullable = false)
     private LocalDate openDate;
 
-    /// bidirectional relationship, referencing side
-    @OneToMany(mappedBy = "account",
-            fetch = FetchType.EAGER,
-            targetEntity = Transaction.class,
-            cascade = {
-                    CascadeType.DETACH,
-                    CascadeType.MERGE,
-                    CascadeType.PERSIST,
-                    CascadeType.REFRESH})
-    @ToString.Exclude // to avoid loop error between account and transaction
-    private List<Transaction> transactions;
-
     @Column(name = "customer_id")
     private Long customerId;
 
-    // no accountId
-    public Account(Long accountNumber, BigDecimal balance,
-                   Currency currency, AccountType accountType,
-                   AccountStatus accountStatus, LocalDate openDate,
-                   List<Transaction> transactions,
-                   Long customerId) {
-        this.accountNumber = accountNumber;
-        this.balance = balance;
-        this.currency = currency;
-        this.accountType = accountType;
-        this.accountStatus = accountStatus;
-        this.openDate = openDate;
-        this.transactions = transactions;
-        this.customerId = customerId;
-    }
-
-    // no accountId and no transactions
+    // no account id
     public Account(Long accountNumber, BigDecimal balance,
                    Currency currency, AccountType accountType,
                    AccountStatus accountStatus, LocalDate openDate,
@@ -86,10 +57,5 @@ public class Account {
         this.accountStatus = accountStatus;
         this.openDate = openDate;
         this.customerId = customerId;
-    }
-
-    public Account(Long accountNumber, BigDecimal balance) {
-        this.accountNumber = accountNumber;
-        this.balance = balance;
     }
 }

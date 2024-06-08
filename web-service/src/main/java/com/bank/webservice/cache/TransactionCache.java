@@ -22,14 +22,25 @@ public class TransactionCache {
     public void addTransactionToCache(Long transactionId, Transaction transaction) {
         redisTemplate.opsForValue().set(transactionId.toString(), transaction);
     }
+
     public void addAllTransactionsToCache(List<Transaction> transactions) {
         for (Transaction transaction : transactions) {
             redisTemplate.opsForValue().set(transaction.getTransactionId().toString(), transaction);
         }
     }
 
-    public Transaction getFromCacheById(Long transactionId) {
-        return (Transaction) redisTemplate.opsForValue().get(transactionId.toString());
+    public void updateTransactionFromCache(Long transactionId, Transaction transaction) {
+        String key = transactionId.toString();
+        if (Boolean.TRUE.equals(redisTemplate.hasKey(key))) {
+            redisTemplate.opsForValue().set(key, transaction);
+        } else {
+            throw new IllegalArgumentException("Transaction with ID " + transactionId
+                    + " does not exist in the cache.");
+        }
+    }
+
+    public void deleteTransactionFromCache(Long transactionId) {
+        redisTemplate.delete(transactionId.toString());
     }
 
     public List<Transaction> getAllTransactionsFromCache() {
@@ -49,16 +60,7 @@ public class TransactionCache {
         return transactions;
     }
 
-    public void deleteTransactionFromCacheById(Long transactionId) {
-        redisTemplate.delete(transactionId.toString());
-    }
-
-    public void updateTransactionFromCacheById(Long transactionId, Transaction transaction) {
-        String key = transactionId.toString();
-        if (Boolean.TRUE.equals(redisTemplate.hasKey(key))) {
-            redisTemplate.opsForValue().set(key, transaction);
-        } else {
-            throw new IllegalArgumentException("Transaction with ID " + transactionId + " does not exist in the cache.");
-        }
+    public Transaction getTransactionFromCache(Long transactionId) {
+        return (Transaction) redisTemplate.opsForValue().get(transactionId.toString());
     }
 }

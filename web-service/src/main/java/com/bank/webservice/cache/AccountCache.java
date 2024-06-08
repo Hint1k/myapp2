@@ -31,8 +31,17 @@ public class AccountCache {
         }
     }
 
-    public Account getFromCacheById(Long accountId) {
-        return (Account) redisTemplate.opsForValue().get(accountId.toString());
+    public void updateAccountFromCache(Long accountId, Account account) {
+        String key = accountId.toString();
+        if (Boolean.TRUE.equals(redisTemplate.hasKey(key))) {
+            redisTemplate.opsForValue().set(key, account);
+        } else {
+            throw new IllegalArgumentException("Account with ID " + accountId + " does not exist in the cache.");
+        }
+    }
+
+    public void deleteAccountFromCache(Long accountId) {
+        redisTemplate.delete(accountId.toString());
     }
 
     public List<Account> getAllAccountsFromCache() {
@@ -52,26 +61,7 @@ public class AccountCache {
         return accounts;
     }
 
-    public void deleteAccountFromCacheById(Long accountId) {
-        redisTemplate.delete(accountId.toString());
-    }
-
-    public void updateAccountFromCacheById(Long accountId, Account account) {
-        String key = accountId.toString();
-        if (Boolean.TRUE.equals(redisTemplate.hasKey(key))) {
-            redisTemplate.opsForValue().set(key, account);
-        } else {
-            throw new IllegalArgumentException("Account with ID " + accountId + " does not exist in the cache.");
-        }
-    }
-
-    public void updateAccountFromCacheByNumber(Long accountNumber, Account account) {
-        String key = accountNumber.toString();
-        if (Boolean.TRUE.equals(redisTemplate.hasKey(key))) {
-            redisTemplate.opsForValue().set(key, account);
-        } else {
-            throw new IllegalArgumentException("Account with Number " + accountNumber
-                    + " does not exist in the cache.");
-        }
+    public Account getAccountFromCache(Long accountId) {
+        return (Account) redisTemplate.opsForValue().get(accountId.toString());
     }
 }

@@ -39,21 +39,6 @@ public class AccountController {
         dataBinder.registerCustomEditor(String.class, stringTrimmerEditor);
     }
 
-    @GetMapping("/accounts/{accountId}")
-    public String getAccountById(@PathVariable("accountId") Long accountId, Model model) {
-        Account account = new Account();
-        account.setAccountId(accountId);
-        publisher.publishAccountDetailsEvent(account);
-        account = cache.getFromCacheById(accountId);
-        if (account != null) {
-            model.addAttribute("account", account);
-            return "account-details";
-        } else {
-            model.addAttribute("accountId", accountId);
-            return "loading-accounts";
-        }
-    }
-
     @GetMapping("/accounts/new-account")
     private String showNewAccountForm(Model model) {
         Account account = new Account();
@@ -72,6 +57,30 @@ public class AccountController {
         return "redirect:/index";
     }
 
+    @PutMapping("/accounts/{accountId}")
+    public String showUpdateAccountForm(@PathVariable("accountId") Long accountId, Model model) {
+        Account account = cache.getAccountFromCache(accountId);
+        model.addAttribute("account", account);
+        return "account-update";
+    }
+
+    @PostMapping("/accounts/account")
+    public String updateAccount(@Valid @ModelAttribute("account") Account account, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            log.error("Account update failed due to validation errors: {}",
+                    bindingResult.getAllErrors());
+            return "account-update";
+        }
+        publisher.publishAccountUpdatedEvent(account);
+        return "redirect:/index";
+    }
+
+    @DeleteMapping("/accounts/{accountId}")
+    public String deleteAccount(@PathVariable("accountId") Long accountId) {
+        publisher.publishAccountDeletedEvent(accountId);
+        return "redirect:/index";
+    }
+
     @GetMapping("/accounts/all-accounts")
     public String getAllAccounts(Model model) {
         List<Account> accounts = new ArrayList<>();
@@ -85,27 +94,18 @@ public class AccountController {
         }
     }
 
-    @DeleteMapping("/accounts/{accountId}")
-    public String deleteAccountById(@PathVariable("accountId") Long accountId) {
-        publisher.publishAccountDeletedEvent(accountId);
-        return "redirect:/index";
-    }
-
-    @PutMapping("/accounts/{accountId}")
-    public String showUpdateAccountForm(@PathVariable("accountId") Long accountId, Model model) {
-        Account account = cache.getFromCacheById(accountId);
-        model.addAttribute("account", account);
-        return "account-update";
-    }
-
-    @PostMapping("/accounts/account")
-    public String updateAccountById(@Valid @ModelAttribute("account") Account account, BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
-            log.error("Account update failed due to validation errors: {}",
-                    bindingResult.getAllErrors());
-            return "account-update";
+    @GetMapping("/accounts/{accountId}")
+    public String getAccount(@PathVariable("accountId") Long accountId, Model model) {
+        Account account = new Account();
+        account.setAccountId(accountId);
+        publisher.publishAccountDetailsEvent(account);
+        account = cache.getAccountFromCache(accountId);
+        if (account != null) {
+            model.addAttribute("account", account);
+            return "account-details";
+        } else {
+            model.addAttribute("accountId", accountId);
+            return "loading-accounts";
         }
-        publisher.publishAccountUpdatedEvent(account);
-        return "redirect:/index";
     }
 }

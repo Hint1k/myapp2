@@ -1,6 +1,5 @@
 package com.bank.webservice.event.transaction;
 
-import com.bank.webservice.dto.Account;
 import com.bank.webservice.util.TransactionType;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -13,17 +12,19 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class TransactionCreatedEvent {
+    // TODO combine later with classes TransactionDetailsEvent and TransactionUpdatedEvent
     private Long transactionId;
     private BigDecimal amount;
     private LocalDateTime transactionTime;
     private TransactionType transactionType;
-    private Account account;
+    private Long accountDestinationNumber;
 
+    // no transaction id
     public TransactionCreatedEvent(BigDecimal amount, LocalDateTime transactionTime,
-                                   TransactionType transactionType, Account account) {
+                                   TransactionType transactionType, Long accountDestinationNumber) {
         this.amount = amount;
         this.transactionTime = transactionTime;
         this.transactionType = transactionType;
-        this.account = account;
+        this.accountDestinationNumber = accountDestinationNumber;
     }
 }

@@ -24,7 +24,6 @@ public class AccountEventListener {
 
     @KafkaListener(topics = "account-created", groupId = "web-service")
     public void handleAccountCreatedEvent(AccountCreatedEvent event, Acknowledgment acknowledgment) {
-        log.info("Received account-created event for account id: {}", event.getAccountId());
         Account account = new Account(
                 event.getAccountId(),
                 event.getAccountNumber(),
@@ -33,16 +32,15 @@ public class AccountEventListener {
                 event.getAccountType(),
                 event.getAccountStatus(),
                 event.getOpenDate(),
-                event.getTransactions(),
                 event.getCustomerId()
         );
+        log.info("Received account-created event for account id: {}", event.getAccountId());
         cache.addAccountToCache(account.getAccountId(), account);
         acknowledgment.acknowledge();
     }
 
-    @KafkaListener(topics = "account-details-received", groupId = "web-service")
-    public void handleAccountDetailsEvent(AccountDetailsEvent event, Acknowledgment acknowledgment) {
-        log.info("Received account-details-received event for account id: {}", event.getAccountId());
+    @KafkaListener(topics = "account-updated", groupId = "web-service")
+    public void handleAccountUpdatedEvent(AccountUpdatedEvent event, Acknowledgment acknowledgment) {
         Account account = new Account(
                 event.getAccountId(),
                 event.getAccountNumber(),
@@ -51,11 +49,20 @@ public class AccountEventListener {
                 event.getAccountType(),
                 event.getAccountStatus(),
                 event.getOpenDate(),
-                event.getTransactions(),
                 event.getCustomerId()
         );
-        cache.addAccountToCache(account.getAccountId(), account);
-        acknowledgment.acknowledge(); // commit offset after successfully added to cache
+        Long accountId = event.getAccountId();
+        log.info("Received account-updated event for account id: {}", accountId);
+        cache.updateAccountFromCache(accountId, account);
+        acknowledgment.acknowledge();
+    }
+
+    @KafkaListener(topics = "account-deleted", groupId = "web-service")
+    public void handleAccountDeletedEvent(AccountDeletedEvent event, Acknowledgment acknowledgment) {
+        Long accountId = event.getAccountId();
+        log.info("Received account-deleted event for account id: {}", accountId);
+        cache.deleteAccountFromCache(accountId);
+        acknowledgment.acknowledge();
     }
 
     @KafkaListener(topics = "all-accounts-received", groupId = "web-service")
@@ -63,21 +70,12 @@ public class AccountEventListener {
         List<Account> accounts = event.getAccounts();
         log.info("Received all-accounts-received event with {} accounts", accounts.size());
         cache.addAllAccountsToCache(accounts);
-        acknowledgment.acknowledge(); // commit offset after successfully added to cache
+        acknowledgment.acknowledge();
     }
 
-    @KafkaListener(topics = "account-deleted", groupId = "web-service")
-    public void handleAccountDeletedEvent(AccountDeletedEvent event, Acknowledgment acknowledgment) {
-        Long accountId = event.getAccountId();
-        log.info("Received account-deleted event for account id: {}", accountId);
-        cache.deleteAccountFromCacheById(accountId);
-        acknowledgment.acknowledge(); // commit offset after successfully added to cache
-    }
-
-    @KafkaListener(topics = "account-updated", groupId = "web-service")
-    public void handleAccountUpdatedEvent(AccountUpdatedEvent event, Acknowledgment acknowledgment) {
+    @KafkaListener(topics = "account-details-received", groupId = "web-service")
+    public void handleAccountDetailsEvent(AccountDetailsEvent event, Acknowledgment acknowledgment) {
         Account account = new Account(
-                // TODO remove fields that cannot be updated later
                 event.getAccountId(),
                 event.getAccountNumber(),
                 event.getBalance(),
@@ -85,12 +83,10 @@ public class AccountEventListener {
                 event.getAccountType(),
                 event.getAccountStatus(),
                 event.getOpenDate(),
-                event.getTransactions(),
                 event.getCustomerId()
         );
-        Long accountId = event.getAccountId();
-        log.info("Received account-updated event for account id: {}", accountId);
-        cache.updateAccountFromCacheById(accountId, account);
-        acknowledgment.acknowledge(); // commit offset after successfully added to cache
+        log.info("Received account-details-received event for account id: {}", event.getAccountId());
+        cache.addAccountToCache(account.getAccountId(), account);
+        acknowledgment.acknowledge();
     }
 }

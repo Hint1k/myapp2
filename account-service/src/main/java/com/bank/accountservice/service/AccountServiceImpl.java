@@ -2,6 +2,7 @@ package com.bank.accountservice.service;
 
 import com.bank.accountservice.repository.AccountRepository;
 import com.bank.accountservice.publisher.AccountEventPublisher;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,29 +29,27 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     @Transactional
-    public Account saveAccount(Account account) {
+    public void saveAccount(Account account) {
         Account savedAccount = repository.save(account);
         publisher.publishAccountCreatedEvent(savedAccount);
         log.info("Account saved: {}", savedAccount);
-        return savedAccount;
     }
 
     @Override
     @Transactional
-    public Account findAccountById(Long accountId) {
-        Account account = repository.findById(accountId).orElse(null);
-        publisher.publishAccountDetailsEvent(account);
-        log.info("Retrieved account with id: {}", accountId);
-        return account;
+    public void updateAccount(Account account) {
+        // JPA repository should merge instead of save
+        repository.save(account);
+        publisher.publishAccountUpdatedEvent(account);
+        log.info("Account with id: {} updated", account.getAccountId());
     }
 
     @Override
     @Transactional
-    public Account findAccountByNumber(Long accountNumber) {
-        Account account = repository.findAccountByNumber(accountNumber);
-        publisher.publishAccountDetailsEvent(account);
-        log.info("Retrieved account with number: {}", accountNumber);
-        return account;
+    public void deleteAccount(Long accountId) {
+        repository.deleteById(accountId);
+        publisher.publishAccountDeletedEvent(accountId);
+        log.info("Account with id: {} deleted", accountId);
     }
 
     @Override
@@ -64,18 +63,14 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     @Transactional
-    public void deleteAccountById(Long accountId){
-        repository.deleteById(accountId);
-        publisher.publishAccountDeletedEvent(accountId);
-        log.info("Account with id: {} deleted", accountId);
-    }
-
-    @Override
-    @Transactional
-    public void updateAccount(Account account){
-        // JPA repository should merge instead of save
-        repository.save(account);
-        publisher.publishAccountUpdatedEvent(account);
-        log.info("Account with id: {} updated", account.getAccountId());
+    public Account findAccountById(Long accountId) {
+        Account account = repository.findById(accountId).orElse(null);
+        if (account == null) {
+            // TODO return message to the web-service
+            throw new EntityNotFoundException("Account with id " + accountId + " not found");
+        }
+        publisher.publishAccountDetailsEvent(account);
+        log.info("Retrieved account with id: {}", accountId);
+        return account;
     }
 }

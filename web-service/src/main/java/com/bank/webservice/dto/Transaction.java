@@ -30,19 +30,25 @@ public class Transaction {
     private TransactionType transactionType;
 
     @NotNull(message = "Account Id is required")
-    // TODO add custom annotation for account id later
-    private Account account;
+    @Min(value = 1)
+    @Digits(integer = MAX_VALUE, fraction = 0)
+    private Long accountDestinationNumber;
 
-    {
+    // TODO planned fields for future updates
+//    private Long accountSourceNumber;
+//    private TransactionStatus transactionStatus;
+
+    { // TODO changed to ZonedDateTime later
         // sets transaction time = current time
         this.transactionTime = LocalDateTime.now();
     }
 
+    // no transaction id
     public Transaction(BigDecimal amount, LocalDateTime transactionTime,
-                       TransactionType transactionType, Account account) {
+                       TransactionType transactionType, Long accountDestinationNumber) {
         this.amount = amount;
         this.transactionTime = transactionTime;
         this.transactionType = transactionType;
-        this.account = account;
+        this.accountDestinationNumber = accountDestinationNumber;
     }
 }

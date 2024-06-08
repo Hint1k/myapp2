@@ -2,7 +2,17 @@ package com.bank.transactionservice.service;
 
 import com.bank.transactionservice.entity.Transaction;
 
+import java.util.List;
+
 public interface TransactionService {
 
-   Transaction saveTransaction(Transaction transaction);
+    void saveTransaction(Transaction transaction);
+
+    void updateTransaction(Transaction transaction);
+
+    void deleteTransaction(Long transactionId);
+
+    List<Transaction> findAllTransactions();
+
+    Transaction findTransactionById(Long transactionId);
 }

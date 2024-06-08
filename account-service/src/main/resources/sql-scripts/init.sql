@@ -1,6 +1,4 @@
-/*
-PostgreSQL script:
-*/
+/* PostgreSQL script: */
 
 \connect postgres
 
@@ -18,26 +16,15 @@ drop table if exists account;
 create table account
 (
     id             bigserial primary key,
-    account_number bigint      not null,
-    balance        numeric     not null,
-    currency       varchar(50) not null,
-    account_type   varchar(50) not null,
-    status         varchar(50) not null,
-    open_date      date        not null,
-    customer_id    bigint      not null,
+    account_number bigint         not null,
+    balance        decimal(10, 2) not null,
+    currency       varchar(25)    not null,
+    account_type   varchar(25)    not null,
+    status         varchar(25)    not null,
+    open_date      date           not null,
+    customer_id    bigint         not null,
     constraint account_number_unique unique (account_number)
 );
-
--- drop table if exists transaction;
--- create table transaction
--- (
---     id               bigserial primary key,
---     amount           numeric,
---     transaction_time timestamp,
---     transaction_type varchar(50) not null,
---     account_id       bigint      not null,
---     constraint fk_account foreign key (account_id) references account (id)
--- );
 
 insert into account (account_number, balance, currency, account_type, status, open_date, customer_id)
 values (1, 0.00, 'USD', 'SAVINGS', 'ACTIVE', '2024-05-24', 1);

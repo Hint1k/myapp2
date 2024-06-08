@@ -3,39 +3,39 @@
       xmlns:th="http://www.thymeleaf.org"
       xmlns="http://www.w3.org/1999/html">
 <head>
-  <meta charset="UTF-8">
-  <title>Transaction Details Page</title>
-  <link rel="stylesheet" th:href="@{/styles.css}">
+    <meta charset="UTF-8">
+    <title>Transaction Details Page</title>
+    <link rel="stylesheet" th:href="@{/styles.css}">
 </head>
 <body>
 <h1>Transaction Details</h1>
 <table th:if="${transaction}">
-  <tr>
-    <td>Transaction Id:</td>
-    <td th:text="${transaction.getTransactionId}"></td>
-  </tr>
-  <tr>
-    <td>Amount:</td>
-    <td th:text="${transaction.amount}"></td>
-  </tr>
-  <tr>
-    <td>Transaction Time:</td>
-    <td th:text="${transaction.transactionTime}"></td>
-  </tr>
-  <tr>
-    <td>Transaction Type:</td>
-    <td th:text="${transaction.transactionType}"></td>
-  </tr>
-  <tr>
-    <td>Account Id:</td>
-    <td th:text="${transaction.account}"></td>
-  </tr>
+    <tr>
+        <td>Transaction Id:</td>
+        <td th:text="${transaction.getTransactionId}"></td>
+    </tr>
+    <tr>
+        <td>Amount:</td>
+        <td th:text="${transaction.amount}"></td>
+    </tr>
+    <tr>
+        <td>Transaction Time:</td>
+        <td th:text="${transaction.transactionTime}"></td>
+    </tr>
+    <tr>
+        <td>Transaction Type:</td>
+        <td th:text="${transaction.transactionType}"></td>
+    </tr>
+    <tr>
+        <td>Account Id:</td>
+        <td th:text="${transaction.account}"></td>
+    </tr>
 </table>
 <hr>
 <button type="button" onclick="history.go(-1)" class="go-button"> Go to previous page</button>
 <br><br>
 <a th:href="@{/index}">
-  <button type="button" class="update-button">Return to index page</button>
+    <button type="button" class="update-button">Return to index page</button>
 </a>
 </body>
 </html>

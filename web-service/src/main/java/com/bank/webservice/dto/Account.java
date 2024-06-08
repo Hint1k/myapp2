@@ -13,8 +13,6 @@ import lombok.NoArgsConstructor;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.Collections;
-import java.util.List;
 
 import static java.lang.Integer.MAX_VALUE;
 
@@ -47,8 +45,6 @@ public class Account implements Serializable {
     @NotNull(message = "Open date is required")
     private LocalDate openDate;
 
-    private List<Transaction> transactions;
-
     @NotNull(message = "Customer ID is required")
     @Min(value = 1)
     @Digits(integer = MAX_VALUE, fraction = 0)
@@ -57,13 +53,11 @@ public class Account implements Serializable {
     {
         // sets account open date = current date
         this.openDate = LocalDate.now();
-        // sets initial balance of a newly created account
+        // sets initial balance
         this.balance = BigDecimal.ZERO;
-        // sets initial transaction history of a newly created account
-        this.transactions = Collections.emptyList();
     }
 
-    // no account Id
+    // no account id
     public Account(Long accountNumber, BigDecimal balance,
                    Currency currency, AccountType accountType,
                    AccountStatus accountStatus, LocalDate openDate,
@@ -75,10 +69,5 @@ public class Account implements Serializable {
         this.accountStatus = accountStatus;
         this.openDate = openDate;
         this.customerId = customerId;
-    }
-
-    public Account(Long accountNumber, BigDecimal balance) {
-        this.accountNumber = accountNumber;
-        this.balance = balance;
     }
 }

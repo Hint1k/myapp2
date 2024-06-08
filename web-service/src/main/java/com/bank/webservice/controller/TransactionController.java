@@ -58,6 +58,31 @@ public class TransactionController {
         return "redirect:/index";
     }
 
+    @PutMapping("/transactions/{transactionId}")
+    public String showUpdateTransactionForm(@PathVariable("transactionId") Long transactionId, Model model) {
+        Transaction transaction = cache.getTransactionFromCache(transactionId);
+        model.addAttribute("transaction", transaction);
+        return "transaction-update";
+    }
+
+    @PostMapping("/transactions/transaction")
+    public String updateTransaction(@Valid @ModelAttribute("transaction") Transaction transaction,
+                                    BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            log.error("Transaction update failed due to validation errors: {}",
+                    bindingResult.getAllErrors());
+            return "transaction-update";
+        }
+        publisher.publishTransactionUpdatedEvent(transaction);
+        return "redirect:/index";
+    }
+
+    @DeleteMapping("/transactions/{transactionId}")
+    public String deleteTransaction(@PathVariable("transactionId") Long transactionId) {
+        publisher.publishTransactionDeletedEvent(transactionId);
+        return "redirect:/index";
+    }
+
     @GetMapping("/transactions/all-transactions")
     public String getAllTransactions(Model model) {
         List<Transaction> transactions = new ArrayList<>();
@@ -71,37 +96,12 @@ public class TransactionController {
         }
     }
 
-    @DeleteMapping("/transactions/{transactionId}")
-    public String deleteTransactionById(@PathVariable("transactionId") Long transactionId) {
-        publisher.publishTransactionDeletedEvent(transactionId);
-        return "redirect:/index";
-    }
-
-    @PutMapping("/transactions/{transactionId}")
-    public String showUpdateTransactionForm(@PathVariable("transactionId") Long transactionId, Model model) {
-        Transaction transaction = cache.getFromCacheById(transactionId);
-        model.addAttribute("transaction", transaction);
-        return "transaction-update";
-    }
-
-    @PostMapping("/transactions/transaction")
-    public String updateTransactionById(@Valid @ModelAttribute("transaction") Transaction transaction,
-                                        BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
-            log.error("Transaction update failed due to validation errors: {}",
-                    bindingResult.getAllErrors());
-            return "transaction-update";
-        }
-        publisher.publishTransactionUpdatedEvent(transaction);
-        return "redirect:/index";
-    }
-
     @GetMapping("/transactions/{transactionId}")
-    public String getTransactionById(@PathVariable("transactionId") Long transactionId, Model model) {
+    public String getTransaction(@PathVariable("transactionId") Long transactionId, Model model) {
         Transaction transaction = new Transaction();
         transaction.setTransactionId(transactionId);
         publisher.publishTransactionDetailsEvent(transaction);
-        transaction = cache.getFromCacheById(transactionId);
+        transaction = cache.getTransactionFromCache(transactionId);
         if (transaction != null) {
             model.addAttribute("transaction", transaction);
             return "transaction-details";

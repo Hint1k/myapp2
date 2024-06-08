@@ -32,7 +32,6 @@ public class AccountEventListener {
                 event.getAccountType(),
                 event.getAccountStatus(),
                 event.getOpenDate(),
-                event.getTransactions(),
                 event.getCustomerId()
         );
         try {
@@ -45,16 +44,37 @@ public class AccountEventListener {
         }
     }
 
-    @KafkaListener(topics = "account-details-requested", groupId = "account-service")
-    public void handleAccountDetailsEvent(AccountDetailsEvent event, Acknowledgment acknowledgment) {
-        Long accountId = event.getAccountId();
-        log.info("Received account-details-requested event for account id: {}", accountId);
-        log.debug("Deserialized AccountDetailsEvent: {}", event);
+    @KafkaListener(topics = "account-update-requested", groupId = "account-service")
+    public void handleAccountUpdatedEvent(AccountUpdatedEvent event, Acknowledgment acknowledgment) {
+        Account account = new Account(
+                event.getAccountId(),
+                event.getAccountNumber(),
+                event.getBalance(),
+                event.getCurrency(),
+                event.getAccountType(),
+                event.getAccountStatus(),
+                event.getOpenDate(),
+                event.getCustomerId()
+        );
+        log.info("Received account-update-requested event for account id: {}", event.getAccountId());
         try {
-            accountService.findAccountById(accountId);
+            accountService.updateAccount(account);
             acknowledgment.acknowledge();
         } catch (Exception e) {
-            log.error("Error finding account by id: {}", e.getMessage());
+            log.error("Error updating account by id: {}", e.getMessage());
+            // TODO implement error handling later
+        }
+    }
+
+    @KafkaListener(topics = "account-deletion-requested", groupId = "account-service")
+    public void handleAccountDeletedEvent(AccountDeletedEvent event, Acknowledgment acknowledgment) {
+        Long accountId = event.getAccountId();
+        log.info("Received account-deletion-requested event for account id: {}", accountId);
+        try {
+            accountService.deleteAccount(accountId);
+            acknowledgment.acknowledge();
+        } catch (Exception e) {
+            log.error("Error deleting account by id: {}", e.getMessage());
             // TODO implement error handling later
         }
     }
@@ -72,39 +92,15 @@ public class AccountEventListener {
         }
     }
 
-    @KafkaListener(topics = "account-deletion-requested", groupId = "account-service")
-    public void handleAccountDeletedEvent(AccountDeletedEvent event, Acknowledgment acknowledgment) {
+    @KafkaListener(topics = "account-details-requested", groupId = "account-service")
+    public void handleAccountDetailsEvent(AccountDetailsEvent event, Acknowledgment acknowledgment) {
         Long accountId = event.getAccountId();
-        log.info("Received account-deletion-requested event for account id: {}", accountId);
+        log.info("Received account-details-requested event for account id: {}", accountId);
         try {
-            accountService.deleteAccountById(accountId);
+            accountService.findAccountById(accountId);
             acknowledgment.acknowledge();
         } catch (Exception e) {
-            log.error("Error deleting account by id: {}", e.getMessage());
-            // TODO implement error handling later
-        }
-    }
-
-    @KafkaListener(topics = "account-update-requested", groupId = "account-service")
-    public void handleAccountUpdatedEvent(AccountUpdatedEvent event, Acknowledgment acknowledgment) {
-        Account account = new Account(
-                event.getAccountNumber(),
-                event.getBalance(),
-                event.getCurrency(),
-                event.getAccountType(),
-                event.getAccountStatus(),
-                event.getOpenDate(),
-                event.getTransactions(),
-                event.getCustomerId()
-        );
-        Long accountId = event.getAccountId();
-        account.setAccountId(accountId);
-        log.info("Received account-update-requested event for account id: {}", accountId);
-        try {
-            accountService.updateAccount(account);
-            acknowledgment.acknowledge();
-        } catch (Exception e) {
-            log.error("Error updating account by id: {}", e.getMessage());
+            log.error("Error finding account by id: {}", e.getMessage());
             // TODO implement error handling later
         }
     }
