@@ -16,7 +16,6 @@ import java.util.List;
 public class TransactionServiceImpl implements TransactionService {
 
     private final TransactionEventPublisher publisher;
-
     private final TransactionRepository repository;
 
     @Autowired

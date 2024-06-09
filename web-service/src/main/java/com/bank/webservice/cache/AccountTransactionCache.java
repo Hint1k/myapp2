@@ -10,43 +10,24 @@ import java.util.List;
 import java.util.Set;
 
 @Component
-public class TransactionCache {
+public class AccountTransactionCache {
 
     // account and transaction cache with the same id causes error
-    private static final String PREFIX = "transaction:";
-
+    private static final String PREFIX = "account_transactions:";
     private final RedisTemplate<String, Object> redisTemplate;
 
     @Autowired
-    public TransactionCache(RedisTemplate<String, Object> redisTemplate) {
+    public AccountTransactionCache(RedisTemplate<String, Object> redisTemplate) {
         this.redisTemplate = redisTemplate;
     }
 
-    public void addTransactionToCache(Long transactionId, Transaction transaction) {
-        redisTemplate.opsForValue().set(PREFIX + transactionId.toString(), transaction);
-    }
-
-    public void addAllTransactionsToCache(List<Transaction> transactions) {
+    public void addAccountTransactionsToCache(List<Transaction> transactions) {
         for (Transaction transaction : transactions) {
             redisTemplate.opsForValue().set(PREFIX + transaction.getTransactionId().toString(), transaction);
         }
     }
 
-    public void updateTransactionFromCache(Long transactionId, Transaction transaction) {
-        String key = PREFIX + transactionId.toString();
-        if (Boolean.TRUE.equals(redisTemplate.hasKey(key))) {
-            redisTemplate.opsForValue().set(key, transaction);
-        } else {
-            throw new IllegalArgumentException("Transaction with ID " + transactionId
-                    + " does not exist in the cache.");
-        }
-    }
-
-    public void deleteTransactionFromCache(Long transactionId) {
-        redisTemplate.delete(PREFIX + transactionId.toString());
-    }
-
-    public List<Transaction> getAllTransactionsFromCache() {
+    public List<Transaction> getTransactionsFromCacheByAccountId(Long accountId) {
         // Retrieve all keys from Redis
         Set<String> keys = redisTemplate.keys(PREFIX + "*");
 
@@ -62,9 +43,5 @@ public class TransactionCache {
             }
         }
         return transactions;
-    }
-
-    public Transaction getTransactionFromCache(Long transactionId) {
-        return (Transaction) redisTemplate.opsForValue().get(PREFIX + transactionId.toString());
     }
 }

@@ -1,6 +1,6 @@
-package com.bank.transactionservice.event.transaction;
+package com.bank.webservice.event.combined;
 
-import com.bank.transactionservice.entity.Transaction;
+import com.bank.webservice.dto.Transaction;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -10,6 +10,7 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class AllTransactionsEvent {
+public class AccountTransactionEvent {
+    private Long accountId;
     private List<Transaction> transactions;
 }

@@ -3,6 +3,7 @@ package com.bank.webservice.listener;
 import com.bank.webservice.cache.AccountCache;
 import com.bank.webservice.dto.Account;
 import com.bank.webservice.event.account.*;
+import com.bank.webservice.service.LatchService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.KafkaListener;
@@ -10,15 +11,18 @@ import org.springframework.kafka.support.Acknowledgment;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
 
 @Component
 @Slf4j
 public class AccountEventListener {
 
+    private final LatchService latchService;
     private final AccountCache cache;
 
     @Autowired
-    public AccountEventListener(AccountCache cache) {
+    public AccountEventListener(LatchService latchService, AccountCache cache) {
+        this.latchService = latchService;
         this.cache = cache;
     }
 
@@ -70,6 +74,10 @@ public class AccountEventListener {
         List<Account> accounts = event.getAccounts();
         log.info("Received all-accounts-received event with {} accounts", accounts.size());
         cache.addAllAccountsToCache(accounts);
+        CountDownLatch latch = latchService.getLatch();
+        if (latch != null) {
+            latch.countDown();
+        }
         acknowledgment.acknowledge();
     }
 

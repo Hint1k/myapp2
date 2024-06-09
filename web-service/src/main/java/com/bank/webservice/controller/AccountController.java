@@ -3,6 +3,8 @@ package com.bank.webservice.controller;
 import com.bank.webservice.cache.AccountCache;
 import com.bank.webservice.dto.Account;
 import com.bank.webservice.publisher.AccountEventPublisher;
+import com.bank.webservice.service.LatchService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,18 +17,22 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 @Controller
 @Slf4j
 @RequestMapping("/api")
 public class AccountController {
 
+    private final LatchService latchService;
     private final AccountEventPublisher publisher;
-
     private final AccountCache cache;
+    private static final int MAX_RESPONSE_TIME = 3; // seconds
 
     @Autowired
-    public AccountController(AccountEventPublisher publisher, AccountCache cache) {
+    public AccountController(LatchService latchService, AccountEventPublisher publisher, AccountCache cache) {
+        this.latchService = latchService;
         this.publisher = publisher;
         this.cache = cache;
     }
@@ -85,12 +91,32 @@ public class AccountController {
     public String getAllAccounts(Model model) {
         List<Account> accounts = new ArrayList<>();
         publisher.publishAllAccountsEvent(accounts);
-        accounts = cache.getAllAccountsFromCache();
-        if (accounts != null && !accounts.isEmpty()) {
-            model.addAttribute("accounts", accounts);
-            return "all-accounts";
-        } else {
+
+        CountDownLatch latch = new CountDownLatch(1);
+        latchService.setLatch(latch);
+
+        try {
+            boolean latchResult = latch.await(MAX_RESPONSE_TIME, TimeUnit.SECONDS);
+            if (latchResult) {
+                accounts = cache.getAllAccountsFromCache();
+                if (accounts != null && !accounts.isEmpty()) {
+                    model.addAttribute("accounts", accounts);
+                    return "all-accounts";
+                } else { // returns empty table when no accounts in database
+                    model.addAttribute("accounts", new ArrayList<>());
+                    return "all-accounts";
+                }
+            } else {
+                String errorMessage = "The service is busy, please try again later.";
+                model.addAttribute("errorMessage", errorMessage);
+                log.error("Timeout waiting for accounts: {}", errorMessage);
+                return "error";
+            }
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
             return "loading-accounts";
+        } finally {
+            latchService.resetLatch();
         }
     }
 

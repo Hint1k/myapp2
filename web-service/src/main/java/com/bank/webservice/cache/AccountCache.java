@@ -1,7 +1,6 @@
 package com.bank.webservice.cache;
 
 import com.bank.webservice.dto.Account;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
@@ -11,7 +10,6 @@ import java.util.List;
 import java.util.Set;
 
 @Component
-@Slf4j
 public class AccountCache {
 
     // account and transaction cache with the same id causes error
@@ -51,8 +49,9 @@ public class AccountCache {
         //Retrieve all keys from Redis
         Set<String> keys = redisTemplate.keys(PREFIX + "*");
 
-        List<Account> accounts = new ArrayList<>();
+        List<Account> accounts = null;
         if (keys != null) {
+            accounts = new ArrayList<>();
             for (String key : keys) {
                 // Retrieve the value associated with the key from Redis
                 Account account = (Account) redisTemplate.opsForValue().get(key);

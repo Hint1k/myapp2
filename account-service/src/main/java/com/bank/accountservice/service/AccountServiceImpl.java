@@ -17,7 +17,6 @@ import java.util.List;
 public class AccountServiceImpl implements AccountService {
 
     private final AccountEventPublisher publisher;
-
     private final AccountRepository repository;
 
     @Autowired

@@ -3,6 +3,7 @@ package com.bank.webservice.controller;
 import com.bank.webservice.cache.TransactionCache;
 import com.bank.webservice.dto.Transaction;
 import com.bank.webservice.publisher.TransactionEventPublisher;
+import com.bank.webservice.service.LatchService;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +16,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.CountDownLatch;
 
 @Controller
 @Slf4j
@@ -22,13 +25,16 @@ import java.util.List;
 public class TransactionController {
 
     private final TransactionEventPublisher publisher;
-
     private final TransactionCache cache;
+    private final LatchService latchService;
+    private static final int MAX_RESPONSE_TIME = 3; // seconds
 
     @Autowired
-    public TransactionController(TransactionEventPublisher publisher, TransactionCache cache) {
+    public TransactionController(TransactionEventPublisher publisher, TransactionCache cache,
+                                 LatchService latchService) {
         this.publisher = publisher;
         this.cache = cache;
+        this.latchService = latchService;
     }
 
     // cutting off the spaces entered by user to avoid errors
@@ -87,12 +93,32 @@ public class TransactionController {
     public String getAllTransactions(Model model) {
         List<Transaction> transactions = new ArrayList<>();
         publisher.publishAllTransactionsEvent(transactions);
-        transactions = cache.getAllTransactionsFromCache();
-        if (transactions != null && !transactions.isEmpty()) {
-            model.addAttribute("transactions", transactions);
-            return "all-transactions";
-        } else {
+
+        CountDownLatch latch = new CountDownLatch(1);
+        latchService.setLatch(latch);
+
+        try {
+            boolean latchResult = latch.await(MAX_RESPONSE_TIME, TimeUnit.SECONDS);
+            if (latchResult) {
+                transactions = cache.getAllTransactionsFromCache();
+                if (transactions != null && !transactions.isEmpty()) {
+                    model.addAttribute("transactions", transactions);
+                    return "all-transactions";
+                } else { // returns empty table when no transactions in database
+                    model.addAttribute("transactions", new ArrayList<>());
+                    return "all-transactions";
+                }
+            } else {
+                String errorMessage = "The service is busy, please try again later.";
+                model.addAttribute("errorMessage", errorMessage);
+                log.error("Timeout waiting for transactions: {}", errorMessage);
+                return "error";
+            }
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
             return "loading-transactions";
+        } finally {
+            latchService.resetLatch();
         }
     }
 

@@ -1,4 +1,4 @@
-package com.bank.transactionservice.event.transaction;
+package com.bank.transactionservice.event;
 
 import com.bank.transactionservice.util.TransactionType;
 import lombok.AllArgsConstructor;

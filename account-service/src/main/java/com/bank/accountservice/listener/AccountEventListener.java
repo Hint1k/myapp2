@@ -1,7 +1,7 @@
 package com.bank.accountservice.listener;
 
 import com.bank.accountservice.entity.Account;
-import com.bank.accountservice.event.account.*;
+import com.bank.accountservice.event.*;
 import com.bank.accountservice.service.AccountService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
