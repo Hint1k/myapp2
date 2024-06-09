@@ -27,6 +27,7 @@ public class Transaction {
     @Column(name = "transaction_time", nullable = false)
     private LocalDateTime transactionTime;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "transaction_type", nullable = false)
     private TransactionType transactionType;
 

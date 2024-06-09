@@ -1,4 +1,5 @@
 /* PostgreSQL script: */
+/* change later to: timestamp with time zone, */
 
 \connect postgres
 
@@ -17,11 +18,10 @@ create table transaction
 (
     id                  bigserial primary key,
     amount              decimal(10, 2),
-    transaction_time    timestamp, /* change later to: timestamp with time zone, */
+    transaction_time    timestamp,
     transaction_type    varchar(25) not null,
-    account_destination bigint      not null,
-    constraint account_destination_unique unique (account_destination)
+    account_destination bigint      not null
 );
 
 insert into transaction (amount, transaction_time, transaction_type, account_destination)
-values ('100.00', '2024-06-07 13:21:02.312872', 'DEPOSIT', 1);
+values (100.00, '2024-06-07 13:21:02.312872', 'DEPOSIT', 1);

@@ -12,6 +12,9 @@ import java.util.Set;
 @Component
 public class TransactionCache {
 
+    // account and transaction cache with the same id causes error
+    private static final String PREFIX = "transaction:";
+
     private final RedisTemplate<String, Object> redisTemplate;
 
     @Autowired
@@ -20,17 +23,17 @@ public class TransactionCache {
     }
 
     public void addTransactionToCache(Long transactionId, Transaction transaction) {
-        redisTemplate.opsForValue().set(transactionId.toString(), transaction);
+        redisTemplate.opsForValue().set(PREFIX + transactionId.toString(), transaction);
     }
 
     public void addAllTransactionsToCache(List<Transaction> transactions) {
         for (Transaction transaction : transactions) {
-            redisTemplate.opsForValue().set(transaction.getTransactionId().toString(), transaction);
+            redisTemplate.opsForValue().set(PREFIX + transaction.getTransactionId().toString(), transaction);
         }
     }
 
     public void updateTransactionFromCache(Long transactionId, Transaction transaction) {
-        String key = transactionId.toString();
+        String key = PREFIX + transactionId.toString();
         if (Boolean.TRUE.equals(redisTemplate.hasKey(key))) {
             redisTemplate.opsForValue().set(key, transaction);
         } else {
@@ -40,12 +43,12 @@ public class TransactionCache {
     }
 
     public void deleteTransactionFromCache(Long transactionId) {
-        redisTemplate.delete(transactionId.toString());
+        redisTemplate.delete(PREFIX + transactionId.toString());
     }
 
     public List<Transaction> getAllTransactionsFromCache() {
         // Retrieve all keys from Redis
-        Set<String> keys = redisTemplate.keys("*");
+        Set<String> keys = redisTemplate.keys(PREFIX + "*");
 
         List<Transaction> transactions = new ArrayList<>();
         if (keys != null) {
@@ -61,6 +64,6 @@ public class TransactionCache {
     }
 
     public Transaction getTransactionFromCache(Long transactionId) {
-        return (Transaction) redisTemplate.opsForValue().get(transactionId.toString());
+        return (Transaction) redisTemplate.opsForValue().get(PREFIX + transactionId.toString());
     }
 }

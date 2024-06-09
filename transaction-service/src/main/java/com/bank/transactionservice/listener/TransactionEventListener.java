@@ -61,8 +61,13 @@ public class TransactionEventListener {
     public void handleTransactionDeletedEvent(TransactionDeletedEvent event, Acknowledgment acknowledgment) {
         Long transactionId = event.getTransactionId();
         log.info("Received transaction-deletion-requested event for transaction id: {}", transactionId);
-        transactionService.deleteTransaction(transactionId);
-        acknowledgment.acknowledge();
+        try {
+            transactionService.deleteTransaction(transactionId);
+            acknowledgment.acknowledge();
+        } catch (Exception exception) {
+            log.error("Error deleting transaction: {}", exception.getMessage());
+            // TODO implement error handling later
+        }
     }
 
     @KafkaListener(topics = "all-transactions-requested", groupId = "transaction-service")

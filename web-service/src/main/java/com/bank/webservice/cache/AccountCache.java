@@ -14,6 +14,9 @@ import java.util.Set;
 @Slf4j
 public class AccountCache {
 
+    // account and transaction cache with the same id causes error
+    private static final String PREFIX = "account:";
+
     private final RedisTemplate<String, Object> redisTemplate;
 
     @Autowired
@@ -22,17 +25,17 @@ public class AccountCache {
     }
 
     public void addAccountToCache(Long accountId, Account account) {
-        redisTemplate.opsForValue().set(accountId.toString(), account);
+        redisTemplate.opsForValue().set(PREFIX + accountId.toString(), account);
     }
 
     public void addAllAccountsToCache(List<Account> accounts) {
         for (Account account : accounts) {
-            redisTemplate.opsForValue().set(account.getAccountId().toString(), account);
+            redisTemplate.opsForValue().set(PREFIX + account.getAccountId().toString(), account);
         }
     }
 
     public void updateAccountFromCache(Long accountId, Account account) {
-        String key = accountId.toString();
+        String key = PREFIX + accountId.toString();
         if (Boolean.TRUE.equals(redisTemplate.hasKey(key))) {
             redisTemplate.opsForValue().set(key, account);
         } else {
@@ -41,12 +44,12 @@ public class AccountCache {
     }
 
     public void deleteAccountFromCache(Long accountId) {
-        redisTemplate.delete(accountId.toString());
+        redisTemplate.delete(PREFIX + accountId.toString());
     }
 
     public List<Account> getAllAccountsFromCache() {
         //Retrieve all keys from Redis
-        Set<String> keys = redisTemplate.keys("*");
+        Set<String> keys = redisTemplate.keys(PREFIX + "*");
 
         List<Account> accounts = new ArrayList<>();
         if (keys != null) {
@@ -62,6 +65,6 @@ public class AccountCache {
     }
 
     public Account getAccountFromCache(Long accountId) {
-        return (Account) redisTemplate.opsForValue().get(accountId.toString());
+        return (Account) redisTemplate.opsForValue().get(PREFIX + accountId.toString());
     }
 }

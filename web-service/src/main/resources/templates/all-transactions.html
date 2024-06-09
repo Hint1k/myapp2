@@ -18,7 +18,6 @@
     <tr>
         <th>Transaction ID</th>
         <th>Amount</th>
-        <th>Transaction Time</th>
         <th>Transaction Type</th>
         <th>Account Number</th>
         <th>Action</th>
@@ -28,9 +27,8 @@
     <tr th:each="transaction : ${transactions}">
         <td th:text="${transaction.transactionId}"></td>
         <td th:text="${transaction.amount}"></td>
-        <td th:text="${transaction.transactionTime}"></td>
         <td th:text="${transaction.transactionType}"></td>
-        <td th:text="${transaction.account.accountNumber}"></td>
+        <td th:text="${transaction.accountDestinationNumber}"></td>
         <td>
             <div class="button-container">
                 <form action="#"

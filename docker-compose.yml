@@ -11,7 +11,7 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - ./account-service/src/main/resources/sql-scripts/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./account-service/src/main/resources/sql-scripts/init1.sql:/docker-entrypoint-initdb.d/init1.sql
     healthcheck:
       test: [ "CMD-SHELL", "pg_isready -U user" ]
       interval: 30s
@@ -29,7 +29,7 @@ services:
     ports:
       - "5433:5432"
     volumes:
-      - ./account-service/src/main/resources/sql-scripts/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./transaction-service/src/main/resources/sql-scripts/init2.sql:/docker-entrypoint-initdb.d/init2.sql
     healthcheck:
       test: [ "CMD-SHELL", "pg_isready -U user" ]
       interval: 30s

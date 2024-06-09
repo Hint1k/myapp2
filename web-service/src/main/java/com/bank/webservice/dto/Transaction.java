@@ -6,6 +6,7 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
@@ -14,7 +15,7 @@ import static java.lang.Integer.MAX_VALUE;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Transaction {
+public class Transaction implements Serializable {
 
     private Long transactionId;
 
@@ -38,7 +39,7 @@ public class Transaction {
 //    private Long accountSourceNumber;
 //    private TransactionStatus transactionStatus;
 
-    { // TODO changed to ZonedDateTime later
+    { // TODO change to ZonedDateTime later and change init2.sql
         // sets transaction time = current time
         this.transactionTime = LocalDateTime.now();
     }

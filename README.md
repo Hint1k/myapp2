@@ -9,9 +9,10 @@
 **The current state of the app:**<br>
 - Web-service - serves web pages <br> 
 - Account-service - handles account operations and account-database <br>
-- Transaction-service - handles transactions and transaction-database <br>
+- Transaction-service - handles transaction operations and transaction-database <br>
 
-**User actions temp unavailable (last working state is 13th commit):**<br> 
+**User actions available:** <br> 
+(simple validation & error handling, not error proof yet):<br> 
 
 - Show all accounts / transactions in database <br>
 - Add new account / transaction to database <br>

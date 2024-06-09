@@ -57,11 +57,12 @@
         <tr>
             <td><label>Account Number:</label></td>
             <td>
-                <input type="text" id="account" name="account" th:field="*{account}"
-                       class="form-control" placeholder="1, 2, 3, etc"/>
+                <input type="text" id="accountDestinationNumber" name="accountDestinationNumber"
+                       th:field="*{accountDestinationNumber}" class="form-control" placeholder="1, 2, 3, etc"/>
             </td>
             <td>
-                <span th:if="${#fields.hasErrors('account')}" class="error" th:errors="*{account}">
+                <span th:if="${#fields.hasErrors('accountDestinationNumber')}" class="error"
+                      th:errors="*{accountDestinationNumber}">
                     Account Number is required
                 </span>
             </td>
