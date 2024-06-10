@@ -66,10 +66,24 @@ public class AccountServiceImpl implements AccountService {
         Account account = repository.findById(accountId).orElse(null);
         if (account == null) {
             // TODO return message to the web-service
+            log.error("Account with id: {} not found", accountId);
             throw new EntityNotFoundException("Account with id " + accountId + " not found");
         }
         publisher.publishAccountDetailsEvent(account);
         log.info("Retrieved account with id: {}", accountId);
+        return account;
+    }
+
+    @Override
+    @Transactional
+    public Account findAccountByItsNumber(Long accountNumber) {
+        Account account = repository.findAccountByItsNumber(accountNumber);
+        if (account == null) {
+            // TODO return message to the web-service
+            log.error("Account with number: {} not found", accountNumber);
+            throw new EntityNotFoundException("Account with number " + accountNumber + " not found");
+        }
+        log.info("Retrieved account with number: {}", accountNumber);
         return account;
     }
 }
