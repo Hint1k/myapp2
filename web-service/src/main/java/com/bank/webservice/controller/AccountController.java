@@ -4,7 +4,6 @@ import com.bank.webservice.cache.AccountCache;
 import com.bank.webservice.dto.Account;
 import com.bank.webservice.publisher.AccountEventPublisher;
 import com.bank.webservice.service.LatchService;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -12,7 +12,7 @@ import java.util.Set;
 @Component
 public class TransactionCache {
 
-    // account and transaction cache with the same id causes error
+    // objects of different classes with the same id in cache cause errors
     private static final String PREFIX = "transaction:";
 
     private final RedisTemplate<String, Object> redisTemplate;

@@ -10,26 +10,24 @@ import java.util.List;
 import java.util.Set;
 
 @Component
-public class AccountTransactionCache {
+public class AccountTransactionsCache {
 
-    // account and transaction cache with the same id causes error
-    private static final String PREFIX = "account_transactions:";
     private final RedisTemplate<String, Object> redisTemplate;
 
     @Autowired
-    public AccountTransactionCache(RedisTemplate<String, Object> redisTemplate) {
+    public AccountTransactionsCache(RedisTemplate<String, Object> redisTemplate) {
         this.redisTemplate = redisTemplate;
     }
 
-    public void addAccountTransactionsToCache(List<Transaction> transactions) {
+    public void addAccountTransactionsToCache(Long accountNumber, List<Transaction> transactions) {
         for (Transaction transaction : transactions) {
-            redisTemplate.opsForValue().set(PREFIX + transaction.getTransactionId().toString(), transaction);
+            redisTemplate.opsForValue().set(accountNumber + transaction.getTransactionId().toString(), transaction);
         }
     }
 
-    public List<Transaction> getTransactionsFromCacheByAccountId(Long accountId) {
+    public List<Transaction> getAccountTransactionsFromCache(Long accountNumber) {
         // Retrieve all keys from Redis
-        Set<String> keys = redisTemplate.keys(PREFIX + "*");
+        Set<String> keys = redisTemplate.keys(accountNumber + "*");
 
         List<Transaction> transactions = null;
         if (keys != null) {

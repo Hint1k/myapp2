@@ -83,6 +83,19 @@ public class TransactionEventListener {
         }
     }
 
+    @KafkaListener(topics = "account-transactions-requested", groupId = "transaction-service")
+    public void handleAccountTransactionsEvent(AccountTransactionsEvent event, Acknowledgment acknowledgment) {
+        List<Transaction> transactions = event.getTransactions();
+        log.info("Received account-transactions-requested event");
+        try {
+            transactions = transactionService.findAccountTransactions(event.getAccountNumber());
+            acknowledgment.acknowledge();
+        } catch (Exception e) {
+            log.error("Error finding transactions by account id {}", e.getMessage());
+            // TODO implement error handling later
+        }
+    }
+
     @KafkaListener(topics = "transaction-details-requested", groupId = "transaction-service")
     public void handleTransactionDetailsEvent(TransactionDetailsEvent event, Acknowledgment acknowledgment) {
         Long transactionId = event.getTransactionId();

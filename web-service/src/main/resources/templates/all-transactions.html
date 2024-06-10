@@ -34,7 +34,7 @@
                 <form action="#"
                       th:action="@{/api/transactions/{transactionId}(transactionId=${transaction.transactionId})}"
                       th:method="get">
-                    <button type="submit">Show</button>
+                    <button type="submit">Details</button>
                 </form>
                 <form action="#"
                       th:action="@{/api/transactions/{transactionId}(transactionId=${transaction.transactionId})}"
@@ -53,6 +53,8 @@
     </tbody>
 </table>
 <hr>
+<button type="button" onclick="history.go(-1)" class="go-button"> Go to previous page</button>
+<br><br>
 <a th:href="@{/index}">
     <button type="button" class="update-button">Return to index page</button>
 </a>

@@ -19,3 +19,4 @@
 - Delete an account / transaction from database <br>
 - Update an account / transaction in database <br>
 - Show account / transaction details (by default only one account / transaction with id = 1 exists) <br>
+- Show all transactions belong to an accountNumber (by default only 1 transaction belong to 1 account) <br>

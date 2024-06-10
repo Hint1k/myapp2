@@ -1,8 +1,8 @@
 package com.bank.webservice.listener;
 
-import com.bank.webservice.cache.AccountTransactionCache;
+import com.bank.webservice.cache.AccountTransactionsCache;
 import com.bank.webservice.dto.Transaction;
-import com.bank.webservice.event.combined.AccountTransactionEvent;
+import com.bank.webservice.event.combined.AccountTransactionsEvent;
 import com.bank.webservice.service.LatchService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,22 +15,24 @@ import java.util.concurrent.CountDownLatch;
 
 @Component
 @Slf4j
-public class AccountTransactionEventListener {
+public class AccountTransactionsEventListener {
 
     private final LatchService latchService;
-    private final AccountTransactionCache cache;
+    private final AccountTransactionsCache cache;
 
     @Autowired
-    public AccountTransactionEventListener(LatchService latchService, AccountTransactionCache cache) {
+    public AccountTransactionsEventListener(LatchService latchService, AccountTransactionsCache cache) {
         this.latchService = latchService;
         this.cache = cache;
     }
 
     @KafkaListener(topics = "account-transactions-received", groupId = "web-service")
-    public void handleAccountTransactionsEvent(AccountTransactionEvent event, Acknowledgment acknowledgment) {
+    public void handleAccountTransactionsEvent(AccountTransactionsEvent event, Acknowledgment acknowledgment) {
         List<Transaction> transactions = event.getTransactions();
-        log.info("Received account-transactions-received event with {} transactions", transactions.size());
-        cache.addAccountTransactionsToCache(transactions);
+        Long accountNumber = event.getAccountNumber();
+        log.info("Received account-transactions-received event with {} transactions for account number: {}",
+                transactions.size(), accountNumber);
+        cache.addAccountTransactionsToCache(accountNumber, transactions);
         CountDownLatch latch = latchService.getLatch();
         if (latch != null) {
             latch.countDown();

@@ -1,8 +1,8 @@
 package com.bank.webservice.controller;
 
-import com.bank.webservice.cache.AccountTransactionCache;
+import com.bank.webservice.cache.AccountTransactionsCache;
 import com.bank.webservice.dto.Transaction;
-import com.bank.webservice.publisher.AccountTransactionEventPublisher;
+import com.bank.webservice.publisher.AccountTransactionsEventPublisher;
 import com.bank.webservice.service.LatchService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,25 +20,25 @@ import java.util.concurrent.TimeUnit;
 @Controller
 @Slf4j
 @RequestMapping("/api")
-public class AccountTransactionController {
+public class AccountTransactionsController {
 
     private static final int MAX_RESPONSE_TIME = 3; // seconds
     private final LatchService latchService;
-    private final AccountTransactionEventPublisher publisher;
-    private final AccountTransactionCache cache;
+    private final AccountTransactionsEventPublisher publisher;
+    private final AccountTransactionsCache cache;
 
     @Autowired
-    public AccountTransactionController(LatchService latchService, AccountTransactionEventPublisher publisher,
-                                        AccountTransactionCache cache) {
+    public AccountTransactionsController(LatchService latchService, AccountTransactionsEventPublisher publisher,
+                                         AccountTransactionsCache cache) {
         this.latchService = latchService;
         this.publisher = publisher;
         this.cache = cache;
     }
 
-    @GetMapping("/accounts/{accountId}/transactions")
-    public String getAccountTransactions(@PathVariable("accountId") Long accountId, Model model) {
+    @GetMapping("/accounts/transactions/{accountNumber}")
+    public String getAccountTransactions(@PathVariable("accountNumber") Long accountNumber, Model model) {
         List<Transaction> transactions = new ArrayList<>();
-        publisher.publishAccountTransactionEvent(accountId, transactions);
+        publisher.publishAccountTransactionEvent(accountNumber, transactions);
 
         CountDownLatch latch = new CountDownLatch(1);
         latchService.setLatch(latch);
@@ -46,7 +46,7 @@ public class AccountTransactionController {
         try {
             boolean latchResult = latch.await(MAX_RESPONSE_TIME, TimeUnit.SECONDS);
             if (latchResult) {
-                transactions = cache.getTransactionsFromCacheByAccountId(accountId);
+                transactions = cache.getAccountTransactionsFromCache(accountNumber);
                 if (transactions != null && !transactions.isEmpty()) {
                     model.addAttribute("transactions", transactions);
                     return "all-transactions";
