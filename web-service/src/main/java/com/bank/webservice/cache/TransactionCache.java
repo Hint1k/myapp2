@@ -1,11 +1,11 @@
 package com.bank.webservice.cache;
 
 import com.bank.webservice.dto.Transaction;
+import com.bank.webservice.service.CacheService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -14,11 +14,13 @@ public class TransactionCache {
 
     // objects of different classes with the same id in cache cause errors
     private static final String PREFIX = "transaction:";
+    private final CacheService cacheService;
 
     private final RedisTemplate<String, Object> redisTemplate;
 
     @Autowired
-    public TransactionCache(RedisTemplate<String, Object> redisTemplate) {
+    public TransactionCache(CacheService cacheService, RedisTemplate<String, Object> redisTemplate) {
+        this.cacheService = cacheService;
         this.redisTemplate = redisTemplate;
     }
 
@@ -49,22 +51,23 @@ public class TransactionCache {
     public List<Transaction> getAllTransactionsFromCache() {
         // Retrieve all keys from Redis
         Set<String> keys = redisTemplate.keys(PREFIX + "*");
-
-        List<Transaction> transactions = null;
-        if (keys != null) {
-            transactions = new ArrayList<>();
-            for (String key : keys) {
-                // Retrieve the value associated with the key from Redis
-                Transaction transaction = (Transaction) redisTemplate.opsForValue().get(key);
-                if (transaction != null) {
-                    transactions.add(transaction);
-                }
-            }
-        }
-        return transactions;
+        return cacheService.getObjectsFromCache(keys, Transaction.class);
     }
 
     public Transaction getTransactionFromCache(Long transactionId) {
         return (Transaction) redisTemplate.opsForValue().get(PREFIX + transactionId.toString());
+    }
+
+    public void addAccountTransactionsToCache(Long accountNumber, List<Transaction> transactions) {
+        for (Transaction transaction : transactions) {
+            redisTemplate.opsForValue().set(PREFIX + accountNumber
+                    + transaction.getTransactionId().toString(), transaction);
+        }
+    }
+
+    public List<Transaction> getAccountTransactionsFromCache(Long accountNumber) {
+        // Retrieve all keys from Redis
+        Set<String> keys = redisTemplate.keys(PREFIX + accountNumber + "*");
+        return cacheService.getObjectsFromCache(keys, Transaction.class);
     }
 }

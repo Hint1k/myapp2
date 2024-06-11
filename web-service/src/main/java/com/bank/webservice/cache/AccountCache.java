@@ -1,11 +1,11 @@
 package com.bank.webservice.cache;
 
 import com.bank.webservice.dto.Account;
+import com.bank.webservice.service.CacheService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -14,11 +14,13 @@ public class AccountCache {
 
     // objects of different classes with the same id in cache cause errors
     private static final String PREFIX = "account:";
+    private final CacheService cacheService;
 
     private final RedisTemplate<String, Object> redisTemplate;
 
     @Autowired
-    public AccountCache(RedisTemplate<String, Object> redisTemplate) {
+    public AccountCache(CacheService cacheService, RedisTemplate<String, Object> redisTemplate) {
+        this.cacheService = cacheService;
         this.redisTemplate = redisTemplate;
     }
 
@@ -48,19 +50,7 @@ public class AccountCache {
     public List<Account> getAllAccountsFromCache() {
         //Retrieve all keys from Redis
         Set<String> keys = redisTemplate.keys(PREFIX + "*");
-
-        List<Account> accounts = null;
-        if (keys != null) {
-            accounts = new ArrayList<>();
-            for (String key : keys) {
-                // Retrieve the value associated with the key from Redis
-                Account account = (Account) redisTemplate.opsForValue().get(key);
-                if (account != null) {
-                    accounts.add(account);
-                }
-            }
-        }
-        return accounts;
+        return cacheService.getObjectsFromCache(keys, Account.class);
     }
 
     public Account getAccountFromCache(Long accountId) {

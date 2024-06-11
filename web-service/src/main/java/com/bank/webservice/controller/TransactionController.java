@@ -15,6 +15,7 @@ import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.CountDownLatch;
@@ -93,33 +94,7 @@ public class TransactionController {
     public String getAllTransactions(Model model) {
         List<Transaction> transactions = new ArrayList<>();
         publisher.publishAllTransactionsEvent(transactions);
-
-        CountDownLatch latch = new CountDownLatch(1);
-        latchService.setLatch(latch);
-
-        try {
-            boolean latchResult = latch.await(MAX_RESPONSE_TIME, TimeUnit.SECONDS);
-            if (latchResult) {
-                transactions = cache.getAllTransactionsFromCache();
-                if (transactions != null && !transactions.isEmpty()) {
-                    model.addAttribute("transactions", transactions);
-                    return "all-transactions";
-                } else { // returns empty table when no transactions in database
-                    model.addAttribute("transactions", new ArrayList<>());
-                    return "all-transactions";
-                }
-            } else {
-                String errorMessage = "The service is busy, please try again later.";
-                model.addAttribute("errorMessage", errorMessage);
-                log.error("Timeout waiting for transactions: {}", errorMessage);
-                return "error";
-            }
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            return "loading-transactions";
-        } finally {
-            latchService.resetLatch();
-        }
+        return handleTransactionRetrieval(model, null);
     }
 
     @GetMapping("/transactions/{transactionId}")
@@ -134,6 +109,46 @@ public class TransactionController {
         } else {
             model.addAttribute("transactionId", transactionId);
             return "loading-transactions";
+        }
+    }
+
+    @GetMapping("/transactions/all-transactions/{accountNumber}")
+    public String getAccountTransactions(@PathVariable("accountNumber") Long accountNumber, Model model) {
+        List<Transaction> transactions = new ArrayList<>();
+        publisher.publishAccountTransactionsEvent(accountNumber, transactions);
+        return handleTransactionRetrieval(model, accountNumber);
+    }
+
+    private String handleTransactionRetrieval(Model model, Long accountNumber) {
+        CountDownLatch latch = new CountDownLatch(1);
+        latchService.setLatch(latch);
+        try {
+            boolean latchResult = latch.await(MAX_RESPONSE_TIME, TimeUnit.SECONDS);
+            if (latchResult) {
+                List<Transaction> transactions;
+                if (accountNumber == null) {
+                    transactions = cache.getAllTransactionsFromCache();
+                } else {
+                    transactions = cache.getAccountTransactionsFromCache(accountNumber);
+                }
+                if (transactions != null && !transactions.isEmpty()) {
+                    transactions.sort(Comparator.comparing(Transaction::getTransactionId));
+                    model.addAttribute("transactions", transactions);
+                } else {
+                    model.addAttribute("transactions", new ArrayList<>());
+                }
+                return "all-transactions";
+            } else {
+                String errorMessage = "The service is busy, please try again later.";
+                model.addAttribute("errorMessage", errorMessage);
+                log.error("Timeout waiting for transactions: {}", errorMessage);
+                return "error";
+            }
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            return "loading-transactions";
+        } finally {
+            latchService.resetLatch();
         }
     }
 }

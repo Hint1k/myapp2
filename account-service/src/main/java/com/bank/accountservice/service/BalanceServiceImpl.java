@@ -2,6 +2,7 @@ package com.bank.accountservice.service;
 
 import com.bank.accountservice.entity.Account;
 import com.bank.accountservice.repository.AccountRepository;
+import com.bank.accountservice.util.TransactionStatus;
 import com.bank.accountservice.util.TransactionType;
 import lombok.Synchronized;
 import lombok.extern.slf4j.Slf4j;
@@ -52,16 +53,18 @@ public class BalanceServiceImpl implements BalanceService {
                                            TransactionType transactionType) {
         switch (transactionType) {
             case DEPOSIT:
+//                transactionStatus = TransactionStatus.APPROVED;
                 return currentBalance.add(amount);
             case WITHDRAWAL:
                 if (currentBalance.compareTo(amount) < 0) {
                     // TODO implement negative balance handling later
-                    amount = currentBalance; // temp code to avoid errors
-//                    throw new InsufficientFundsException("Insufficient funds for account: " + accountNumber);
+//                    transactionStatus = TransactionStatus.FAILED;
+                    return currentBalance;
                 }
                 return currentBalance.subtract(amount);
             case TRANSFER:
                 // TODO implement TRANSFER type later
+//                transactionStatus = TransactionStatus.APPROVED;
                 currentBalance = currentBalance.add(BigDecimal.valueOf(0)); // temp code to avoid errors
             default:
                 // wrong transaction type should be handled in the web-service module of the project

@@ -15,6 +15,8 @@ import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -99,6 +101,7 @@ public class AccountController {
             if (latchResult) {
                 accounts = cache.getAllAccountsFromCache();
                 if (accounts != null && !accounts.isEmpty()) {
+                    accounts.sort(Comparator.comparing(Account::getAccountId));
                     model.addAttribute("accounts", accounts);
                     return "all-accounts";
                 } else { // returns empty table when no accounts in database

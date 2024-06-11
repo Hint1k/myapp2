@@ -38,7 +38,8 @@
                     <button type="submit">Details</button>
                 </form>
                 <form action="#"
-                      th:action="@{/api/accounts/transactions/{accountNumber}(accountNumber=${account.accountNumber})}"
+                      th:action="@{/api/transactions/all-transactions/
+                      {accountNumber}(accountNumber=${account.accountNumber})}"
                       th:method="get">
                     <button type="submit">Transactions</button>
                 </form>

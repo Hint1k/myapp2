@@ -88,4 +88,18 @@ public class TransactionEventListener {
         cache.addTransactionToCache(transaction.getTransactionId(), transaction);
         acknowledgment.acknowledge();
     }
+
+    @KafkaListener(topics = "account-transactions-received", groupId = "web-service")
+    public void handleAccountTransactionsEvent(AccountTransactionsEvent event, Acknowledgment acknowledgment) {
+        List<Transaction> transactions = event.getTransactions();
+        Long accountNumber = event.getAccountNumber();
+        log.info("Received account-transactions-received event with {} transactions for account number: {}",
+                transactions.size(), accountNumber);
+        cache.addAccountTransactionsToCache(accountNumber, transactions);
+        CountDownLatch latch = latchService.getLatch();
+        if (latch != null) {
+            latch.countDown();
+        }
+        acknowledgment.acknowledge();
+    }
 }
