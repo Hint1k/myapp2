@@ -26,6 +26,7 @@ public class TransactionEventPublisher {
                 transaction.getAmount(),
                 transaction.getTransactionTime(),
                 transaction.getTransactionType(),
+                transaction.getTransactionStatus(),
                 transaction.getAccountDestinationNumber()
         );
         kafkaTemplate.send("transaction-created", event);
@@ -38,6 +39,7 @@ public class TransactionEventPublisher {
                 transaction.getAmount(),
                 transaction.getTransactionTime(),
                 transaction.getTransactionType(),
+                transaction.getTransactionStatus(),
                 transaction.getAccountDestinationNumber()
         );
         kafkaTemplate.send("transaction-updated", event);
@@ -72,6 +74,7 @@ public class TransactionEventPublisher {
                 transaction.getAmount(),
                 transaction.getTransactionTime(),
                 transaction.getTransactionType(),
+                transaction.getTransactionStatus(),
                 transaction.getAccountDestinationNumber()
         );
         kafkaTemplate.send("transaction-details-received", event);

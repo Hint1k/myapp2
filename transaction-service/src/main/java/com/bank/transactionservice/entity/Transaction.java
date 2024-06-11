@@ -1,5 +1,6 @@
 package com.bank.transactionservice.entity;
 
+import com.bank.transactionservice.util.TransactionStatus;
 import com.bank.transactionservice.util.TransactionType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -31,15 +32,21 @@ public class Transaction {
     @Column(name = "transaction_type", nullable = false)
     private TransactionType transactionType;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "transaction_status", nullable = false)
+    private TransactionStatus transactionStatus;
+
     @Column(name = "account_destination", nullable = false)
     private Long accountDestinationNumber;
 
     // no transaction id
     public Transaction(BigDecimal amount, LocalDateTime transactionTime,
-                       TransactionType transactionType, Long accountDestinationNumber) {
+                       TransactionType transactionType, TransactionStatus transactionStatus,
+                       Long accountDestinationNumber) {
         this.amount = amount;
         this.transactionTime = transactionTime;
         this.transactionType = transactionType;
+        this.transactionStatus = transactionStatus;
         this.accountDestinationNumber = accountDestinationNumber;
     }
 }

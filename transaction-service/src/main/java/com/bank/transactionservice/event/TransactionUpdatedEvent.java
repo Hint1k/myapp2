@@ -1,5 +1,6 @@
 package com.bank.transactionservice.event;
 
+import com.bank.transactionservice.util.TransactionStatus;
 import com.bank.transactionservice.util.TransactionType;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -18,5 +19,6 @@ public class TransactionUpdatedEvent {
     private BigDecimal amount;
     private LocalDateTime transactionTime;
     private TransactionType transactionType;
+    private TransactionStatus transactionStatus;
     private Long accountDestinationNumber;
 }

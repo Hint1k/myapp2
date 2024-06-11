@@ -9,8 +9,6 @@ import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.support.Acknowledgment;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
-
 @Component
 @Slf4j
 public class TransactionEventListener {
@@ -32,6 +30,7 @@ public class TransactionEventListener {
                     event.getAmount(),
                     event.getTransactionTime(),
                     event.getTransactionType(),
+                    event.getTransactionStatus(),
                     event.getAccountDestinationNumber()
             );
             transactionService.saveTransaction(transaction);
@@ -44,15 +43,15 @@ public class TransactionEventListener {
 
     @KafkaListener(topics = "transaction-update-requested", groupId = "transaction-service")
     public void handleTransactionUpdatedEvent(TransactionUpdatedEvent event, Acknowledgment acknowledgment) {
+        log.info("Received transaction-update-requested event for transaction id: {}", event.getTransactionId());
         Transaction transaction = new Transaction(
                 event.getTransactionId(),
                 event.getAmount(),
                 event.getTransactionTime(),
                 event.getTransactionType(),
+                event.getTransactionStatus(),
                 event.getAccountDestinationNumber()
         );
-        Long transactionId = event.getTransactionId();
-        log.info("Received transaction-update-requested event for transaction id: {}", transactionId);
         transactionService.updateTransaction(transaction);
         acknowledgment.acknowledge();
     }
@@ -71,11 +70,10 @@ public class TransactionEventListener {
     }
 
     @KafkaListener(topics = "all-transactions-requested", groupId = "transaction-service")
-    public void handleAllTransactionsEvent(AllTransactionsEvent event, Acknowledgment acknowledgment) {
-        List<Transaction> transactions = event.getTransactions();
+    public void handleAllTransactionsEvent(Acknowledgment acknowledgment) {
         log.info("Received all-transactions-requested event");
         try {
-            transactions = transactionService.findAllTransactions();
+            transactionService.findAllTransactions();
             acknowledgment.acknowledge();
         } catch (Exception e) {
             log.error("Error finding all transactions: {}", e.getMessage());
@@ -85,13 +83,13 @@ public class TransactionEventListener {
 
     @KafkaListener(topics = "account-transactions-requested", groupId = "transaction-service")
     public void handleAccountTransactionsEvent(AccountTransactionsEvent event, Acknowledgment acknowledgment) {
-        List<Transaction> transactions = event.getTransactions();
-        log.info("Received account-transactions-requested event");
+        Long accountNumber = event.getAccountNumber();
+        log.info("Received account-transactions-requested event for account number: {}", accountNumber);
         try {
-            transactions = transactionService.findAccountTransactions(event.getAccountNumber());
+            transactionService.findAccountTransactions(accountNumber);
             acknowledgment.acknowledge();
         } catch (Exception e) {
-            log.error("Error finding transactions by account id {}", e.getMessage());
+            log.error("Error finding transactions by account number {}", e.getMessage());
             // TODO implement error handling later
         }
     }
@@ -105,6 +103,32 @@ public class TransactionEventListener {
             acknowledgment.acknowledge();
         } catch (Exception e) {
             log.error("Error finding transaction by id: {}", e.getMessage());
+            // TODO implement error handling later
+        }
+    }
+
+    @KafkaListener(topics = "transaction-failed", groupId = "transaction-service")
+    public void handleTransactionFailedEvent(TransactionFailedEvent event, Acknowledgment acknowledgment) {
+        Long transactionId = event.getTransactionId();
+        log.info("Received transaction-failed event for transaction id: {}", transactionId);
+        try {
+            transactionService.handleTransactionFailure(transactionId);
+            acknowledgment.acknowledge();
+        } catch (Exception e) {
+            log.error("Error handling transaction failure {}", e.getMessage());
+            // TODO implement error handling later
+        }
+    }
+
+    @KafkaListener(topics = "transaction-approved", groupId = "transaction-service")
+    public void handleTransactionApprovedEvent(TransactionApprovedEvent event, Acknowledgment acknowledgment) {
+        Long transactionId = event.getTransactionId();
+        log.info("Received transaction-approved event for transaction id: {}", transactionId);
+        try {
+            transactionService.handleTransactionApproval(transactionId);
+            acknowledgment.acknowledge();
+        } catch (Exception e) {
+            log.error("Error handling transaction approval {}", e.getMessage());
             // TODO implement error handling later
         }
     }

@@ -20,8 +20,9 @@ create table transaction
     amount              decimal(10, 2),
     transaction_time    timestamp,
     transaction_type    varchar(25) not null,
+    transaction_status  varchar(25) not null,
     account_destination bigint      not null
 );
 
-insert into transaction (amount, transaction_time, transaction_type, account_destination)
-values (100.00, '2024-06-07 13:21:02.312872', 'DEPOSIT', 1);
+insert into transaction (amount, transaction_time, transaction_type, transaction_status, account_destination)
+values (100.00, '2024-06-07 13:21:02.312872', 'DEPOSIT', 'APPROVED', 1);

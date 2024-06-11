@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
+import java.util.ArrayList;
 
 @Component
 @Slf4j
@@ -25,6 +25,7 @@ public class TransactionEventPublisher {
                 transaction.getAmount(),
                 transaction.getTransactionTime(),
                 transaction.getTransactionType(),
+                transaction.getTransactionStatus(),
                 transaction.getAccountDestinationNumber()
         );
         kafkaTemplate.send("transaction-creation-requested", event);
@@ -38,6 +39,7 @@ public class TransactionEventPublisher {
                 transaction.getAmount(),
                 transaction.getTransactionTime(),
                 transaction.getTransactionType(),
+                transaction.getTransactionStatus(),
                 transaction.getAccountDestinationNumber()
         );
         kafkaTemplate.send("transaction-update-requested", event);
@@ -50,10 +52,19 @@ public class TransactionEventPublisher {
         log.info("Published transaction-deletion-requested event for transaction id: {}", event.getTransactionId());
     }
 
-    public void publishAllTransactionsEvent(List<Transaction> transactions) {
-        AllTransactionsEvent event = new AllTransactionsEvent(transactions);
+    public void publishAllTransactionsEvent() {
+        AllTransactionsEvent event = new AllTransactionsEvent(new ArrayList<>());
         kafkaTemplate.send("all-transactions-requested", event);
-        log.info("Published all-transactions-requested event for {} transactions", transactions.size());
+        log.info("Published all-transactions-requested event");
+    }
+
+    public void publishAccountTransactionsEvent(Long accountNumber) {
+        AccountTransactionsEvent event = new AccountTransactionsEvent(
+                accountNumber,
+                new ArrayList<>()
+        );
+        kafkaTemplate.send("account-transactions-requested", event);
+        log.info("Published account-transactions-requested event for account number: {}", event.getAccountNumber());
     }
 
     public void publishTransactionDetailsEvent(Transaction transaction) {
@@ -62,19 +73,10 @@ public class TransactionEventPublisher {
                 null,
                 null,
                 null,
+                null,
                 null
         );
-
         kafkaTemplate.send("transaction-details-requested", event);
         log.info("Published transaction-details-requested event for transaction id: {}", event.getTransactionId());
-    }
-
-    public void publishAccountTransactionsEvent(Long accountNumber, List<Transaction> transactions) {
-        AccountTransactionsEvent event = new AccountTransactionsEvent(
-                accountNumber,
-                transactions
-        );
-        kafkaTemplate.send("account-transactions-requested", event);
-        log.info("Published account-transactions-requested event for account number: {}", event.getAccountNumber());
     }
 }

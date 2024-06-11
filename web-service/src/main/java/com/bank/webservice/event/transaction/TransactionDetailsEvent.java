@@ -1,5 +1,6 @@
 package com.bank.webservice.event.transaction;
 
+import com.bank.webservice.util.TransactionStatus;
 import com.bank.webservice.util.TransactionType;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -17,14 +18,17 @@ public class TransactionDetailsEvent {
     private BigDecimal amount;
     private LocalDateTime transactionTime;
     private TransactionType transactionType;
+    private TransactionStatus transactionStatus;
     private Long accountDestinationNumber;
 
     // no transaction id
     public TransactionDetailsEvent(BigDecimal amount, LocalDateTime transactionTime,
-                                   TransactionType transactionType, Long accountDestinationNumber) {
+                                   TransactionType transactionType, TransactionStatus transactionStatus,
+                                   Long accountDestinationNumber) {
         this.amount = amount;
         this.transactionTime = transactionTime;
         this.transactionType = transactionType;
+        this.transactionStatus = transactionStatus;
         this.accountDestinationNumber = accountDestinationNumber;
     }
 }

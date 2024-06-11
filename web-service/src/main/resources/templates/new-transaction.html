@@ -29,7 +29,7 @@
             <td><label>Transaction time:</label></td>
             <td>
                 <input type="text" id="transactionTime" name="transactionTime" th:field="*{transactionTime}"
-                       class="form-control" placeholder="dd-MM-yyyy HH:mm:ss" disabled="disabled"/>
+                       class="form-control" disabled="disabled"/>
             </td>
             <td>
                 <span th:if="${#fields.hasErrors('transactionTime')}" class="error" th:errors="*{transactionTime}">
@@ -51,6 +51,23 @@
                 <span th:if="${#fields.hasErrors('transactionType')}" class="error" th:errors="*{transactionType}">
                     Transaction Type is required
                 </span>
+            </td>
+        </tr>
+        <tr>
+            <td><label>Transaction Status:</label></td>
+            <td>
+                <select id="transactionStatus" name="transactionStatus" th:field="*{transactionStatus}"
+                        class="form-control" disabled="disabled">
+                    <option value="">Select Transaction Status</option>
+                    <option th:each="status : ${T(com.bank.webservice.util.TransactionStatus).values()}"
+                            th:value="${status.name()}" th:text="${status.name()}">
+                    </option>
+                </select>
+            </td>
+            <td>
+        <span th:if="${#fields.hasErrors('transactionStatus')}" class="error" th:errors="*{transactionStatus}">
+            Transaction Status is required
+        </span>
             </td>
         </tr>
         <tr>

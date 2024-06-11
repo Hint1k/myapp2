@@ -9,8 +9,6 @@ import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.support.Acknowledgment;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
-
 @Component
 @Slf4j
 public class AccountEventListener {
@@ -46,6 +44,7 @@ public class AccountEventListener {
 
     @KafkaListener(topics = "account-update-requested", groupId = "account-service")
     public void handleAccountUpdatedEvent(AccountUpdatedEvent event, Acknowledgment acknowledgment) {
+        log.info("Received account-update-requested event for account id: {}", event.getAccountId());
         Account account = new Account(
                 event.getAccountId(),
                 event.getAccountNumber(),
@@ -56,7 +55,6 @@ public class AccountEventListener {
                 event.getOpenDate(),
                 event.getCustomerId()
         );
-        log.info("Received account-update-requested event for account id: {}", event.getAccountId());
         try {
             accountService.updateAccount(account);
             acknowledgment.acknowledge();
@@ -80,11 +78,10 @@ public class AccountEventListener {
     }
 
     @KafkaListener(topics = "all-accounts-requested", groupId = "account-service")
-    public void handleAllAccountsEvent(AllAccountsEvent event, Acknowledgment acknowledgment) {
-        List<Account> accounts = event.getAccounts();
+    public void handleAllAccountsEvent(Acknowledgment acknowledgment) {
         log.info("Received all-accounts-requested event");
         try {
-            accounts = accountService.findAllAccounts();
+            accountService.findAllAccounts();
             acknowledgment.acknowledge();
         } catch (Exception e) {
             log.error("Error finding all accounts: {}", e.getMessage());

@@ -3,6 +3,7 @@ package com.bank.transactionservice.service;
 import com.bank.transactionservice.entity.Transaction;
 import com.bank.transactionservice.publisher.TransactionEventPublisher;
 import com.bank.transactionservice.repository.TransactionRepository;
+import com.bank.transactionservice.util.TransactionStatus;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -79,5 +80,33 @@ public class TransactionServiceImpl implements TransactionService {
         publisher.publishTransactionDetailsEvent(transaction);
         log.info("Retrieved transaction with id: {}", transactionId);
         return transaction;
+    }
+
+    @Override
+    @Transactional
+    public void handleTransactionFailure(Long transactionId) {
+        Transaction transaction = repository.findById(transactionId).orElse(null);
+        if (transaction == null) {
+            // TODO return message to the web-service
+            throw new EntityNotFoundException("Transaction with id " + transactionId + " not found");
+        }
+        transaction.setTransactionStatus(TransactionStatus.FAILED);
+        repository.save(transaction);
+        publisher.publishTransactionDetailsEvent(transaction);
+        log.info("Failed transaction with id: {}", transactionId);
+    }
+
+    @Override
+    @Transactional
+    public void handleTransactionApproval(Long transactionId) {
+        Transaction transaction = repository.findById(transactionId).orElse(null);
+        if (transaction == null) {
+            // TODO return message to the web-service
+            throw new EntityNotFoundException("Transaction with id " + transactionId + " not found");
+        }
+        transaction.setTransactionStatus(TransactionStatus.APPROVED);
+        repository.save(transaction);
+        publisher.publishTransactionDetailsEvent(transaction);
+        log.info("Approved transaction with id: {}", transactionId);
     }
 }

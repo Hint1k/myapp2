@@ -55,6 +55,23 @@
             </td>
         </tr>
         <tr>
+            <td><label>Transaction Status:</label></td>
+            <td>
+                <select id="transactionStatus" name="transactionStatus" th:field="*{transactionStatus}"
+                        class="form-control">
+                    <option value="">Select Transaction Status</option>
+                    <option th:each="status : ${T(com.bank.webservice.util.TransactionStatus).values()}"
+                            th:value="${status.name()}" th:text="${status.name()}">
+                    </option>
+                </select>
+            </td>
+            <td>
+        <span th:if="${#fields.hasErrors('transactionStatus')}" class="error" th:errors="*{transactionStatus}">
+            Transaction Status is required
+        </span>
+            </td>
+        </tr>
+        <tr>
             <td><label>Account Number:</label></td>
             <td>
                 <input type="text" id="accountDestinationNumber" name="accountDestinationNumber"

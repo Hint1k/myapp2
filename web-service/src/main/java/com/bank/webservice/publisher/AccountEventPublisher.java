@@ -7,7 +7,7 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 import com.bank.webservice.dto.Account;
 
-import java.util.List;
+import java.util.ArrayList;
 
 @Component
 @Slf4j
@@ -55,15 +55,15 @@ public class AccountEventPublisher {
         log.info("Published account-deletion-requested event for account id: {}", event.getAccountId());
     }
 
-    public void publishAllAccountsEvent(List<Account> accounts) {
-        AllAccountsEvent event = new AllAccountsEvent(accounts);
+    public void publishAllAccountsEvent() {
+        AllAccountsEvent event = new AllAccountsEvent(new ArrayList<>());
         kafkaTemplate.send("all-accounts-requested", event);
-        log.info("Published all-accounts-requested event for {} accounts", accounts.size());
+        log.info("Published all-accounts-requested event");
     }
 
-    public void publishAccountDetailsEvent(Account account) {
+    public void publishAccountDetailsEvent(Long accountId) {
         AccountDetailsEvent event = new AccountDetailsEvent(
-                account.getAccountId(),
+                accountId,
                 null,
                 null,
                 null,
@@ -72,7 +72,6 @@ public class AccountEventPublisher {
                 null,
                 null
         );
-
         kafkaTemplate.send("account-details-requested", event);
         log.info("Published account-details-requested event for account id: {}", event.getAccountId());
     }

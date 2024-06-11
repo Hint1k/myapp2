@@ -29,7 +29,7 @@ public class TransactionEventListener {
         Long transactionId = event.getTransactionId();
         TransactionType transactionType = event.getTransactionType();
 
-        //TODO implement transaction status - PENDING, COMPLETED, FAILED
+        //TODO implement transaction status - PENDING, APPROVED, FAILED
         balanceService.updateAccountBalance(accountNumber, amount, transactionId, transactionType);
 
         log.info("Received transaction-created event for account number: {}", accountNumber);

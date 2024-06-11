@@ -90,13 +90,6 @@ public class TransactionController {
         return "redirect:/index";
     }
 
-    @GetMapping("/transactions/all-transactions")
-    public String getAllTransactions(Model model) {
-        List<Transaction> transactions = new ArrayList<>();
-        publisher.publishAllTransactionsEvent(transactions);
-        return handleTransactionRetrieval(model, null);
-    }
-
     @GetMapping("/transactions/{transactionId}")
     public String getTransaction(@PathVariable("transactionId") Long transactionId, Model model) {
         Transaction transaction = new Transaction();
@@ -112,14 +105,19 @@ public class TransactionController {
         }
     }
 
-    @GetMapping("/transactions/all-transactions/{accountNumber}")
-    public String getAccountTransactions(@PathVariable("accountNumber") Long accountNumber, Model model) {
-        List<Transaction> transactions = new ArrayList<>();
-        publisher.publishAccountTransactionsEvent(accountNumber, transactions);
-        return handleTransactionRetrieval(model, accountNumber);
+    @GetMapping("/transactions/all-transactions")
+    public String getAllTransactions(Model model) {
+        publisher.publishAllTransactionsEvent();
+        return handleTransactionsRetrieval(model, null);
     }
 
-    private String handleTransactionRetrieval(Model model, Long accountNumber) {
+    @GetMapping("/transactions/all-transactions/{accountNumber}")
+    public String getAccountTransactions(@PathVariable("accountNumber") Long accountNumber, Model model) {
+        publisher.publishAccountTransactionsEvent(accountNumber);
+        return handleTransactionsRetrieval(model, accountNumber);
+    }
+
+    private String handleTransactionsRetrieval(Model model, Long accountNumber) {
         CountDownLatch latch = new CountDownLatch(1);
         latchService.setLatch(latch);
         try {

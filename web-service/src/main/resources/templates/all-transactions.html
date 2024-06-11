@@ -27,7 +27,7 @@
     <tr th:each="transaction : ${transactions}">
         <td th:text="${transaction.transactionId}"></td>
         <td th:text="${transaction.amount}"></td>
-        <td th:text="${transaction.transactionType}"></td>
+        <td th:text="${transaction.transactionStatus}"></td>
         <td th:text="${transaction.accountDestinationNumber}"></td>
         <td>
             <div class="button-container">

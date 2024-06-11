@@ -15,7 +15,6 @@ import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
@@ -88,18 +87,28 @@ public class AccountController {
         return "redirect:/index";
     }
 
+    @GetMapping("/accounts/{accountId}")
+    public String getAccount(@PathVariable("accountId") Long accountId, Model model) {
+        publisher.publishAccountDetailsEvent(accountId);
+        Account account = cache.getAccountFromCache(accountId);
+        if (account != null) {
+            model.addAttribute("account", account);
+            return "account-details";
+        } else {
+            model.addAttribute("accountId", accountId);
+            return "loading-accounts";
+        }
+    }
+
     @GetMapping("/accounts/all-accounts")
     public String getAllAccounts(Model model) {
-        List<Account> accounts = new ArrayList<>();
-        publisher.publishAllAccountsEvent(accounts);
-
+        publisher.publishAllAccountsEvent();
         CountDownLatch latch = new CountDownLatch(1);
         latchService.setLatch(latch);
-
         try {
             boolean latchResult = latch.await(MAX_RESPONSE_TIME, TimeUnit.SECONDS);
             if (latchResult) {
-                accounts = cache.getAllAccountsFromCache();
+                List<Account> accounts = cache.getAllAccountsFromCache();
                 if (accounts != null && !accounts.isEmpty()) {
                     accounts.sort(Comparator.comparing(Account::getAccountId));
                     model.addAttribute("accounts", accounts);
@@ -119,21 +128,6 @@ public class AccountController {
             return "loading-accounts";
         } finally {
             latchService.resetLatch();
-        }
-    }
-
-    @GetMapping("/accounts/{accountId}")
-    public String getAccount(@PathVariable("accountId") Long accountId, Model model) {
-        Account account = new Account();
-        account.setAccountId(accountId);
-        publisher.publishAccountDetailsEvent(account);
-        account = cache.getAccountFromCache(accountId);
-        if (account != null) {
-            model.addAttribute("account", account);
-            return "account-details";
-        } else {
-            model.addAttribute("accountId", accountId);
-            return "loading-accounts";
         }
     }
 }

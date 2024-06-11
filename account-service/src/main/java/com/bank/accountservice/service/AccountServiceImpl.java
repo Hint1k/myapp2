@@ -37,7 +37,6 @@ public class AccountServiceImpl implements AccountService {
     @Override
     @Transactional
     public void updateAccount(Account account) {
-        // JPA repository should merge instead of save
         repository.save(account);
         publisher.publishAccountUpdatedEvent(account);
         log.info("Account with id: {} updated", account.getAccountId());

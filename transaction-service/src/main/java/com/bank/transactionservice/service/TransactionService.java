@@ -17,4 +17,8 @@ public interface TransactionService {
     List<Transaction> findAccountTransactions(Long accountNumber);
 
     Transaction findTransactionById(Long transactionId);
+
+    void handleTransactionFailure(Long transactionId);
+
+    void handleTransactionApproval(Long transactionId);
 }
