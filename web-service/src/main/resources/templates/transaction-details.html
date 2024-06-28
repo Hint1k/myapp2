@@ -31,7 +31,11 @@
         <td th:text="${transaction.transactionStatus}"></td>
     </tr>
     <tr>
-        <td>Account Id:</td>
+        <td>Account Source Number:</td>
+        <td th:text="${transaction.accountSourceNumber}"></td>
+    </tr>
+    <tr>
+        <td>Account Destination Number:</td>
         <td th:text="${transaction.accountDestinationNumber}"></td>
     </tr>
 </table>

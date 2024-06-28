@@ -40,8 +40,7 @@ public class AccountController {
     // cutting off the spaces entered by user to avoid errors
     @InitBinder
     public void initBinder(WebDataBinder dataBinder) {
-        StringTrimmerEditor stringTrimmerEditor
-                = new StringTrimmerEditor(true);
+        StringTrimmerEditor stringTrimmerEditor = new StringTrimmerEditor(true);
         dataBinder.registerCustomEditor(String.class, stringTrimmerEditor);
     }
 

@@ -72,7 +72,20 @@
             </td>
         </tr>
         <tr>
-            <td><label>Account Number:</label></td>
+            <td><label>Account Source Number:</label></td>
+            <td>
+                <input type="text" id="accountSourceNumber" name="accountSourceNumber"
+                       th:field="*{accountSourceNumber}" class="form-control" placeholder="1, 2, 3, etc"/>
+            </td>
+            <td>
+                <span th:if="${#fields.hasErrors('accountSourceNumber')}" class="error"
+                      th:errors="*{accountSourceNumber}">
+                    Account Source Number is required
+                </span>
+            </td>
+        </tr>
+        <tr>
+            <td><label>Account Destination Number:</label></td>
             <td>
                 <input type="text" id="accountDestinationNumber" name="accountDestinationNumber"
                        th:field="*{accountDestinationNumber}" class="form-control" placeholder="1, 2, 3, etc"/>
@@ -80,7 +93,7 @@
             <td>
                 <span th:if="${#fields.hasErrors('accountDestinationNumber')}" class="error"
                       th:errors="*{accountDestinationNumber}">
-                    Account Number is required
+                    Account Destination Number is required
                 </span>
             </td>
         </tr>

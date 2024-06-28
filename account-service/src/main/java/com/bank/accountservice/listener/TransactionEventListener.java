@@ -24,15 +24,17 @@ public class TransactionEventListener {
 
     @KafkaListener(topics = "transaction-created", groupId = "account-service")
     public void handleTransactionCreatedEvent(TransactionCreatedEvent event, Acknowledgment acknowledgment) {
-        Long accountNumber = event.getAccountDestinationNumber();
+        Long accountSourceNumber = event.getAccountSourceNumber();
+        Long accountDestinationNumber = event.getAccountDestinationNumber();
         BigDecimal amount = event.getAmount();
         Long transactionId = event.getTransactionId();
         TransactionType transactionType = event.getTransactionType();
 
         //TODO implement transaction status - PENDING, APPROVED, FAILED
-        balanceService.updateAccountBalance(accountNumber, amount, transactionId, transactionType);
+        balanceService.updateAccountBalance(accountSourceNumber, accountDestinationNumber, amount, transactionId,
+                transactionType);
 
-        log.info("Received transaction-created event for account number: {}", accountNumber);
+        log.info("Received transaction-created event for transaction id: {}", transactionId);
         acknowledgment.acknowledge();
     }
 }

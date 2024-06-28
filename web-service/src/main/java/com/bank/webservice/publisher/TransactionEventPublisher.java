@@ -21,11 +21,15 @@ public class TransactionEventPublisher {
     }
 
     public void publishTransactionCreatedEvent(Transaction transaction) {
+        if (transaction.getAccountDestinationNumber() == null) {
+            transaction.setAccountDestinationNumber(transaction.getAccountSourceNumber());
+        }
         TransactionCreatedEvent event = new TransactionCreatedEvent(
                 transaction.getAmount(),
                 transaction.getTransactionTime(),
                 transaction.getTransactionType(),
                 transaction.getTransactionStatus(),
+                transaction.getAccountSourceNumber(),
                 transaction.getAccountDestinationNumber()
         );
         kafkaTemplate.send("transaction-creation-requested", event);
@@ -40,6 +44,7 @@ public class TransactionEventPublisher {
                 transaction.getTransactionTime(),
                 transaction.getTransactionType(),
                 transaction.getTransactionStatus(),
+                transaction.getAccountSourceNumber(),
                 transaction.getAccountDestinationNumber()
         );
         kafkaTemplate.send("transaction-update-requested", event);
@@ -70,6 +75,7 @@ public class TransactionEventPublisher {
     public void publishTransactionDetailsEvent(Transaction transaction) {
         TransactionDetailsEvent event = new TransactionDetailsEvent(
                 transaction.getTransactionId(),
+                null,
                 null,
                 null,
                 null,

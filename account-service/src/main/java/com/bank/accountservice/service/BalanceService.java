@@ -6,6 +6,6 @@ import java.math.BigDecimal;
 
 public interface BalanceService {
 
-    void updateAccountBalance(Long accountNumber, BigDecimal amount,
+    void updateAccountBalance(Long accountSourceNumber, Long accountDestinationNumber, BigDecimal amount,
                               Long transactionId, TransactionType transactionType);
 }

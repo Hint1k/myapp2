@@ -34,6 +34,7 @@ public class TransactionEventListener {
                 event.getTransactionTime(),
                 event.getTransactionType(),
                 event.getTransactionStatus(),
+                event.getAccountSourceNumber(),
                 event.getAccountDestinationNumber()
         );
         log.info("Received transaction-created event for transaction id: {}", event.getTransactionId());
@@ -49,6 +50,7 @@ public class TransactionEventListener {
                 event.getTransactionTime(),
                 event.getTransactionType(),
                 event.getTransactionStatus(),
+                event.getAccountSourceNumber(),
                 event.getAccountDestinationNumber()
         );
         Long transactionId = event.getTransactionId();
@@ -85,6 +87,7 @@ public class TransactionEventListener {
                 event.getTransactionTime(),
                 event.getTransactionType(),
                 event.getTransactionStatus(),
+                event.getAccountSourceNumber(),
                 event.getAccountDestinationNumber()
         );
         log.info("Received transaction-details-received event for transaction id: {}", event.getTransactionId());

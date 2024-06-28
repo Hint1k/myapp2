@@ -36,17 +36,21 @@ public class Transaction {
     @Column(name = "transaction_status", nullable = false)
     private TransactionStatus transactionStatus;
 
+    @Column(name = "account_source", nullable = false)
+    private Long accountSourceNumber;
+
     @Column(name = "account_destination", nullable = false)
     private Long accountDestinationNumber;
 
     // no transaction id
     public Transaction(BigDecimal amount, LocalDateTime transactionTime,
                        TransactionType transactionType, TransactionStatus transactionStatus,
-                       Long accountDestinationNumber) {
+                       Long accountDestinationNumber, Long accountSourceNumber) {
         this.amount = amount;
         this.transactionTime = transactionTime;
         this.transactionType = transactionType;
         this.transactionStatus = transactionStatus;
         this.accountDestinationNumber = accountDestinationNumber;
+        this.accountSourceNumber = accountSourceNumber;
     }
 }

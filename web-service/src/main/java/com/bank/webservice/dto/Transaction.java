@@ -2,6 +2,8 @@ package com.bank.webservice.dto;
 
 import com.bank.webservice.util.TransactionStatus;
 import com.bank.webservice.util.TransactionType;
+import com.bank.webservice.validation.AccountNumbersNotEqual;
+import com.bank.webservice.validation.MinimumAmount;
 import jakarta.validation.constraints.Digits;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
@@ -21,6 +23,7 @@ public class Transaction implements Serializable {
     private Long transactionId;
 
     @NotNull(message = "Balance is required")
+//    @MinimumAmount // set to 0.01, custom annotation in validation package
     @Min(value = 1) // TODO create later custom validation for minimum value = 0.01
     @Digits(integer = MAX_VALUE, fraction = 2)
     private BigDecimal amount;
@@ -37,10 +40,15 @@ public class Transaction implements Serializable {
     @NotNull(message = "Account Id is required")
     @Min(value = 1)
     @Digits(integer = MAX_VALUE, fraction = 0)
-    private Long accountDestinationNumber;
+//    @AccountNumbersNotEqual //custom annotation in validation package
+    private Long accountSourceNumber;
 
-    // TODO planned fields for future updates
-//    private Long accountSourceNumber;
+    //TODO add validation group
+//    @NotNull(message = "Account Id is required")
+//    @Min(value = 1)
+//    @Digits(integer = MAX_VALUE, fraction = 0)
+//    @AccountNumbersNotEqual //custom annotation in validation package
+    private Long accountDestinationNumber;
 
     { // TODO change to ZonedDateTime later and change init2.sql
         // sets transaction time = current time
@@ -52,11 +60,12 @@ public class Transaction implements Serializable {
     // no transaction id
     public Transaction(BigDecimal amount, LocalDateTime transactionTime,
                        TransactionType transactionType, TransactionStatus transactionStatus,
-                       Long accountDestinationNumber) {
+                       Long accountDestinationNumber, Long accountSourceNumber) {
         this.amount = amount;
         this.transactionTime = transactionTime;
         this.transactionType = transactionType;
         this.transactionStatus = transactionStatus;
         this.accountDestinationNumber = accountDestinationNumber;
+        this.accountSourceNumber = accountSourceNumber;
     }
 }

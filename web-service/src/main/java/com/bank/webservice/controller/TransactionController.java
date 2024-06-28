@@ -4,6 +4,7 @@ import com.bank.webservice.cache.TransactionCache;
 import com.bank.webservice.dto.Transaction;
 import com.bank.webservice.publisher.TransactionEventPublisher;
 import com.bank.webservice.service.LatchService;
+import com.bank.webservice.util.TransactionType;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,14 +42,22 @@ public class TransactionController {
     // cutting off the spaces entered by user to avoid errors
     @InitBinder
     public void initBinder(WebDataBinder dataBinder) {
-        StringTrimmerEditor stringTrimmerEditor
-                = new StringTrimmerEditor(true);
+        StringTrimmerEditor stringTrimmerEditor = new StringTrimmerEditor(true);
         dataBinder.registerCustomEditor(String.class, stringTrimmerEditor);
     }
 
     @GetMapping("/transactions/new-transaction")
     private String showNewTransactionForm(Model model) {
         Transaction transaction = new Transaction();
+
+        String transactionType = (String) model.asMap().getOrDefault("transactionType", "");
+
+        if (transactionType.equals(TransactionType.TRANSFER.name())) {
+            transaction.setAccountDestinationNumber(null); // user input is allowed
+        } else {
+            transaction.setAccountDestinationNumber(0L); // user input is not allowed, the default value = 0 is set
+        }
+
         model.addAttribute("transaction", transaction);
         return "new-transaction";
     }

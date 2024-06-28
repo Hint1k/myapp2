@@ -23,19 +23,21 @@ public class TransactionEventListener {
 
     @KafkaListener(topics = "transaction-creation-requested", groupId = "transaction-service")
     public void handleTransactionCreatedEvent(TransactionCreatedEvent event, Acknowledgment acknowledgment) {
-        log.info("Received transaction-creation-requested event for account destination number: {}",
-                event.getAccountDestinationNumber());
+        log.info("Received transaction-creation-requested event for account source number: {}",
+                event.getAccountSourceNumber());
         try {
             Transaction transaction = new Transaction(
                     event.getAmount(),
                     event.getTransactionTime(),
                     event.getTransactionType(),
                     event.getTransactionStatus(),
+                    event.getAccountSourceNumber(),
                     event.getAccountDestinationNumber()
             );
             transactionService.saveTransaction(transaction);
             acknowledgment.acknowledge();
-        } catch (Exception exception) {
+        } catch (
+                Exception exception) {
             log.error("Error saving transaction: {}", exception.getMessage());
             // TODO handle exception here later
         }
@@ -50,6 +52,7 @@ public class TransactionEventListener {
                 event.getTransactionTime(),
                 event.getTransactionType(),
                 event.getTransactionStatus(),
+                event.getAccountSourceNumber(),
                 event.getAccountDestinationNumber()
         );
         transactionService.updateTransaction(transaction);

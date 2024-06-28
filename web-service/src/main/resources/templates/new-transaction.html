@@ -6,6 +6,7 @@
     <meta charset="UTF-8">
     <title>New Transaction Page</title>
     <link rel="stylesheet" th:href="@{/styles.css}">
+    <script th:src="@{/transaction.js}"></script>
 </head>
 <body>
 <h1>Transaction Details</h1>
@@ -40,7 +41,8 @@
         <tr>
             <td><label>Transaction Type:</label></td>
             <td>
-                <select id="transactionType" name="transactionType" th:field="*{transactionType}" class="form-control">
+                <select id="transactionType" name="transactionType" th:field="*{transactionType}" class="form-control"
+                        onchange="toggleDestinationField()">
                     <option value="">Select Transaction Type</option>
                     <option th:each="type : ${T(com.bank.webservice.util.TransactionType).values()}"
                             th:value="${type.name()}" th:text="${type.name()}">
@@ -71,15 +73,30 @@
             </td>
         </tr>
         <tr>
-            <td><label>Account Number:</label></td>
+            <td><label>Your Account Number:</label></td>
+            <td>
+                <input type="text" id="accountSourceNumber" name="accountSourceNumber"
+                       th:field="*{accountSourceNumber}" class="form-control" placeholder="1, 2, 3, etc"/>
+            </td>
+            <td>
+                <span th:if="${#fields.hasErrors('accountSourceNumber')}" class="error"
+                      th:errors="*{accountSourceNumber}">
+                    Account Source Number is required
+                </span>
+            </td>
+        </tr>
+        <!-- Conditionally enable/disable Account Destination Number -->
+        <tr id="destinationField" style="display: none;">
+            <td><label>Account Destination Number:</label></td>
             <td>
                 <input type="text" id="accountDestinationNumber" name="accountDestinationNumber"
-                       th:field="*{accountDestinationNumber}" class="form-control" placeholder="1, 2, 3, etc"/>
+                       th:field="*{accountDestinationNumber}" class="form-control"
+                       placeholder="1, 2, 3, etc" disabled/>
             </td>
             <td>
                 <span th:if="${#fields.hasErrors('accountDestinationNumber')}" class="error"
                       th:errors="*{accountDestinationNumber}">
-                    Account Number is required
+                    Account Destination Number is required
                 </span>
             </td>
         </tr>
