@@ -19,8 +19,7 @@
 - Add new account / transaction to database <br>
 - Delete an account / transaction from database <br>
 - Update an account / transaction in database <br>
-- Show account / transaction details (2) <br>
-- Show all transactions belong to an accountNumber <br>
+- Show account / transaction details <br>
+- Show all transactions belong to an account <br>
 
-(1) simple fields validation & error handling, not error proof yet <br>
-(2) only Deposit / Withdrawal transactions are implemented and can change account balance <br>
+(1) simple fields validation & error handling, no full error proof yet <br>

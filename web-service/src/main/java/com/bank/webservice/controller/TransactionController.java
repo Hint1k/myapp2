@@ -116,17 +116,16 @@ public class TransactionController {
 
     @GetMapping("/transactions/all-transactions")
     public String getAllTransactions(Model model) {
-        publisher.publishAllTransactionsEvent();
         return handleTransactionsRetrieval(model, null);
     }
 
     @GetMapping("/transactions/all-transactions/{accountNumber}")
-    public String getAccountTransactions(@PathVariable("accountNumber") Long accountNumber, Model model) {
-        publisher.publishAccountTransactionsEvent(accountNumber);
+    public String getTransactionsByAccountNumber(@PathVariable("accountNumber") Long accountNumber, Model model) {
         return handleTransactionsRetrieval(model, accountNumber);
     }
 
     private String handleTransactionsRetrieval(Model model, Long accountNumber) {
+        publisher.publishAllTransactionsEvent();
         CountDownLatch latch = new CountDownLatch(1);
         latchService.setLatch(latch);
         try {

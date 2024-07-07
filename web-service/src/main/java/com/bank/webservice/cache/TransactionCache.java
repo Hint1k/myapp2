@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Component
 public class TransactionCache {
@@ -58,16 +59,12 @@ public class TransactionCache {
         return (Transaction) redisTemplate.opsForValue().get(PREFIX + transactionId.toString());
     }
 
-    public void addAccountTransactionsToCache(Long accountNumber, List<Transaction> transactions) {
-        for (Transaction transaction : transactions) {
-            redisTemplate.opsForValue().set(PREFIX + accountNumber
-                    + transaction.getTransactionId().toString(), transaction);
-        }
-    }
-
     public List<Transaction> getAccountTransactionsFromCache(Long accountNumber) {
-        // Retrieve all keys from Redis
-        Set<String> keys = redisTemplate.keys(PREFIX + accountNumber + "*");
-        return cacheService.getObjectsFromCache(keys, Transaction.class);
+        List<Transaction> allTransactions = getAllTransactionsFromCache();
+        return allTransactions.stream()
+                .filter(t -> t.getAccountSourceNumber().equals(accountNumber) ||
+                        t.getAccountDestinationNumber().equals(accountNumber))
+                .distinct()
+                .collect(Collectors.toList());
     }
 }

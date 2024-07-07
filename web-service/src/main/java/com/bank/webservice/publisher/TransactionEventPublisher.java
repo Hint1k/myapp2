@@ -63,15 +63,6 @@ public class TransactionEventPublisher {
         log.info("Published all-transactions-requested event");
     }
 
-    public void publishAccountTransactionsEvent(Long accountNumber) {
-        AccountTransactionsEvent event = new AccountTransactionsEvent(
-                accountNumber,
-                new ArrayList<>()
-        );
-        kafkaTemplate.send("account-transactions-requested", event);
-        log.info("Published account-transactions-requested event for account number: {}", event.getAccountNumber());
-    }
-
     public void publishTransactionDetailsEvent(Transaction transaction) {
         TransactionDetailsEvent event = new TransactionDetailsEvent(
                 transaction.getTransactionId(),

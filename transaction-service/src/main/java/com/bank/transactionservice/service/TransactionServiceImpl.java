@@ -62,15 +62,6 @@ public class TransactionServiceImpl implements TransactionService {
 
     @Override
     @Transactional
-    public List<Transaction> findAccountTransactions(Long accountNumber) {
-        List<Transaction> transactions = repository.findTransactionsByAccountDestinationNumber(accountNumber);
-        publisher.publishAccountTransactionsEvent(accountNumber, transactions);
-        log.info("Retrieved {} transactions for account number {}", transactions.size(), accountNumber);
-        return transactions;
-    }
-
-    @Override
-    @Transactional
     public Transaction findTransactionById(Long transactionId) {
         Transaction transaction = repository.findById(transactionId).orElse(null);
         if (transaction == null) {
