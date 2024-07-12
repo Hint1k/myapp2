@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Component
@@ -34,10 +35,11 @@ public class TransactionEventPublisher {
         log.info("Published transaction-created event for transaction id: {}", event.getTransactionId());
     }
 
-    public void publishTransactionUpdatedEvent(Transaction transaction) {
+    public void publishTransactionUpdatedEvent(Transaction transaction, BigDecimal oldAmount) {
         TransactionUpdatedEvent event = new TransactionUpdatedEvent(
                 transaction.getTransactionId(),
-                transaction.getAmount(),
+                oldAmount,
+                transaction.getAmount(), // newAmount
                 transaction.getTransactionTime(),
                 transaction.getTransactionType(),
                 transaction.getTransactionStatus(),

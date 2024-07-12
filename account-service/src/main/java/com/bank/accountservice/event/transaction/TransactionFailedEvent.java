@@ -1,4 +1,4 @@
-package com.bank.accountservice.event;
+package com.bank.accountservice.event.transaction;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -9,5 +9,5 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class TransactionFailedEvent {
     // TODO combine later with TransactionApprovedEvent
-    Long transactionId;
+  private Long transactionId;
 }

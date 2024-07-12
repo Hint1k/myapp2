@@ -9,5 +9,5 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class TransactionApprovedEvent {
     // TODO combine later with TransactionFailedEvent
-    Long transactionId;
+    private Long transactionId;
 }

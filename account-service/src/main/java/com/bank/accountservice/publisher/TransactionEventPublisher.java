@@ -1,7 +1,7 @@
 package com.bank.accountservice.publisher;
 
-import com.bank.accountservice.event.TransactionApprovedEvent;
-import com.bank.accountservice.event.TransactionFailedEvent;
+import com.bank.accountservice.event.transaction.TransactionApprovedEvent;
+import com.bank.accountservice.event.transaction.TransactionFailedEvent;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.core.KafkaTemplate;

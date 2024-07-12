@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Service
@@ -36,11 +37,17 @@ public class TransactionServiceImpl implements TransactionService {
 
     @Override
     @Transactional
-    public void updateTransaction(Transaction transaction) {
-        // JPA repository should merge instead of save
-        repository.save(transaction);
-        publisher.publishTransactionUpdatedEvent(transaction);
-        log.info("Transaction with id: {} updated", transaction.getTransactionId());
+    public void updateTransaction(Transaction newTransaction) {
+        Long transactionId = newTransaction.getTransactionId();
+        Transaction oldTransaction = repository.findById(transactionId).orElse(null);
+        if (oldTransaction == null) {
+            // TODO return message to the web-service
+            throw new EntityNotFoundException("Transaction with id " + transactionId + " not found");
+        }
+        BigDecimal oldAmount = oldTransaction.getAmount();
+        repository.save(newTransaction); // JPA repository should merge instead of save
+        publisher.publishTransactionUpdatedEvent(newTransaction, oldAmount);
+        log.info("Transaction with id: {} updated", transactionId);
     }
 
     @Override

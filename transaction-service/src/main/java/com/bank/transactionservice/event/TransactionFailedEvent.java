@@ -8,5 +8,5 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class TransactionFailedEvent {
-    Long transactionId;
+    private Long transactionId;
 }

@@ -11,5 +11,5 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class AllAccountsEvent {
-    List<Account> accounts;
+    private List<Account> accounts;
 }

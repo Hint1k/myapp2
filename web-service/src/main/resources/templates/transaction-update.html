@@ -6,6 +6,7 @@
     <meta charset="UTF-8">
     <title>Transaction Update Page</title>
     <link rel="stylesheet" th:href="@{/styles.css}">
+    <script th:src="@{/transaction.js}"></script>
 </head>
 <body>
 <h1>Transaction Details</h1>
@@ -41,7 +42,8 @@
         <tr>
             <td><label>Transaction Type:</label></td>
             <td>
-                <select id="transactionType" name="transactionType" th:field="*{transactionType}" class="form-control">
+                <select id="transactionType" name="transactionType" th:field="*{transactionType}" class="form-control"
+                        onchange="toggleDestinationField()">
                     <option value="">Select Transaction Type</option>
                     <option th:each="type : ${T(com.bank.webservice.util.TransactionType).values()}"
                             th:value="${type.name()}" th:text="${type.name()}">
@@ -84,7 +86,8 @@
                 </span>
             </td>
         </tr>
-        <tr>
+        <!-- Conditionally enable/disable Account Destination Number -->
+        <tr id="destinationField" style="display: none;">
             <td><label>Account Destination Number:</label></td>
             <td>
                 <input type="text" id="accountDestinationNumber" name="accountDestinationNumber"

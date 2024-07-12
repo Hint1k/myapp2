@@ -1,4 +1,4 @@
-package com.bank.accountservice.event;
+package com.bank.accountservice.event.account;
 
 import com.bank.accountservice.entity.Account;
 import lombok.AllArgsConstructor;
@@ -12,5 +12,5 @@ import java.util.List;
 @NoArgsConstructor
 public class AllAccountsEvent {
 
-    List<Account> accounts;
+   private List<Account> accounts;
 }
