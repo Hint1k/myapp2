@@ -4,6 +4,7 @@ import com.bank.transactionservice.entity.Transaction;
 import com.bank.transactionservice.publisher.TransactionEventPublisher;
 import com.bank.transactionservice.repository.TransactionRepository;
 import com.bank.transactionservice.util.TransactionStatus;
+import com.bank.transactionservice.util.TransactionType;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @Slf4j
@@ -45,8 +47,17 @@ public class TransactionServiceImpl implements TransactionService {
             throw new EntityNotFoundException("Transaction with id " + transactionId + " not found");
         }
         BigDecimal oldAmount = oldTransaction.getAmount();
+        TransactionType oldTransactionType = oldTransaction.getTransactionType();
+        Long oldSourceAccountNumber = oldTransaction.getAccountSourceNumber();
+        Long oldDestinationAccountNumber;
+        if (Objects.equals(oldTransactionType, TransactionType.TRANSFER)) {
+            oldDestinationAccountNumber = oldTransaction.getAccountDestinationNumber();
+        } else {
+            oldDestinationAccountNumber = 0L;
+        }
         repository.save(newTransaction); // JPA repository should merge instead of save
-        publisher.publishTransactionUpdatedEvent(newTransaction, oldAmount);
+        publisher.publishTransactionUpdatedEvent(newTransaction, oldAmount, oldTransactionType,
+                oldSourceAccountNumber, oldDestinationAccountNumber);
         log.info("Transaction with id: {} updated", transactionId);
     }
 

@@ -7,11 +7,12 @@ import java.math.BigDecimal;
 public interface BalanceService {
 
     void updateAccountBalanceForCreatedTransaction(Long accountSourceNumber, Long accountDestinationNumber,
-                                                   BigDecimal amount, Long transactionId,
-                                                   TransactionType transactionType);
+                                                   BigDecimal amount, TransactionType transactionType,
+                                                   Long transactionId);
 
-    void updateAccountBalanceForUpdatedTransaction(Long accountSourceNumber, Long accountDestinationNumber,
-                                                   BigDecimal oldAmount, BigDecimal newAmount, Long transactionId,
+    void updateAccountBalanceForUpdatedTransaction(Long oldAccountSourceNumber, Long oldAccountDestinationNumber,
+                                                   Long newAccountSourceNumber, Long newAccountDestinationNumber,
+                                                   BigDecimal oldAmount, BigDecimal newAmount,
                                                    TransactionType oldTransactionType,
-                                                   TransactionType newTransactionType);
+                                                   TransactionType newTransactionType, Long transactionId);
 }

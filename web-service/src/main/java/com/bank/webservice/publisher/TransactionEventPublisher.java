@@ -38,6 +38,9 @@ public class TransactionEventPublisher {
     }
 
     public void publishTransactionUpdatedEvent(Transaction transaction) {
+        if (transaction.getAccountDestinationNumber() == null) {
+            transaction.setAccountDestinationNumber(transaction.getAccountSourceNumber());
+        }
         TransactionUpdatedEvent event = new TransactionUpdatedEvent(
                 transaction.getTransactionId(),
                 transaction.getAmount(),

@@ -7,6 +7,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 public interface TransactionEvent {
+
     Long getTransactionId();
 
     BigDecimal getOldAmount();
@@ -21,7 +22,11 @@ public interface TransactionEvent {
 
     TransactionStatus getTransactionStatus();
 
+    Long getOldAccountSourceNumber();
+
     Long getAccountSourceNumber();
+
+    Long getOldAccountDestinationNumber();
 
     Long getAccountDestinationNumber();
 }

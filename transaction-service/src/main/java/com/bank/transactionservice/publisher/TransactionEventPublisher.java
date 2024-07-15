@@ -2,6 +2,7 @@ package com.bank.transactionservice.publisher;
 
 import com.bank.transactionservice.entity.Transaction;
 import com.bank.transactionservice.event.*;
+import com.bank.transactionservice.util.TransactionType;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -35,16 +36,21 @@ public class TransactionEventPublisher {
         log.info("Published transaction-created event for transaction id: {}", event.getTransactionId());
     }
 
-    public void publishTransactionUpdatedEvent(Transaction transaction, BigDecimal oldAmount) {
+    public void publishTransactionUpdatedEvent(Transaction transaction, BigDecimal oldAmount,
+                                               TransactionType oldTransactionType, Long oldSourceAccountNumber,
+                                               Long oldDestinationAccountNumber) {
         TransactionUpdatedEvent event = new TransactionUpdatedEvent(
                 transaction.getTransactionId(),
                 oldAmount,
-                transaction.getAmount(), // newAmount
+                transaction.getAmount(), // new amount
                 transaction.getTransactionTime(),
-                transaction.getTransactionType(),
+                oldTransactionType,
+                transaction.getTransactionType(), // new transaction type
                 transaction.getTransactionStatus(),
-                transaction.getAccountSourceNumber(),
-                transaction.getAccountDestinationNumber()
+                oldSourceAccountNumber,
+                transaction.getAccountSourceNumber(), // new source account
+                oldDestinationAccountNumber,
+                transaction.getAccountDestinationNumber() // new destination account
         );
         kafkaTemplate.send("transaction-updated", event);
         log.info("Published transaction-updated event for transaction id: {}", event.getTransactionId());

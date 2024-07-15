@@ -15,8 +15,7 @@ import java.time.LocalDateTime;
 public class TransactionCreatedEvent implements TransactionEvent {
     // TODO combine later with classes TransactionDetailsEvent and TransactionUpdatedEvent
     private Long transactionId;
-    private BigDecimal oldAmount;
-    private BigDecimal newAmount;
+    private BigDecimal amount;
     private LocalDateTime transactionTime;
     private TransactionType transactionType;
     private TransactionStatus transactionStatus;
@@ -24,11 +23,10 @@ public class TransactionCreatedEvent implements TransactionEvent {
     private Long accountDestinationNumber;
 
     // no transaction id
-    public TransactionCreatedEvent(BigDecimal oldAmount, BigDecimal newAmount, LocalDateTime transactionTime,
+    public TransactionCreatedEvent(BigDecimal amount, LocalDateTime transactionTime,
                                    TransactionType transactionType, TransactionStatus transactionStatus,
                                    Long accountSourceNumber, Long accountDestinationNumber) {
-        this.oldAmount = oldAmount;
-        this.newAmount = newAmount;
+        this.amount = amount;
         this.transactionTime = transactionTime;
         this.transactionType = transactionType;
         this.transactionStatus = transactionStatus;
@@ -37,12 +35,22 @@ public class TransactionCreatedEvent implements TransactionEvent {
     }
 
     @Override
-    public BigDecimal getAmount() {
+    public BigDecimal getOldAmount() {
         return null;
     }
 
     @Override
     public TransactionType getOldTransactionType() {
         return null;
+    }
+
+    @Override
+    public Long getOldAccountSourceNumber() {
+        return 0L;
+    }
+
+    @Override
+    public Long getOldAccountDestinationNumber() {
+        return 0L;
     }
 }

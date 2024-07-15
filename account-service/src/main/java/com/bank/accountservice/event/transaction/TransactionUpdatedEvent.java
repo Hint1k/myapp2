@@ -21,10 +21,12 @@ public class TransactionUpdatedEvent implements TransactionEvent {
     private TransactionType oldTransactionType;
     private TransactionType transactionType;
     private TransactionStatus transactionStatus;
+    private Long oldAccountSourceNumber;
     private Long accountSourceNumber;
+    private Long oldAccountDestinationNumber;
     private Long accountDestinationNumber;
 
-    // no oldAmount and no oldTransactionType fields
+    // no old amount, no old transaction type, no old account number fields
     public TransactionUpdatedEvent(Long transactionId, BigDecimal amount, LocalDateTime transactionTime,
                                    TransactionType transactionType, TransactionStatus transactionStatus,
                                    Long accountSourceNumber, Long accountDestinationNumber) {

@@ -14,17 +14,19 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class TransactionUpdatedEvent {
     // TODO combine later with classes TransactionCreatedEvent and TransactionDetailsEvent
-    private Long transactionId;
+    private Long transactionId; // this field can't be removed
     private BigDecimal oldAmount;
     private BigDecimal amount;
     private LocalDateTime transactionTime;
     private TransactionType oldTransactionType;
     private TransactionType transactionType;
     private TransactionStatus transactionStatus;
+    private Long oldAccountSourceNumber;
     private Long accountSourceNumber;
+    private Long oldAccountDestinationNumber;
     private Long accountDestinationNumber;
 
-    // no oldAmount and no oldTransactionType fields
+    // no old amount, no old transaction type, no old account number fields
     public TransactionUpdatedEvent(Long transactionId, BigDecimal amount, LocalDateTime transactionTime,
                                    TransactionType transactionType, TransactionStatus transactionStatus,
                                    Long accountSourceNumber, Long accountDestinationNumber) {

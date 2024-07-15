@@ -46,15 +46,18 @@ public class TransactionEventListener {
         TransactionType oldTransactionType = event.getOldTransactionType();
         TransactionType newTransactionType = event.getTransactionType();
         TransactionStatus transactionStatus = event.getTransactionStatus(); // TODO implement later
+        Long oldAccountSourceNumber = event.getOldAccountSourceNumber();
         Long accountSourceNumber = event.getAccountSourceNumber();
+        Long oldAccountDestinationNumber = event.getOldAccountDestinationNumber();
         Long accountDestinationNumber = event.getAccountDestinationNumber();
         if (event instanceof TransactionCreatedEvent) {
             balanceService.updateAccountBalanceForCreatedTransaction(accountSourceNumber, accountDestinationNumber,
-                    newAmount, transactionId, newTransactionType);
+                    newAmount, newTransactionType, transactionId);
         }
         if (event instanceof TransactionUpdatedEvent) {
-            balanceService.updateAccountBalanceForUpdatedTransaction(accountSourceNumber, accountDestinationNumber,
-                    oldAmount, newAmount, transactionId, oldTransactionType, newTransactionType);
+            balanceService.updateAccountBalanceForUpdatedTransaction(oldAccountSourceNumber, accountSourceNumber,
+                    oldAccountDestinationNumber, accountDestinationNumber, oldAmount, newAmount,
+                    oldTransactionType, newTransactionType, transactionId);
         }
         acknowledgment.acknowledge();
     }

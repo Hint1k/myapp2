@@ -31,12 +31,13 @@ public class BalanceServiceImpl implements BalanceService {
     @Synchronized // TODO implement optimistic locking with JPA instead
 //    @Retryable(retryFor = OptimisticLockingFailureException.class, backoff = @Backoff(delay = 1000, multiplier = 2))
     public void updateAccountBalanceForCreatedTransaction(Long accountSourceNumber, Long accountDestinationNumber,
-                                                          BigDecimal amount, Long transactionId,
-                                                          TransactionType transactionType) {
+                                                          BigDecimal amount, TransactionType transactionType,
+                                                          Long transactionId) {
         boolean hasProblems = false;
         Account sourceAccount = getAccountFromDatabase(accountSourceNumber, transactionId);
         if (sourceAccount != null) {
             if (!transactionType.equals(TransactionType.TRANSFER)) {
+                // Saving new balance for the account
                 BigDecimal newSourceBalance = calculateBalance(sourceAccount.getBalance(), amount, transactionType);
                 hasProblems = hasBalanceProblems(newSourceBalance, sourceAccount, transactionId);
                 if (hasProblems) {
@@ -44,7 +45,13 @@ public class BalanceServiceImpl implements BalanceService {
                 }
                 saveNewBalanceToDatabase(sourceAccount, newSourceBalance);
             } else {
-                if (!isFundsTransferSuccessful(sourceAccount, accountDestinationNumber, amount, transactionId)) {
+                Account destinationAccount = getAccountFromDatabase(accountDestinationNumber, transactionId);
+                if (destinationAccount != null) {
+                    // Making a transfer between account
+                    if (!isFundsTransferSuccessful(sourceAccount, destinationAccount, amount, transactionId)) {
+                        return;
+                    }
+                } else {
                     return;
                 }
             }
@@ -58,111 +65,408 @@ public class BalanceServiceImpl implements BalanceService {
     @Transactional
     @Synchronized // TODO implement optimistic locking with JPA instead
 //    @Retryable(retryFor = OptimisticLockingFailureException.class, backoff = @Backoff(delay = 1000, multiplier = 2))
-    public void updateAccountBalanceForUpdatedTransaction(Long accountSourceNumber, Long accountDestinationNumber,
-                                                          BigDecimal oldAmount, BigDecimal newAmount,
-                                                          Long transactionId, TransactionType oldTransactionType,
-                                                          TransactionType newTransactionType) {
+    public void updateAccountBalanceForUpdatedTransaction(Long oldAccountSourceNumber, Long newAccountSourceNumber,
+                                                          Long oldAccountDestinationNumber,
+                                                          Long newAccountDestinationNumber, BigDecimal oldAmount,
+                                                          BigDecimal newAmount, TransactionType oldTransactionType,
+                                                          TransactionType newTransactionType, Long transactionId) {
+        // TODO implement a design pattern for this method instead of current code. Probably strategy pattern.
         boolean hasProblems = false;
-        Account sourceAccount = getAccountFromDatabase(accountSourceNumber, transactionId);
-        if (sourceAccount != null) {
-            if (!oldTransactionType.equals(TransactionType.TRANSFER)) {
-                // Reversing the account balance by adding negative value of the old amount
-                BigDecimal oldBalance =
-                        calculateBalance(sourceAccount.getBalance(), oldAmount.negate(), oldTransactionType);
-                hasProblems = hasBalanceProblems(oldBalance, sourceAccount, transactionId);
-                if (hasProblems) {
-                    return;
-                }
-                // Saving the new amount on the account with reversed balance
-                if (!newTransactionType.equals(TransactionType.TRANSFER)) {
-                    BigDecimal newBalance = calculateBalance(oldBalance, newAmount, newTransactionType);
-                    hasProblems = hasBalanceProblems(newBalance, sourceAccount, transactionId);
-                    if (hasProblems) {
-                        return;
-                    }
-                    saveNewBalanceToDatabase(sourceAccount, newBalance);
-                } else {
-                    if (!isFundsTransferSuccessful(sourceAccount, accountDestinationNumber, newAmount,
-                            transactionId)) {
-                        return;
-                    }
-                }
-            } else {
-                Account destinationAccount = getAccountFromDatabase(accountDestinationNumber, transactionId);
-                if (destinationAccount != null) {
-                    // Reversing the old transfer by rolling back the account balances
-                    BigDecimal oldSourceBalance =
-                            calculateBalance(sourceAccount.getBalance(), oldAmount.negate(), oldTransactionType);
-                    hasProblems = hasBalanceProblems(oldSourceBalance, sourceAccount, transactionId);
-                    if (hasProblems) {
-                        return;
-                    }
-                    BigDecimal oldDestinationBalance =
-                            calculateBalance(destinationAccount.getBalance(), oldAmount.negate(), oldTransactionType);
-                    hasProblems = hasBalanceProblems(oldDestinationBalance, destinationAccount, transactionId);
-                    if (hasProblems) {
-                        return;
-                    }
-                    if (!newTransactionType.equals(TransactionType.TRANSFER)) {
-                        // Saving new balance on source account (old transaction type is transfer)
-                        BigDecimal newSourceBalance =
-                                calculateBalance(oldSourceBalance, newAmount, newTransactionType);
-                        hasProblems = hasBalanceProblems(newSourceBalance, sourceAccount, transactionId);
-                        if (hasProblems) {
-                            return;
-                        }
-                        saveNewBalanceToDatabase(sourceAccount, newSourceBalance);
-                        // Reversing the old balance on destination account (old transaction type is transfer)
-                        saveNewBalanceToDatabase(destinationAccount, oldDestinationBalance);
-                    } else {
-                        // Reversing the old balance on both accounts
-                        saveNewBalanceToDatabase(sourceAccount, oldSourceBalance);
-                        saveNewBalanceToDatabase(destinationAccount, oldDestinationBalance);
-                        // Removing money from the source account
-                        BigDecimal newSourceBalance =
-                                calculateBalance(sourceAccount.getBalance(), newAmount, TransactionType.WITHDRAWAL);
-                        hasProblems = hasBalanceProblems(newSourceBalance, sourceAccount, transactionId);
-                        if (hasProblems) {
-                            return;
-                        }
-                        // Adding money to the destination account
-                        BigDecimal newDestinationBalance =
-                                calculateBalance(destinationAccount.getBalance(), newAmount, TransactionType.DEPOSIT);
-                        // Making a transfer between two accounts with reversed balances
-                        saveNewBalanceToDatabase(sourceAccount, newSourceBalance);
-                        saveNewBalanceToDatabase(destinationAccount, newDestinationBalance);
-                    }
-                } else {
-                    return;
-                }
+        boolean isSourceAccountChanged = !Objects.equals(oldAccountSourceNumber, newAccountSourceNumber);
+        boolean isDestinationAccountChanged = !Objects.equals(oldAccountDestinationNumber, newAccountDestinationNumber);
+        boolean isOldTransactionATransfer = Objects.equals(oldTransactionType, TransactionType.TRANSFER);
+        boolean isNewTransactionATransfer = Objects.equals(newTransactionType, TransactionType.TRANSFER);
+
+        if (isOldTransactionATransfer && isNewTransactionATransfer && !isSourceAccountChanged &&
+                !isDestinationAccountChanged) {
+            Account oldSourceAccount = getAccountFromDatabase(oldAccountSourceNumber, transactionId);
+            if (oldSourceAccount == null) {
+                return;
             }
-        } else {
-            return;
+            Account oldDestinationAccount = getAccountFromDatabase(oldAccountDestinationNumber, transactionId);
+            if (oldDestinationAccount == null) {
+                return;
+            }
+            BigDecimal oldSourceBalance =
+                    calculateBalance(oldSourceAccount.getBalance(), oldAmount, TransactionType.DEPOSIT);
+            hasProblems = hasBalanceProblems(oldSourceBalance, oldSourceAccount, transactionId);
+            if (hasProblems) {
+                return;
+            }
+            BigDecimal oldDestinationBalance =
+                    calculateBalance(oldDestinationAccount.getBalance(), oldAmount, TransactionType.WITHDRAWAL);
+            hasProblems = hasBalanceProblems(oldDestinationBalance, oldDestinationAccount, transactionId);
+            if (hasProblems) {
+                return;
+            }
+            BigDecimal newSourceBalance = calculateBalance(oldSourceBalance, newAmount, TransactionType.WITHDRAWAL);
+            hasProblems = hasBalanceProblems(newSourceBalance, oldSourceAccount, transactionId);
+            if (hasProblems) {
+                return;
+            }
+            BigDecimal newDestinationBalance =
+                    calculateBalance(oldDestinationBalance, newAmount, TransactionType.DEPOSIT);
+            hasProblems = hasBalanceProblems(newDestinationBalance, oldDestinationAccount, transactionId);
+            if (hasProblems) {
+                return;
+            }
+            saveNewBalanceToDatabase(oldSourceAccount, newSourceBalance);
+            saveNewBalanceToDatabase(oldDestinationAccount, newDestinationBalance);
+        }
+        if (!isOldTransactionATransfer && !isNewTransactionATransfer && !isSourceAccountChanged) {
+            Account oldSourceAccount = getAccountFromDatabase(oldAccountSourceNumber, transactionId);
+            if (oldSourceAccount == null) {
+                return;
+            }
+            BigDecimal oldSourceBalance =
+                    calculateBalance(oldSourceAccount.getBalance(), oldAmount.negate(), oldTransactionType);
+            hasProblems = hasBalanceProblems(oldSourceBalance, oldSourceAccount, transactionId);
+            if (hasProblems) {
+                return;
+            }
+            BigDecimal newSourceBalance = calculateBalance(oldSourceBalance, newAmount, newTransactionType);
+            hasProblems = hasBalanceProblems(newSourceBalance, oldSourceAccount, transactionId);
+            if (hasProblems) {
+                return;
+            }
+            saveNewBalanceToDatabase(oldSourceAccount, newSourceBalance);
+        }
+        if (!isOldTransactionATransfer && isNewTransactionATransfer && !isSourceAccountChanged) {
+            Account oldSourceAccount = getAccountFromDatabase(oldAccountSourceNumber, transactionId);
+            if (oldSourceAccount == null) {
+                return;
+            }
+            Account newDestinationAccount = getAccountFromDatabase(newAccountDestinationNumber, transactionId);
+            if (newDestinationAccount == null) {
+                return;
+            }
+            BigDecimal oldSourceBalance =
+                    calculateBalance(oldSourceAccount.getBalance(), oldAmount.negate(), oldTransactionType);
+            hasProblems = hasBalanceProblems(oldSourceBalance, oldSourceAccount, transactionId);
+            if (hasProblems) {
+                return;
+            }
+            BigDecimal newSourceBalance = calculateBalance(oldSourceBalance, newAmount, TransactionType.WITHDRAWAL);
+            hasProblems = hasBalanceProblems(newSourceBalance, oldSourceAccount, transactionId);
+            if (hasProblems) {
+                return;
+            }
+            BigDecimal newDestinationBalance =
+                    calculateBalance(newDestinationAccount.getBalance(), newAmount, TransactionType.DEPOSIT);
+            hasProblems = hasBalanceProblems(newDestinationBalance, newDestinationAccount, transactionId);
+            if (hasProblems) {
+                return;
+            }
+            saveNewBalanceToDatabase(oldSourceAccount, newSourceBalance);
+            saveNewBalanceToDatabase(newDestinationAccount, newDestinationBalance);
+        }
+        if (isOldTransactionATransfer && !isNewTransactionATransfer && !isSourceAccountChanged) {
+            Account oldSourceAccount = getAccountFromDatabase(oldAccountSourceNumber, transactionId);
+            if (oldSourceAccount == null) {
+                return;
+            }
+            Account oldDestinationAccount = getAccountFromDatabase(oldAccountDestinationNumber, transactionId);
+            if (oldDestinationAccount == null) {
+                return;
+            }
+            BigDecimal oldSourceBalance =
+                    calculateBalance(oldSourceAccount.getBalance(), oldAmount, TransactionType.DEPOSIT);
+            hasProblems = hasBalanceProblems(oldSourceBalance, oldSourceAccount, transactionId);
+            if (hasProblems) {
+                return;
+            }
+            BigDecimal oldDestinationBalance =
+                    calculateBalance(oldDestinationAccount.getBalance(), oldAmount, TransactionType.WITHDRAWAL);
+            hasProblems = hasBalanceProblems(oldDestinationBalance, oldDestinationAccount, transactionId);
+            if (hasProblems) {
+                return;
+            }
+            BigDecimal newSourceBalance = calculateBalance(oldSourceBalance, newAmount, newTransactionType);
+            hasProblems = hasBalanceProblems(newSourceBalance, oldSourceAccount, transactionId);
+            if (hasProblems) {
+                return;
+            }
+            saveNewBalanceToDatabase(oldSourceAccount, newSourceBalance);
+            saveNewBalanceToDatabase(oldDestinationAccount, oldDestinationBalance);
+        }
+        if (isOldTransactionATransfer && isNewTransactionATransfer && !isSourceAccountChanged &&
+                isDestinationAccountChanged) {
+            Account oldSourceAccount = getAccountFromDatabase(oldAccountSourceNumber, transactionId);
+            if (oldSourceAccount == null) {
+                return;
+            }
+            Account oldDestinationAccount = getAccountFromDatabase(oldAccountDestinationNumber, transactionId);
+            if (oldDestinationAccount == null) {
+                return;
+            }
+            Account newDestinationAccount = getAccountFromDatabase(newAccountDestinationNumber, transactionId);
+            if (newDestinationAccount == null) {
+                return;
+            }
+            BigDecimal oldSourceBalance =
+                    calculateBalance(oldSourceAccount.getBalance(), oldAmount, TransactionType.DEPOSIT);
+            hasProblems = hasBalanceProblems(oldSourceBalance, oldSourceAccount, transactionId);
+            if (hasProblems) {
+                return;
+            }
+            BigDecimal oldDestinationBalance =
+                    calculateBalance(oldDestinationAccount.getBalance(), oldAmount, TransactionType.WITHDRAWAL);
+            hasProblems = hasBalanceProblems(oldDestinationBalance, oldDestinationAccount, transactionId);
+            if (hasProblems) {
+                return;
+            }
+            BigDecimal newSourceBalance = calculateBalance(oldSourceBalance, newAmount, TransactionType.WITHDRAWAL);
+            hasProblems = hasBalanceProblems(newSourceBalance, oldSourceAccount, transactionId);
+            if (hasProblems) {
+                return;
+            }
+            BigDecimal newDestinationBalance =
+                    calculateBalance(newDestinationAccount.getBalance(), newAmount, TransactionType.DEPOSIT);
+            hasProblems = hasBalanceProblems(newDestinationBalance, newDestinationAccount, transactionId);
+            if (hasProblems) {
+                return;
+            }
+            saveNewBalanceToDatabase(oldSourceAccount, newSourceBalance);
+            saveNewBalanceToDatabase(oldDestinationAccount, oldDestinationBalance);
+            saveNewBalanceToDatabase(newDestinationAccount, newDestinationBalance);
+        }
+        if (isOldTransactionATransfer && isNewTransactionATransfer && isSourceAccountChanged &&
+                isDestinationAccountChanged) {
+            Account oldSourceAccount = getAccountFromDatabase(oldAccountSourceNumber, transactionId);
+            if (oldSourceAccount == null) {
+                return;
+            }
+            Account oldDestinationAccount = getAccountFromDatabase(oldAccountDestinationNumber, transactionId);
+            if (oldDestinationAccount == null) {
+                return;
+            }
+            Account newSourceAccount = getAccountFromDatabase(newAccountSourceNumber, transactionId);
+            if (newSourceAccount == null) {
+                return;
+            }
+            Account newDestinationAccount = getAccountFromDatabase(newAccountDestinationNumber, transactionId);
+            if (newDestinationAccount == null) {
+                return;
+            }
+            BigDecimal oldSourceBalance =
+                    calculateBalance(oldSourceAccount.getBalance(), oldAmount, TransactionType.DEPOSIT);
+            hasProblems = hasBalanceProblems(oldSourceBalance, oldSourceAccount, transactionId);
+            if (hasProblems) {
+                return;
+            }
+            BigDecimal oldDestinationBalance =
+                    calculateBalance(oldDestinationAccount.getBalance(), oldAmount, TransactionType.WITHDRAWAL);
+            hasProblems = hasBalanceProblems(oldDestinationBalance, oldDestinationAccount, transactionId);
+            if (hasProblems) {
+                return;
+            }
+            BigDecimal newSourceBalance =
+                    calculateBalance(newSourceAccount.getBalance(), newAmount, TransactionType.WITHDRAWAL);
+            hasProblems = hasBalanceProblems(newSourceBalance, newSourceAccount, transactionId);
+            if (hasProblems) {
+                return;
+            }
+            BigDecimal newDestinationBalance =
+                    calculateBalance(newDestinationAccount.getBalance(), newAmount, TransactionType.DEPOSIT);
+            hasProblems = hasBalanceProblems(newDestinationBalance, newDestinationAccount, transactionId);
+            if (hasProblems) {
+                return;
+            }
+            saveNewBalanceToDatabase(oldSourceAccount, oldSourceBalance);
+            saveNewBalanceToDatabase(newSourceAccount, newSourceBalance);
+            saveNewBalanceToDatabase(oldDestinationAccount, oldDestinationBalance);
+            saveNewBalanceToDatabase(newDestinationAccount, newDestinationBalance);
+        }
+        if (!isOldTransactionATransfer && !isNewTransactionATransfer && isSourceAccountChanged) {
+            Account oldSourceAccount = getAccountFromDatabase(oldAccountSourceNumber, transactionId);
+            if (oldSourceAccount == null) {
+                return;
+            }
+            Account newSourceAccount = getAccountFromDatabase(newAccountSourceNumber, transactionId);
+            if (newSourceAccount == null) {
+                return;
+            }
+            BigDecimal oldSourceBalance =
+                    calculateBalance(oldSourceAccount.getBalance(), oldAmount.negate(), oldTransactionType);
+            hasProblems = hasBalanceProblems(oldSourceBalance, oldSourceAccount, transactionId);
+            if (hasProblems) {
+                return;
+            }
+            BigDecimal newSourceBalance =
+                    calculateBalance(newSourceAccount.getBalance(), newAmount, newTransactionType);
+            hasProblems = hasBalanceProblems(newSourceBalance, newSourceAccount, transactionId);
+            if (hasProblems) {
+                return;
+            }
+            saveNewBalanceToDatabase(oldSourceAccount, oldSourceBalance);
+            saveNewBalanceToDatabase(newSourceAccount, newSourceBalance);
+        }
+        if (!isOldTransactionATransfer && isNewTransactionATransfer && isSourceAccountChanged) {
+            Account oldSourceAccount = getAccountFromDatabase(oldAccountSourceNumber, transactionId);
+            if (oldSourceAccount == null) {
+                return;
+            }
+            Account newSourceAccount = getAccountFromDatabase(newAccountSourceNumber, transactionId);
+            if (newSourceAccount == null) {
+                return;
+            }
+            Account newDestinationAccount = getAccountFromDatabase(newAccountDestinationNumber, transactionId);
+            if (newDestinationAccount == null) {
+                return;
+            }
+            BigDecimal oldSourceBalance =
+                    calculateBalance(oldSourceAccount.getBalance(), oldAmount.negate(), oldTransactionType);
+            hasProblems = hasBalanceProblems(oldSourceBalance, oldSourceAccount, transactionId);
+            if (hasProblems) {
+                return;
+            }
+            BigDecimal newSourceBalance =
+                    calculateBalance(newSourceAccount.getBalance(), newAmount, TransactionType.WITHDRAWAL);
+            hasProblems = hasBalanceProblems(newSourceBalance, newSourceAccount, transactionId);
+            if (hasProblems) {
+                return;
+            }
+            BigDecimal newDestinationBalance =
+                    calculateBalance(newDestinationAccount.getBalance(), newAmount, TransactionType.DEPOSIT);
+            hasProblems = hasBalanceProblems(newDestinationBalance, newDestinationAccount, transactionId);
+            if (hasProblems) {
+                return;
+            }
+            saveNewBalanceToDatabase(oldSourceAccount, oldSourceBalance);
+            saveNewBalanceToDatabase(newSourceAccount, newSourceBalance);
+            saveNewBalanceToDatabase(newDestinationAccount, newDestinationBalance);
+        }
+        if (isOldTransactionATransfer && !isNewTransactionATransfer && isSourceAccountChanged) {
+            Account oldSourceAccount = getAccountFromDatabase(oldAccountSourceNumber, transactionId);
+            if (oldSourceAccount == null) {
+                return;
+            }
+            Account oldDestinationAccount = getAccountFromDatabase(oldAccountDestinationNumber, transactionId);
+            if (oldDestinationAccount == null) {
+                return;
+            }
+            Account newSourceAccount = getAccountFromDatabase(newAccountSourceNumber, transactionId);
+            if (newSourceAccount == null) {
+                return;
+            }
+            BigDecimal oldSourceBalance =
+                    calculateBalance(oldSourceAccount.getBalance(), oldAmount, TransactionType.DEPOSIT);
+            hasProblems = hasBalanceProblems(oldSourceBalance, oldSourceAccount, transactionId);
+            if (hasProblems) {
+                return;
+            }
+            BigDecimal oldDestinationBalance =
+                    calculateBalance(oldDestinationAccount.getBalance(), oldAmount, TransactionType.WITHDRAWAL);
+            hasProblems = hasBalanceProblems(oldDestinationBalance, oldDestinationAccount, transactionId);
+            if (hasProblems) {
+                return;
+            }
+            BigDecimal newSourceBalance =
+                    calculateBalance(newSourceAccount.getBalance(), newAmount, newTransactionType);
+            hasProblems = hasBalanceProblems(newSourceBalance, newSourceAccount, transactionId);
+            if (hasProblems) {
+                return;
+            }
+            saveNewBalanceToDatabase(oldSourceAccount, oldSourceBalance);
+            saveNewBalanceToDatabase(newSourceAccount, newSourceBalance);
+            saveNewBalanceToDatabase(oldDestinationAccount, oldDestinationBalance);
+        }
+        if (isOldTransactionATransfer && isNewTransactionATransfer && isSourceAccountChanged &&
+                !isDestinationAccountChanged) {
+            Account oldSourceAccount = getAccountFromDatabase(oldAccountSourceNumber, transactionId);
+            if (oldSourceAccount == null) {
+                return;
+            }
+            Account oldDestinationAccount = getAccountFromDatabase(oldAccountDestinationNumber, transactionId);
+            if (oldDestinationAccount == null) {
+                return;
+            }
+            Account newSourceAccount = getAccountFromDatabase(newAccountSourceNumber, transactionId);
+            if (newSourceAccount == null) {
+                return;
+            }
+            BigDecimal oldSourceBalance =
+                    calculateBalance(oldSourceAccount.getBalance(), oldAmount, TransactionType.DEPOSIT);
+            hasProblems = hasBalanceProblems(oldSourceBalance, oldSourceAccount, transactionId);
+            if (hasProblems) {
+                return;
+            }
+            BigDecimal newSourceBalance =
+                    calculateBalance(newSourceAccount.getBalance(), newAmount, TransactionType.WITHDRAWAL);
+            hasProblems = hasBalanceProblems(newSourceBalance, newSourceAccount, transactionId);
+            if (hasProblems) {
+                return;
+            }
+            BigDecimal oldDestinationBalance =
+                    calculateBalance(oldDestinationAccount.getBalance(), oldAmount, TransactionType.WITHDRAWAL);
+            hasProblems = hasBalanceProblems(oldDestinationBalance, oldDestinationAccount, transactionId);
+            if (hasProblems) {
+                return;
+            }
+            BigDecimal newDestinationBalance =
+                    calculateBalance(oldDestinationBalance, newAmount, TransactionType.DEPOSIT);
+            hasProblems = hasBalanceProblems(newDestinationBalance, oldDestinationAccount, transactionId);
+            if (hasProblems) {
+                return;
+            }
+            saveNewBalanceToDatabase(oldSourceAccount, oldSourceBalance);
+            saveNewBalanceToDatabase(newSourceAccount, newSourceBalance);
+            saveNewBalanceToDatabase(oldDestinationAccount, newDestinationBalance);
+        }
+        if (!isOldTransactionATransfer && isNewTransactionATransfer && isSourceAccountChanged &&
+                !isDestinationAccountChanged) {
+            Account oldSourceAccount = getAccountFromDatabase(oldAccountSourceNumber, transactionId);
+            if (oldSourceAccount == null) {
+                return;
+            }
+            Account newSourceAccount = getAccountFromDatabase(newAccountSourceNumber, transactionId);
+            if (newSourceAccount == null) {
+                return;
+            }
+            Account newDestinationAccount = getAccountFromDatabase(newAccountDestinationNumber, transactionId);
+            if (newDestinationAccount == null) {
+                return;
+            }
+            BigDecimal oldSourceBalance =
+                    calculateBalance(oldSourceAccount.getBalance(), oldAmount.negate(), oldTransactionType);
+            hasProblems = hasBalanceProblems(oldSourceBalance, oldSourceAccount, transactionId);
+            if (hasProblems) {
+                return;
+            }
+            BigDecimal newSourceBalance =
+                    calculateBalance(newSourceAccount.getBalance(), newAmount, TransactionType.WITHDRAWAL);
+            hasProblems = hasBalanceProblems(newSourceBalance, newSourceAccount, transactionId);
+            if (hasProblems) {
+                return;
+            }
+            BigDecimal newDestinationBalance =
+                    calculateBalance(newDestinationAccount.getBalance(), newAmount, TransactionType.DEPOSIT);
+            hasProblems = hasBalanceProblems(newDestinationBalance, newDestinationAccount, transactionId);
+            if (hasProblems) {
+                return;
+            }
+            saveNewBalanceToDatabase(oldSourceAccount, oldSourceBalance);
+            saveNewBalanceToDatabase(newSourceAccount, newSourceBalance);
+            saveNewBalanceToDatabase(newDestinationAccount, newDestinationBalance);
         }
         publisher.publishTransactionApprovedEvent(transactionId);
     }
 
-    private boolean isFundsTransferSuccessful(Account sourceAccount, Long accountDestinationNumber,
+    private boolean isFundsTransferSuccessful(Account sourceAccount, Account destinationAccount,
                                               BigDecimal amount, Long transactionId) {
-        boolean hasProblems = false;
-        Account destinationAccount = getAccountFromDatabase(accountDestinationNumber, transactionId);
-        if (destinationAccount != null) {
-            // removing money from the source account:
-            BigDecimal newSourceBalance =
-                    calculateBalance(sourceAccount.getBalance(), amount, TransactionType.WITHDRAWAL);
-            hasProblems = hasBalanceProblems(newSourceBalance, sourceAccount, transactionId);
-            if (hasProblems) {
-                return false;
-            }
-            // adding money to the destination account:
-            BigDecimal newDestinationBalance =
-                    calculateBalance(destinationAccount.getBalance(), amount, TransactionType.DEPOSIT);
-            // Making a transfer between two accounts with reversed balances
-            saveNewBalanceToDatabase(sourceAccount, newSourceBalance);
-            saveNewBalanceToDatabase(destinationAccount, newDestinationBalance);
-        } else {
+        // Removing money from the source account:
+        BigDecimal newSourceBalance =
+                calculateBalance(sourceAccount.getBalance(), amount, TransactionType.WITHDRAWAL);
+        boolean hasProblems = hasBalanceProblems(newSourceBalance, sourceAccount, transactionId);
+        if (hasProblems) {
             return false;
         }
+        // Adding money to the destination account:
+        BigDecimal newDestinationBalance =
+                calculateBalance(destinationAccount.getBalance(), amount, TransactionType.DEPOSIT);
+        // Making a transfer between two accounts by saving new balances
+        saveNewBalanceToDatabase(sourceAccount, newSourceBalance);
+        saveNewBalanceToDatabase(destinationAccount, newDestinationBalance);
         return true;
     }
 
