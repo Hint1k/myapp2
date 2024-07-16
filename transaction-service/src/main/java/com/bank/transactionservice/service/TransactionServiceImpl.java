@@ -53,7 +53,7 @@ public class TransactionServiceImpl implements TransactionService {
         if (Objects.equals(oldTransactionType, TransactionType.TRANSFER)) {
             oldDestinationAccountNumber = oldTransaction.getAccountDestinationNumber();
         } else {
-            oldDestinationAccountNumber = 0L;
+            oldDestinationAccountNumber = oldSourceAccountNumber;
         }
         repository.save(newTransaction); // JPA repository should merge instead of save
         publisher.publishTransactionUpdatedEvent(newTransaction, oldAmount, oldTransactionType,
