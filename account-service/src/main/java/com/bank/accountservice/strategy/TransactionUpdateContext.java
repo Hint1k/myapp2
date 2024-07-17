@@ -1,16 +1,16 @@
-package com.bank.accountservice.service.strategy;
+package com.bank.accountservice.strategy;
 
 import com.bank.accountservice.util.TransactionType;
+import lombok.Setter;
+import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
 
-public class TransactionContext {
+@Component
+@Setter
+public class TransactionUpdateContext {
 
-    private TransactionStrategy strategy;
-
-    public void setStrategy(TransactionStrategy strategy) {
-        this.strategy = strategy;
-    }
+    private TransactionUpdateStrategy strategy;
 
     public void executeStrategy(Long oldAccountSourceNumber, Long newAccountSourceNumber,
                                 Long oldAccountDestinationNumber, Long newAccountDestinationNumber,
@@ -22,5 +22,4 @@ public class TransactionContext {
                 oldAmount, newAmount, oldTransactionType, newTransactionType,
                 transactionId);
     }
-
 }

@@ -46,11 +46,11 @@ public class TransactionCreatedEvent implements TransactionEvent {
 
     @Override
     public Long getOldAccountSourceNumber() {
-        return 0L;
+        return null;
     }
 
     @Override
     public Long getOldAccountDestinationNumber() {
-        return 0L;
+        return null;
     }
 }

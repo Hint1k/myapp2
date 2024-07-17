@@ -3,7 +3,7 @@ package com.bank.accountservice.listener;
 import com.bank.accountservice.event.transaction.TransactionCreatedEvent;
 import com.bank.accountservice.event.transaction.TransactionEvent;
 import com.bank.accountservice.event.transaction.TransactionUpdatedEvent;
-import com.bank.accountservice.service.BalanceService;
+import com.bank.accountservice.service.TransactionService;
 import com.bank.accountservice.util.TransactionStatus;
 import com.bank.accountservice.util.TransactionType;
 import lombok.extern.slf4j.Slf4j;
@@ -19,11 +19,11 @@ import java.time.LocalDateTime;
 @Slf4j
 public class TransactionEventListener {
 
-    private final BalanceService balanceService;
+    private final TransactionService service;
 
     @Autowired
-    public TransactionEventListener(BalanceService balanceService) {
-        this.balanceService = balanceService;
+    public TransactionEventListener(TransactionService service) {
+        this.service = service;
     }
 
     @KafkaListener(topics = "transaction-created", groupId = "account-service")
@@ -47,18 +47,13 @@ public class TransactionEventListener {
         TransactionType newTransactionType = event.getTransactionType();
         TransactionStatus transactionStatus = event.getTransactionStatus(); // TODO implement later
         Long oldAccountSourceNumber = event.getOldAccountSourceNumber();
-        Long accountSourceNumber = event.getAccountSourceNumber();
+        Long newAccountSourceNumber = event.getAccountSourceNumber();
         Long oldAccountDestinationNumber = event.getOldAccountDestinationNumber();
-        Long accountDestinationNumber = event.getAccountDestinationNumber();
-        if (event instanceof TransactionCreatedEvent) {
-            balanceService.updateAccountBalanceForCreatedTransaction(accountSourceNumber, accountDestinationNumber,
-                    newAmount, newTransactionType, transactionId);
-        }
-        if (event instanceof TransactionUpdatedEvent) {
-            balanceService.updateAccountBalanceForUpdatedTransaction(oldAccountSourceNumber, accountSourceNumber,
-                    oldAccountDestinationNumber, accountDestinationNumber, oldAmount, newAmount,
-                    oldTransactionType, newTransactionType, transactionId);
-        }
+        Long newAccountDestinationNumber = event.getAccountDestinationNumber();
+
+        service.updateAccountBalanceForTransaction(oldAccountSourceNumber, newAccountSourceNumber,
+                oldAccountDestinationNumber, newAccountDestinationNumber, oldAmount, newAmount,
+                oldTransactionType, newTransactionType, transactionId);
         acknowledgment.acknowledge();
     }
 }
