@@ -37,11 +37,10 @@ public class AccountController {
         this.cache = cache;
     }
 
-    // cutting off the spaces entered by user to avoid errors
+    // Cutting off the spaces entered by user to avoid errors
     @InitBinder
     public void initBinder(WebDataBinder dataBinder) {
-        StringTrimmerEditor stringTrimmerEditor = new StringTrimmerEditor(true);
-        dataBinder.registerCustomEditor(String.class, stringTrimmerEditor);
+        dataBinder.registerCustomEditor(String.class, new StringTrimmerEditor(true));
     }
 
     @GetMapping("/accounts/new-account")
@@ -52,13 +51,20 @@ public class AccountController {
     }
 
     @PostMapping("/accounts")
-    public String createAccount(@Valid @ModelAttribute("account") Account account, BindingResult bindingResult) {
+    public String createAccount(@Valid @ModelAttribute("account") Account newAccount, BindingResult bindingResult) {
+        List<Account> accounts = cache.getAllAccountsFromCache();
+        boolean accountExists = accounts.stream()
+                .anyMatch(account -> account.getAccountNumber().equals(newAccount.getAccountNumber()));
+        if (accountExists) {
+            bindingResult.rejectValue("accountNumber", "error.account",
+                    "Account with the same number already exists.");
+        }
         if (bindingResult.hasErrors()) {
             log.error("Account saving failed due to validation errors: {}",
                     bindingResult.getAllErrors());
             return "new-account";
         }
-        publisher.publishAccountCreatedEvent(account);
+        publisher.publishAccountCreatedEvent(newAccount);
         return "redirect:/index";
     }
 

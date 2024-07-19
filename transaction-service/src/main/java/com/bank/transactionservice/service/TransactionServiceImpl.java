@@ -64,8 +64,13 @@ public class TransactionServiceImpl implements TransactionService {
     @Override
     @Transactional
     public void deleteTransaction(Long transactionId) {
+        Transaction transaction = repository.findById(transactionId).orElse(null);
+        if (transaction == null) {
+            // TODO return message to the web-service
+            throw new EntityNotFoundException("Transaction with id " + transactionId + " not found");
+        }
         repository.deleteById(transactionId);
-        publisher.publishTransactionDeletedEvent(transactionId);
+        publisher.publishTransactionDeletedEvent(transaction);
         log.info("Transaction with id: {} deleted", transactionId);
     }
 

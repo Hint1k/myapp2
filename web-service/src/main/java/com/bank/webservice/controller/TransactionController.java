@@ -42,7 +42,7 @@ public class TransactionController {
         this.latchService = latchService;
     }
 
-    // cutting off the spaces entered by user to avoid errors
+    // Cutting off the spaces entered by user to avoid errors
     @InitBinder
     public void initBinder(WebDataBinder dataBinder) {
         dataBinder.registerCustomEditor(String.class, new StringTrimmerEditor(true));
@@ -164,7 +164,6 @@ public class TransactionController {
         }
         long sourceAccountNumber = Long.parseLong(sourceAccountNumberString);
         if (sourceAccountNumber < 1) {
-            log.error("Source account number = {}", sourceAccountNumber);
             bindingResult.rejectValue("accountSourceNumber", "error.transaction",
                     "Account number has to be 1 or greater");
             return;

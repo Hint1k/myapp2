@@ -11,16 +11,15 @@ import org.springframework.stereotype.Component;
 import java.math.BigDecimal;
 
 @Component
-public class NewTransactionCreatedStrategy implements TransactionUpdateStrategy {
+public class DeletingTransactionStrategy implements TransactionUpdateStrategy {
 
     private final BalanceService service;
 
     @Autowired
-    public NewTransactionCreatedStrategy(BalanceService service) {
+    public DeletingTransactionStrategy(BalanceService service) {
         this.service = service;
     }
 
-    @Override
     public void execute(Long oldAccountSourceNumber, Long newAccountSourceNumber,
                         Long oldAccountDestinationNumber, Long newAccountDestinationNumber,
                         BigDecimal oldAmount, BigDecimal newAmount,
@@ -38,15 +37,15 @@ public class NewTransactionCreatedStrategy implements TransactionUpdateStrategy 
                 throw new TransactionProcessingException("Could not find an account with id: " +
                         newAccountDestinationNumber);
             }
-            boolean isTransferMade =
-                    service.makeTransfer(newSourceAccount, newDestinationAccount, newAmount, transactionId);
-            if (!isTransferMade) {
+            boolean isTransferReversed =
+                    service.reverseTransfer(newSourceAccount, newDestinationAccount, newAmount, transactionId);
+            if (!isTransferReversed) {
                 throw new TransactionProcessingException("Could not make a transaction with id: " + transactionId);
             }
         } else {
-            boolean isBalanceChanged =
-                    service.changeBalance(newSourceAccount, newAmount, newTransactionType, transactionId);
-            if (!isBalanceChanged) {
+            boolean isBalanceReversed =
+                    service.reverseBalance(newSourceAccount, newAmount, newTransactionType, transactionId);
+            if (!isBalanceReversed) {
                 throw new TransactionProcessingException("Could not make a transaction with id: " + transactionId);
             }
         }

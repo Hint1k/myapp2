@@ -56,8 +56,14 @@ public class TransactionEventPublisher {
         log.info("Published transaction-updated event for transaction id: {}", event.getTransactionId());
     }
 
-    public void publishTransactionDeletedEvent(Long transactionId) {
-        TransactionDeletedEvent event = new TransactionDeletedEvent(transactionId);
+    public void publishTransactionDeletedEvent(Transaction transaction) {
+        TransactionDeletedEvent event = new TransactionDeletedEvent(
+                transaction.getTransactionId(),
+                transaction.getAmount(),
+                transaction.getTransactionType(),
+                transaction.getAccountSourceNumber(),
+                transaction.getAccountDestinationNumber()
+        );
         kafkaTemplate.send("transaction-deleted", event);
         log.info("Published transaction-deleted event for transaction id: {}", event.getTransactionId());
     }
