@@ -60,7 +60,7 @@
             <td><label>Transaction Status:</label></td>
             <td>
                 <select id="transactionStatus" name="transactionStatus" th:field="*{transactionStatus}"
-                        class="form-control">
+                        class="form-control" disabled="disabled">
                     <option value="">Select Transaction Status</option>
                     <option th:each="status : ${T(com.bank.webservice.util.TransactionStatus).values()}"
                             th:value="${status.name()}" th:text="${status.name()}">

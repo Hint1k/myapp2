@@ -13,8 +13,6 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface MinimumAmount {
 
-    String value() default "";
-
     String message() default "The minimum amount must be equal or greater than 0.01";
 
     Class<?>[] groups() default {};

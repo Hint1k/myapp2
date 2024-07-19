@@ -1,8 +1,9 @@
-package com.bank.accountservice.strategy;
+package com.bank.accountservice.strategy.strategies;
 
 import com.bank.accountservice.entity.Account;
 import com.bank.accountservice.exception.TransactionProcessingException;
 import com.bank.accountservice.service.BalanceService;
+import com.bank.accountservice.strategy.TransactionUpdateStrategy;
 import com.bank.accountservice.util.TransactionType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -10,12 +11,12 @@ import org.springframework.stereotype.Component;
 import java.math.BigDecimal;
 
 @Component
-public class NonTranToNonTranDiffSrcStrategy implements TransactionUpdateStrategy {
+public class TranToTranDiffSrcSameDestStrategy implements TransactionUpdateStrategy {
 
     private final BalanceService service;
 
     @Autowired
-    public NonTranToNonTranDiffSrcStrategy(BalanceService service) {
+    public TranToTranDiffSrcSameDestStrategy(BalanceService service) {
         this.service = service;
     }
 
@@ -34,15 +35,20 @@ public class NonTranToNonTranDiffSrcStrategy implements TransactionUpdateStrateg
         if (newSourceAccount == null) {
             throw new TransactionProcessingException("Could not find an account with id: " + newAccountSourceNumber);
         }
+        Account oldDestinationAccount = service.getAccountFromDatabase(oldAccountDestinationNumber, transactionId);
+        if (oldDestinationAccount == null) {
+            throw new TransactionProcessingException("Could not find an account with id: " +
+                    oldAccountDestinationNumber);
+        }
 
-        boolean isBalanceReversed =
-                service.reverseBalance(oldSourceAccount, oldAmount, oldTransactionType, transactionId);
-        if (!isBalanceReversed) {
+        boolean isTransferReversed =
+                service.reverseTransfer(oldSourceAccount, oldDestinationAccount, oldAmount, transactionId);
+        if (!isTransferReversed) {
             throw new TransactionProcessingException("Could not reverse a transaction with id: " + transactionId);
         }
-        boolean isBalanceChanged =
-                service.changeBalance(newSourceAccount, newAmount, newTransactionType, transactionId);
-        if (!isBalanceChanged) {
+        boolean isTransferMade =
+                service.makeTransfer(newSourceAccount, oldDestinationAccount, newAmount, transactionId);
+        if (!isTransferMade) {
             throw new TransactionProcessingException("Could not make a transaction with id: " + transactionId);
         }
     }

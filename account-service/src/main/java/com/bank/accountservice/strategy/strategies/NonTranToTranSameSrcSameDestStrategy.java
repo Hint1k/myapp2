@@ -1,8 +1,9 @@
-package com.bank.accountservice.strategy;
+package com.bank.accountservice.strategy.strategies;
 
 import com.bank.accountservice.entity.Account;
 import com.bank.accountservice.exception.TransactionProcessingException;
 import com.bank.accountservice.service.BalanceService;
+import com.bank.accountservice.strategy.TransactionUpdateStrategy;
 import com.bank.accountservice.util.TransactionType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -10,12 +11,12 @@ import org.springframework.stereotype.Component;
 import java.math.BigDecimal;
 
 @Component
-public class TranToTranDiffSrcDiffDestStrategy implements TransactionUpdateStrategy {
+public class NonTranToTranSameSrcSameDestStrategy implements TransactionUpdateStrategy {
 
     private final BalanceService service;
 
     @Autowired
-    public TranToTranDiffSrcDiffDestStrategy(BalanceService service) {
+    public NonTranToTranSameSrcSameDestStrategy(BalanceService service) {
         this.service = service;
     }
 
@@ -30,28 +31,19 @@ public class TranToTranDiffSrcDiffDestStrategy implements TransactionUpdateStrat
         if (oldSourceAccount == null) {
             throw new TransactionProcessingException("Could not find an account with id: " + oldAccountSourceNumber);
         }
-        Account newSourceAccount = service.getAccountFromDatabase(newAccountSourceNumber, transactionId);
-        if (newSourceAccount == null) {
-            throw new TransactionProcessingException("Could not find an account with id: " + newAccountSourceNumber);
-        }
-        Account oldDestinationAccount = service.getAccountFromDatabase(oldAccountDestinationNumber, transactionId);
-        if (oldDestinationAccount == null) {
-            throw new TransactionProcessingException("Could not find an account with id: " +
-                    oldAccountDestinationNumber);
-        }
         Account newDestinationAccount = service.getAccountFromDatabase(newAccountDestinationNumber, transactionId);
         if (newDestinationAccount == null) {
             throw new TransactionProcessingException("Could not find an account with id: " +
                     newAccountDestinationNumber);
         }
 
-        boolean isTransferReversed =
-                service.reverseTransfer(oldSourceAccount, oldDestinationAccount, oldAmount, transactionId);
-        if (!isTransferReversed) {
+        boolean isBalanceReversed =
+                service.reverseBalance(oldSourceAccount, oldAmount, oldTransactionType, transactionId);
+        if (!isBalanceReversed) {
             throw new TransactionProcessingException("Could not reverse a transaction with id: " + transactionId);
         }
         boolean isTransferMade =
-                service.makeTransfer(newSourceAccount, newDestinationAccount, newAmount, transactionId);
+                service.makeTransfer(oldSourceAccount, newDestinationAccount, newAmount, transactionId);
         if (!isTransferMade) {
             throw new TransactionProcessingException("Could not make a transaction with id: " + transactionId);
         }

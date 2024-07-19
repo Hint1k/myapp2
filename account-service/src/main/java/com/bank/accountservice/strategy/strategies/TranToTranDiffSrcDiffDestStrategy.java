@@ -1,8 +1,9 @@
-package com.bank.accountservice.strategy;
+package com.bank.accountservice.strategy.strategies;
 
 import com.bank.accountservice.entity.Account;
 import com.bank.accountservice.exception.TransactionProcessingException;
 import com.bank.accountservice.service.BalanceService;
+import com.bank.accountservice.strategy.TransactionUpdateStrategy;
 import com.bank.accountservice.util.TransactionType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -10,12 +11,12 @@ import org.springframework.stereotype.Component;
 import java.math.BigDecimal;
 
 @Component
-public class TranToTranDiffSrcSameDestStrategy implements TransactionUpdateStrategy {
+public class TranToTranDiffSrcDiffDestStrategy implements TransactionUpdateStrategy {
 
     private final BalanceService service;
 
     @Autowired
-    public TranToTranDiffSrcSameDestStrategy(BalanceService service) {
+    public TranToTranDiffSrcDiffDestStrategy(BalanceService service) {
         this.service = service;
     }
 
@@ -39,6 +40,11 @@ public class TranToTranDiffSrcSameDestStrategy implements TransactionUpdateStrat
             throw new TransactionProcessingException("Could not find an account with id: " +
                     oldAccountDestinationNumber);
         }
+        Account newDestinationAccount = service.getAccountFromDatabase(newAccountDestinationNumber, transactionId);
+        if (newDestinationAccount == null) {
+            throw new TransactionProcessingException("Could not find an account with id: " +
+                    newAccountDestinationNumber);
+        }
 
         boolean isTransferReversed =
                 service.reverseTransfer(oldSourceAccount, oldDestinationAccount, oldAmount, transactionId);
@@ -46,7 +52,7 @@ public class TranToTranDiffSrcSameDestStrategy implements TransactionUpdateStrat
             throw new TransactionProcessingException("Could not reverse a transaction with id: " + transactionId);
         }
         boolean isTransferMade =
-                service.makeTransfer(newSourceAccount, oldDestinationAccount, newAmount, transactionId);
+                service.makeTransfer(newSourceAccount, newDestinationAccount, newAmount, transactionId);
         if (!isTransferMade) {
             throw new TransactionProcessingException("Could not make a transaction with id: " + transactionId);
         }

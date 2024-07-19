@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
-    // handling generic exceptions
+    // Handling generic exceptions
     @ExceptionHandler(Exception.class)
     public String handleGenericException(Exception ex, Model model) {
 

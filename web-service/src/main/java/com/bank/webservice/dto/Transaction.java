@@ -2,10 +2,8 @@ package com.bank.webservice.dto;
 
 import com.bank.webservice.util.TransactionStatus;
 import com.bank.webservice.util.TransactionType;
-import com.bank.webservice.validation.AccountNumbersNotEqual;
 import com.bank.webservice.validation.MinimumAmount;
 import jakarta.validation.constraints.Digits;
-import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
@@ -23,9 +21,8 @@ public class Transaction implements Serializable {
     private Long transactionId;
 
     @NotNull(message = "Balance is required")
-//    @MinimumAmount // set to 0.01, custom annotation in validation package
-    @Min(value = 1) // TODO create later custom validation for minimum value = 0.01
-    @Digits(integer = MAX_VALUE, fraction = 2)
+    @MinimumAmount // set to 0.01, custom annotation in validation package
+    @Digits(integer = MAX_VALUE, fraction = 2, message = "Only 2 decimal places are allowed")
     private BigDecimal amount;
 
     @NotNull(message = "Transaction time is required")
@@ -37,17 +34,10 @@ public class Transaction implements Serializable {
     @NotNull(message = "Transaction status is required")
     private TransactionStatus transactionStatus;
 
-    @NotNull(message = "Account Id is required")
-    @Min(value = 1)
-    @Digits(integer = MAX_VALUE, fraction = 0)
-//    @AccountNumbersNotEqual //custom annotation in validation package
+    // Custom validation logic is in TransactionController class
     private Long accountSourceNumber;
 
-    //TODO add validation group
-//    @NotNull(message = "Account Id is required")
-//    @Min(value = 1)
-//    @Digits(integer = MAX_VALUE, fraction = 0)
-//    @AccountNumbersNotEqual //custom annotation in validation package
+    // Custom validation logic is in TransactionController class
     private Long accountDestinationNumber;
 
     { // TODO change to ZonedDateTime later and change init2.sql

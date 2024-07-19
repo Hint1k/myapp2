@@ -25,12 +25,12 @@ public class Account implements Serializable {
 
     @NotNull(message = "Account number is required")
     @Min(value = 1)
-    @Digits(integer = MAX_VALUE, fraction = 0)
+    @Digits(integer = MAX_VALUE, fraction = 0, message = "Only whole numbers are allowed")
     private Long accountNumber;
 
     @NotNull(message = "Balance is required")
     @Min(value = 0)
-    @Digits(integer = MAX_VALUE, fraction = 2)
+    @Digits(integer = MAX_VALUE, fraction = 2, message = "Only 2 decimal places are allowed")
     private BigDecimal balance;
 
     @NotNull(message = "Currency is required")
@@ -47,7 +47,7 @@ public class Account implements Serializable {
 
     @NotNull(message = "Customer ID is required")
     @Min(value = 1)
-    @Digits(integer = MAX_VALUE, fraction = 0)
+    @Digits(integer = MAX_VALUE, fraction = 0, message = "Only whole numbers are allowed")
     private Long customerId;
 
     {

@@ -9,6 +9,16 @@ function toggleDestinationField() {
     } else {
         destinationField.style.display = "none";
         accountDestinationNumber.disabled = true;
-        accountDestinationNumber.value = 0; // Reset value to 0 for a non-transfer type of transaction
+        accountDestinationNumber.value = ""; // Reset value for a non-transfer type of transaction
     }
 }
+
+document.addEventListener('change', function(event) {
+    if (event.target && event.target.id === "transactionType") {
+        toggleDestinationField();
+    }
+});
+
+window.onload = function() {
+    toggleDestinationField();
+};

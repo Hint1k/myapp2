@@ -4,9 +4,11 @@ import com.bank.webservice.cache.TransactionCache;
 import com.bank.webservice.dto.Transaction;
 import com.bank.webservice.publisher.TransactionEventPublisher;
 import com.bank.webservice.service.LatchService;
+import com.bank.webservice.util.TransactionStatus;
 import com.bank.webservice.util.TransactionType;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.TypeMismatchException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.propertyeditors.StringTrimmerEditor;
 import org.springframework.stereotype.Controller;
@@ -18,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.CountDownLatch;
 
@@ -42,22 +45,12 @@ public class TransactionController {
     // cutting off the spaces entered by user to avoid errors
     @InitBinder
     public void initBinder(WebDataBinder dataBinder) {
-        StringTrimmerEditor stringTrimmerEditor = new StringTrimmerEditor(true);
-        dataBinder.registerCustomEditor(String.class, stringTrimmerEditor);
+        dataBinder.registerCustomEditor(String.class, new StringTrimmerEditor(true));
     }
 
     @GetMapping("/transactions/new-transaction")
     private String showNewTransactionForm(Model model) {
         Transaction transaction = new Transaction();
-
-        String transactionType = (String) model.asMap().getOrDefault("transactionType", "");
-
-        if (transactionType.equals(TransactionType.TRANSFER.name())) {
-            transaction.setAccountDestinationNumber(null); // user input is allowed
-        } else {
-            transaction.setAccountDestinationNumber(0L); // user input is not allowed, the default value = 0 is set
-        }
-
         model.addAttribute("transaction", transaction);
         return "new-transaction";
     }
@@ -65,9 +58,9 @@ public class TransactionController {
     @PostMapping("/transactions")
     public String createTransaction(@Valid @ModelAttribute("transaction") Transaction transaction,
                                     BindingResult bindingResult) {
+        validateTransaction(transaction, bindingResult);
         if (bindingResult.hasErrors()) {
-            log.error("Transaction submission failed due to validation errors: {}",
-                    bindingResult.getAllErrors());
+            log.error("Transaction submission failed due to validation errors: {}", bindingResult.getAllErrors());
             return "new-transaction";
         }
         publisher.publishTransactionCreatedEvent(transaction);
@@ -77,6 +70,7 @@ public class TransactionController {
     @PutMapping("/transactions/{transactionId}")
     public String showUpdateTransactionForm(@PathVariable("transactionId") Long transactionId, Model model) {
         Transaction transaction = cache.getTransactionFromCache(transactionId);
+        transaction.setTransactionStatus(TransactionStatus.PENDING);
         model.addAttribute("transaction", transaction);
         return "transaction-update";
     }
@@ -84,9 +78,9 @@ public class TransactionController {
     @PostMapping("/transactions/transaction")
     public String updateTransaction(@Valid @ModelAttribute("transaction") Transaction transaction,
                                     BindingResult bindingResult) {
+        validateTransaction(transaction, bindingResult);
         if (bindingResult.hasErrors()) {
-            log.error("Transaction update failed due to validation errors: {}",
-                    bindingResult.getAllErrors());
+            log.error("Transaction update failed due to validation errors: {}", bindingResult.getAllErrors());
             return "transaction-update";
         }
         publisher.publishTransactionUpdatedEvent(transaction);
@@ -155,6 +149,47 @@ public class TransactionController {
             return "loading-transactions";
         } finally {
             latchService.resetLatch();
+        }
+    }
+
+    private void validateTransaction(Transaction transaction, BindingResult bindingResult) {
+        // Validating source account number
+        String sourceAccountNumberString = "";
+        try {
+            sourceAccountNumberString = transaction.getAccountSourceNumber().toString();
+        } catch (IllegalArgumentException | NullPointerException | TypeMismatchException e) {
+            bindingResult.rejectValue("accountSourceNumber", "error.transaction",
+                    "Account number containing only digits is required for transaction");
+            return;
+        }
+        long sourceAccountNumber = Long.parseLong(sourceAccountNumberString);
+        if (sourceAccountNumber < 1) {
+            log.error("Source account number = {}", sourceAccountNumber);
+            bindingResult.rejectValue("accountSourceNumber", "error.transaction",
+                    "Account number has to be 1 or greater");
+            return;
+        }
+
+        // Validating destination account number if the transaction type is TRANSFER
+        if (transaction.getTransactionType().equals(TransactionType.TRANSFER)) {
+            String destinationAccountNumberString;
+            try {
+                destinationAccountNumberString = transaction.getAccountDestinationNumber().toString();
+            } catch (IllegalArgumentException | NullPointerException | TypeMismatchException e) {
+                bindingResult.rejectValue("accountDestinationNumber", "error.transaction",
+                        "Account number containing only digits is required for transaction");
+                return;
+            }
+            long destinationAccountNumber = Long.parseLong(destinationAccountNumberString);
+            if (destinationAccountNumber < 1) {
+                bindingResult.rejectValue("accountDestinationNumber", "error.transaction",
+                        "Account number has to be 1 or greater");
+                return;
+            }
+            if (Objects.equals(sourceAccountNumber, destinationAccountNumber)) {
+                bindingResult.rejectValue("accountDestinationNumber", "error.transaction",
+                        "Two account numbers must be different");
+            }
         }
     }
 }
