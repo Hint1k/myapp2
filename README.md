@@ -17,9 +17,12 @@
 
 - Show all accounts / transactions in database <br>
 - Add new account / transaction to database <br>
-- Delete an account / transaction from database <br>
-- Update an account / transaction in database <br>
+- Delete an account (2) / transaction from database (3) <br>
+- Update an account / transaction in database (4) <br>
 - Show account / transaction details <br>
 - Show all transactions belong to an account <br>
 
-(1) simple fields validation & error handling, no full error proof yet <br>
+(1) Handled most common users errors. <br>
+(2) Deleting an account freezes all linked transactions. Frozen transactions can't be updated or deleted. <br>
+(3) Deleting a transaction refunds the money to the linked accounts. <br>
+(4) Changing a transaction amount affects the balances of the linked accounts. <br>

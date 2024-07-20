@@ -13,12 +13,11 @@ import org.springframework.stereotype.Component;
 @Slf4j
 public class TransactionEventListener {
 
-    private final TransactionService transactionService;
+    private final TransactionService service;
 
     @Autowired
-    public TransactionEventListener(TransactionService transactionService
-    ) {
-        this.transactionService = transactionService;
+    public TransactionEventListener(TransactionService service) {
+        this.service = service;
     }
 
     @KafkaListener(topics = "transaction-creation-requested", groupId = "transaction-service")
@@ -34,7 +33,7 @@ public class TransactionEventListener {
                     event.getAccountSourceNumber(),
                     event.getAccountDestinationNumber()
             );
-            transactionService.saveTransaction(transaction);
+            service.saveTransaction(transaction);
             acknowledgment.acknowledge();
         } catch (
                 Exception exception) {
@@ -55,7 +54,7 @@ public class TransactionEventListener {
                 event.getAccountSourceNumber(),
                 event.getAccountDestinationNumber()
         );
-        transactionService.updateTransaction(transaction);
+        service.updateTransaction(transaction);
         acknowledgment.acknowledge();
     }
 
@@ -64,7 +63,7 @@ public class TransactionEventListener {
         Long transactionId = event.getTransactionId();
         log.info("Received transaction-deletion-requested event for transaction id: {}", transactionId);
         try {
-            transactionService.deleteTransaction(transactionId);
+            service.deleteTransaction(transactionId);
             acknowledgment.acknowledge();
         } catch (Exception exception) {
             log.error("Error deleting transaction: {}", exception.getMessage());
@@ -76,7 +75,7 @@ public class TransactionEventListener {
     public void handleAllTransactionsEvent(Acknowledgment acknowledgment) {
         log.info("Received all-transactions-requested event");
         try {
-            transactionService.findAllTransactions();
+            service.findAllTransactions();
             acknowledgment.acknowledge();
         } catch (Exception e) {
             log.error("Error finding all transactions: {}", e.getMessage());
@@ -89,7 +88,7 @@ public class TransactionEventListener {
         Long transactionId = event.getTransactionId();
         log.info("Received transaction-details-requested event for transaction id: {}", transactionId);
         try {
-            transactionService.findTransactionById(transactionId);
+            service.findTransactionById(transactionId);
             acknowledgment.acknowledge();
         } catch (Exception e) {
             log.error("Error finding transaction by id: {}", e.getMessage());
@@ -102,7 +101,7 @@ public class TransactionEventListener {
         Long transactionId = event.getTransactionId();
         log.info("Received transaction-failed event for transaction id: {}", transactionId);
         try {
-            transactionService.handleTransactionFailure(transactionId);
+            service.handleTransactionFailure(transactionId);
             acknowledgment.acknowledge();
         } catch (Exception e) {
             log.error("Error handling transaction failure {}", e.getMessage());
@@ -115,7 +114,7 @@ public class TransactionEventListener {
         Long transactionId = event.getTransactionId();
         log.info("Received transaction-approved event for transaction id: {}", transactionId);
         try {
-            transactionService.handleTransactionApproval(transactionId);
+            service.handleTransactionApproval(transactionId);
             acknowledgment.acknowledge();
         } catch (Exception e) {
             log.error("Error handling transaction approval {}", e.getMessage());

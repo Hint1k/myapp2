@@ -6,7 +6,7 @@
     <meta charset="UTF-8">
     <title>New Transaction Page</title>
     <link rel="stylesheet" th:href="@{/styles.css}">
-    <script th:src="@{/transaction.js}"></script>
+    <script th:src="@{/transactionTypes.js}"></script>
 </head>
 <body>
 <h1>Transaction Details</h1>
@@ -104,6 +104,10 @@
     <br>
     <input type="submit" value="Submit Transaction" class="save"/>
 </form>
+<br>
+- Transaction time and transaction status cannot be changed manually. <br>
+- Transaction status changes automatically. <br>
+<br>
 <hr>
 <button type="button" onclick="history.go(-1)" class="go-button"> Go to previous page</button>
 <br><br>

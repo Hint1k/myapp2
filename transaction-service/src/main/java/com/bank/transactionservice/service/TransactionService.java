@@ -19,4 +19,6 @@ public interface TransactionService {
     void handleTransactionFailure(Long transactionId);
 
     void handleTransactionApproval(Long transactionId);
+
+    void freezeTransactions(Long accountNumber);
 }

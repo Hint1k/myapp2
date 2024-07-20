@@ -53,8 +53,11 @@ public class AccountEventPublisher {
         // TODO add check later with completableFuture
     }
 
-    public void publishAccountDeletedEvent(Long accountId) {
-        AccountDeletedEvent event = new AccountDeletedEvent(accountId);
+    public void publishAccountDeletedEvent(Long accountId, Long accountNumber) {
+        AccountDeletedEvent event = new AccountDeletedEvent(
+                accountId,
+                accountNumber
+        );
         kafkaTemplate.send("account-deleted", event);
         log.info("Published account-deleted event for account id: {}", event.getAccountId());
         // TODO add check later with completableFuture

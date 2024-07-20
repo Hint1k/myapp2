@@ -123,4 +123,24 @@ public class TransactionServiceImpl implements TransactionService {
         publisher.publishTransactionDetailsEvent(transaction);
         log.info("Approved transaction with id: {}", transactionId);
     }
+
+    @Override
+    @Transactional
+    public void freezeTransactions(Long accountNumber) {
+        List<Transaction> transactions = repository.findTransactionsByAccountNumber(accountNumber);
+        for (Transaction transaction : transactions) {
+            transaction.setTransactionStatus(TransactionStatus.FROZEN);
+            /* changing the account number of the deleted account to zero in all transactions
+            to avoid confusions when later a new account with the same number is created */
+            if (transaction.getAccountSourceNumber().equals(accountNumber)) {
+                transaction.setAccountSourceNumber(0L);
+            }
+            if (transaction.getAccountDestinationNumber().equals(accountNumber)) {
+                transaction.setAccountDestinationNumber(0L);
+            }
+            repository.save(transaction);
+        }
+        log.info("Froze {} transactions", transactions.size());
+        publisher.publishAllTransactionsEvent(transactions);
+    }
 }

@@ -50,7 +50,10 @@ public class AccountEventPublisher {
     }
 
     public void publishAccountDeletedEvent(Long accountId) {
-        AccountDeletedEvent event = new AccountDeletedEvent(accountId);
+        AccountDeletedEvent event = new AccountDeletedEvent(
+                accountId,
+                null
+        );
         kafkaTemplate.send("account-deletion-requested", event);
         log.info("Published account-deletion-requested event for account id: {}", event.getAccountId());
     }

@@ -17,7 +17,7 @@
             <td><label>Account Number:</label></td>
             <td>
                 <input type="text" id="accountNumber" name="accountNumber" th:field="*{accountNumber}"
-                       class="form-control" placeholder="1, 2, 3, etc"/>
+                       class="form-control" placeholder="1, 2, 3, etc" disabled="disabled">
             </td>
             <td>
                 <span th:if="${#fields.hasErrors('accountNumber')}" class="error" th:errors="*{accountNumber}">
@@ -98,7 +98,7 @@
             <td><label>User ID:</label></td>
             <td>
                 <input type="text" id="userId" name="userId" th:field="*{customerId}" class="form-control"
-                       placeholder="1, 2, 3, etc"/>
+                       placeholder="1, 2, 3, etc" disabled="disabled">
             </td>
             <td>
                 <span th:if="${#fields.hasErrors('customerId')}" class="error" th:errors="*{customerId}">
@@ -111,6 +111,10 @@
     <br>
     <input type="submit" value="Save Account" class="save"/>
 </form>
+<br>
+- Account number, open date and customer id cannot be changed. <br>
+- Balance can be changes automatically by creating / updating / deleting transactions. <br>
+<br>
 <hr>
 <button type="button" onclick="history.go(-1)" class="go-button"> Go to previous page</button>
 <br><br>

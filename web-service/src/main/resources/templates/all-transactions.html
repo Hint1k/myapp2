@@ -6,6 +6,7 @@
     <meta charset="UTF-8">
     <title>All Transactions Page</title>
     <link rel="stylesheet" th:href="@{/styles.css}">
+    <script th:src="@{/frozenTransactions.js}"></script>
 </head>
 <body>
 <h1>All Transactions</h1>
@@ -25,7 +26,7 @@
     </tr>
     </thead>
     <tbody>
-    <tr th:each="transaction : ${transactions}">
+    <tr th:each="transaction : ${transactions}" th:data-status="${transaction.transactionStatus}">
         <td th:text="${transaction.transactionId}"></td>
         <td th:text="${transaction.amount}"></td>
         <td th:text="${transaction.transactionStatus}"></td>
@@ -41,24 +42,28 @@
                 <form action="#"
                       th:action="@{/api/transactions/{transactionId}(transactionId=${transaction.transactionId})}"
                       th:method="put">
-                    <button type="submit">Update</button>
+                    <button type="submit" class="update-button">Update</button>
                 </form>
                 <form action="#"
                       th:action="@{/api/transactions/{transactionId}(transactionId=${transaction.transactionId})}"
                       th:method="delete"
                       onclick="if(!(confirm('Are you sure to delete this transaction?'))) return false">
-                    <button type="submit">Delete</button>
+                    <button type="submit" class="delete-button">Delete</button>
                 </form>
             </div>
         </td>
     </tr>
     </tbody>
 </table>
+<br>
+- Deleting a transaction refunds all money to the linked accounts <br>
+- Frozen transactions can't be updated or deleted <br>
+<br>
 <hr>
 <button type="button" onclick="history.go(-1)" class="go-button"> Go to previous page</button>
 <br><br>
 <a th:href="@{/index}">
-    <button type="button" class="update-button">Return to index page</button>
+    <button type="button" class="return-button">Return to index page</button>
 </a>
 </body>
 </html>

@@ -45,8 +45,15 @@ public class AccountServiceImpl implements AccountService {
     @Override
     @Transactional
     public void deleteAccount(Long accountId) {
+        Account account = repository.findById(accountId).orElse(null);
+        if (account == null) {
+            // TODO return message to the web-service
+            log.error("Account with id: {} not found", accountId);
+            throw new EntityNotFoundException("Account with id " + accountId + " not found");
+        }
+        Long accountNumber = account.getAccountNumber();
         repository.deleteById(accountId);
-        publisher.publishAccountDeletedEvent(accountId);
+        publisher.publishAccountDeletedEvent(accountId, accountNumber);
         log.info("Account with id: {} deleted", accountId);
     }
 

@@ -9,4 +9,5 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class AccountDeletedEvent {
     private Long accountId;
+    private Long accountNumber;
 }

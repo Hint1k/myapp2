@@ -20,3 +20,7 @@ th, td {
 .error {
     color: red;
 }
+
+.frozen-transaction {
+    background-color: lightgray;
+}
