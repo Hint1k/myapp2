@@ -1,7 +1,7 @@
 package com.bank.transactionservice.listener;
 
 import com.bank.transactionservice.entity.Transaction;
-import com.bank.transactionservice.event.*;
+import com.bank.transactionservice.event.transaction.*;
 import com.bank.transactionservice.service.TransactionService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;

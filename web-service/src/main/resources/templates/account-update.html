@@ -17,7 +17,7 @@
             <td><label>Account Number:</label></td>
             <td>
                 <input type="text" id="accountNumber" name="accountNumber" th:field="*{accountNumber}"
-                       class="form-control" placeholder="1, 2, 3, etc" disabled="disabled">
+                       class="form-control readonly-field" placeholder="1, 2, 3, etc" readonly="readonly">
             </td>
             <td>
                 <span th:if="${#fields.hasErrors('accountNumber')}" class="error" th:errors="*{accountNumber}">
@@ -28,8 +28,8 @@
         <tr>
             <td><label>Balance:</label></td>
             <td>
-                <input type="text" id="balance" name="balance" th:field="*{balance}" class="form-control"
-                       placeholder="0"/>
+                <input type="text" id="balance" name="balance" th:field="*{balance}"
+                       class="form-control readonly-field" placeholder="0" readonly="readonly">
             </td>
             <td>
                 <span th:if="${#fields.hasErrors('balance')}" class="error" th:errors="*{balance}">
@@ -85,8 +85,8 @@
         <tr>
             <td><label>Open Date:</label></td>
             <td>
-                <input type="text" id="openDate" name="openDate" th:field="*{openDate}" class="form-control"
-                       placeholder="dd-MM-yyyy" disabled="disabled"/>
+                <input type="text" id="openDate" name="openDate" th:field="*{openDate}"
+                       class="form-control readonly-field" placeholder="dd-MM-yyyy" readonly="readonly"/>
             </td>
             <td>
                 <span th:if="${#fields.hasErrors('openDate')}" class="error" th:errors="*{openDate}">
@@ -97,8 +97,8 @@
         <tr>
             <td><label>User ID:</label></td>
             <td>
-                <input type="text" id="userId" name="userId" th:field="*{customerId}" class="form-control"
-                       placeholder="1, 2, 3, etc" disabled="disabled">
+                <input type="text" id="userId" name="userId" th:field="*{customerId}"
+                       class="form-control readonly-field" placeholder="1, 2, 3, etc" readonly="readonly">
             </td>
             <td>
                 <span th:if="${#fields.hasErrors('customerId')}" class="error" th:errors="*{customerId}">
@@ -113,7 +113,7 @@
 </form>
 <br>
 - Account number, open date and customer id cannot be changed. <br>
-- Balance can be changes automatically by creating / updating / deleting transactions. <br>
+- Balance can be changed automatically by creating / updating / deleting transactions. <br>
 <br>
 <hr>
 <button type="button" onclick="history.go(-1)" class="go-button"> Go to previous page</button>

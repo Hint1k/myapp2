@@ -76,12 +76,7 @@ public class AccountController {
     }
 
     @PostMapping("/accounts/account")
-    public String updateAccount(@Valid @ModelAttribute("account") Account account, BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
-            log.error("Account update failed due to validation errors: {}",
-                    bindingResult.getAllErrors());
-            return "account-update";
-        }
+    public String updateAccount(@ModelAttribute("account") Account account) {
         publisher.publishAccountUpdatedEvent(account);
         return "redirect:/index";
     }

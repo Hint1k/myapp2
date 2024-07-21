@@ -6,6 +6,7 @@
     <meta charset="UTF-8">
     <title>All Accounts Page</title>
     <link rel="stylesheet" th:href="@{/styles.css}">
+    <script th:src="@{/frozenAccounts.js}"></script>
 </head>
 <body>
 <h1>All Accounts</h1>
@@ -19,17 +20,17 @@
         <th>Account ID</th>
         <th>Account Number</th>
         <th>Balance</th>
-        <th>Currency</th>
+        <th>Account Status</th>
         <th>Customer ID</th>
         <th>Action</th>
     </tr>
     </thead>
     <tbody>
-    <tr th:each="account : ${accounts}">
+    <tr th:each="account : ${accounts}" th:data-status="${account.accountStatus}">
         <td th:text="${account.getAccountId}"></td>
         <td th:text="${account.accountNumber}"></td>
         <td th:text="${account.balance}"></td>
-        <td th:text="${account.currency}"></td>
+        <td th:text="${account.accountStatus}"></td>
         <td th:text="${account.customerId}"></td>
         <td>
             <div class="button-container">

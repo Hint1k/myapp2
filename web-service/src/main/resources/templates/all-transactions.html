@@ -6,7 +6,7 @@
     <meta charset="UTF-8">
     <title>All Transactions Page</title>
     <link rel="stylesheet" th:href="@{/styles.css}">
-    <script th:src="@{/frozenTransactions.js}"></script>
+    <script th:src="@{/blockedTransactions.js}"></script>
 </head>
 <body>
 <h1>All Transactions</h1>
@@ -57,7 +57,7 @@
 </table>
 <br>
 - Deleting a transaction refunds all money to the linked accounts <br>
-- Frozen transactions can't be updated or deleted <br>
+- Frozen / Suspended transactions can't be updated or deleted <br>
 <br>
 <hr>
 <button type="button" onclick="history.go(-1)" class="go-button"> Go to previous page</button>

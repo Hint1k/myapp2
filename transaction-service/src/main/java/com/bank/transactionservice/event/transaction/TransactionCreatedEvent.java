@@ -1,4 +1,4 @@
-package com.bank.transactionservice.event;
+package com.bank.transactionservice.event.transaction;
 
 import com.bank.transactionservice.util.TransactionStatus;
 import com.bank.transactionservice.util.TransactionType;

@@ -143,4 +143,20 @@ public class TransactionServiceImpl implements TransactionService {
         log.info("Froze {} transactions", transactions.size());
         publisher.publishAllTransactionsEvent(transactions);
     }
+
+    @Override
+    @Transactional
+    public void suspendOrUnsuspendTransactions(Long accountNumber, String suspend) {
+        List<Transaction> transactions = repository.findTransactionsByAccountNumber(accountNumber);
+        for (Transaction transaction : transactions) {
+            if (suspend.equalsIgnoreCase("suspend")) {
+                transaction.setTransactionStatus(TransactionStatus.SUSPENDED);
+            } else {
+                transaction.setTransactionStatus(TransactionStatus.APPROVED);
+            }
+            repository.save(transaction);
+        }
+        log.info("Suspended {} transactions", transactions.size());
+        publisher.publishAllTransactionsEvent(transactions);
+    }
 }

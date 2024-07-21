@@ -13,16 +13,14 @@
 - Account-service - handles account operations and account-database <br>
 - Transaction-service - handles transaction operations and transaction-database <br>
 
-**User actions available (1):** <br>
+**User actions available:** <br>
 
-- Show all accounts / transactions in database <br>
-- Add new account / transaction to database <br>
-- Delete an account (2) / transaction from database (3) <br>
-- Update an account / transaction in database (4) <br>
-- Show account / transaction details <br>
-- Show all transactions belong to an account <br>
+- Performing CRUD operations on accounts and transactions
 
-(1) Handled most common users errors. <br>
-(2) Deleting an account freezes all linked transactions. Frozen transactions can't be updated or deleted. <br>
-(3) Deleting a transaction refunds the money to the linked accounts. <br>
-(4) Changing a transaction amount affects the balances of the linked accounts. <br>
+**Additional info:**
+
+- Account status (active / non-active) dictates linked transactions status (approved / suspended). <br>
+- Deleted account freezes linked transactions. <br>
+- Changed transaction amount updates linked account balances. <br>
+- Deleted transactions refunds linked accounts. <br>
+- Frozen & suspended transactions are read-only. <br>

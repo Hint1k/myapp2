@@ -1,7 +1,7 @@
 package com.bank.transactionservice.publisher;
 
 import com.bank.transactionservice.entity.Transaction;
-import com.bank.transactionservice.event.*;
+import com.bank.transactionservice.event.transaction.*;
 import com.bank.transactionservice.util.TransactionType;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;

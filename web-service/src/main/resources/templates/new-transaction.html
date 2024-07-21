@@ -30,7 +30,7 @@
             <td><label>Transaction time:</label></td>
             <td>
                 <input type="text" id="transactionTime" name="transactionTime" th:field="*{transactionTime}"
-                       class="form-control" disabled="disabled"/>
+                       class="form-control readonly-field" readonly="readonly"/>
             </td>
             <td>
                 <span th:if="${#fields.hasErrors('transactionTime')}" class="error" th:errors="*{transactionTime}">

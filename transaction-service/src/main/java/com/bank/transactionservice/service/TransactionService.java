@@ -21,4 +21,6 @@ public interface TransactionService {
     void handleTransactionApproval(Long transactionId);
 
     void freezeTransactions(Long accountNumber);
+
+    void suspendOrUnsuspendTransactions(Long accountNumber, String suspend);
 }

@@ -21,6 +21,20 @@ th, td {
     color: red;
 }
 
-.frozen-transaction {
+.suspended-transaction {
     background-color: lightgray;
+}
+
+.frozen-transaction {
+    background-color: gray;
+}
+
+.frozen-account {
+    background-color: lightgray;
+}
+
+.readonly-field {
+    background-color: #e9ecef;
+    opacity: 0.6;
+    cursor: not-allowed;
 }

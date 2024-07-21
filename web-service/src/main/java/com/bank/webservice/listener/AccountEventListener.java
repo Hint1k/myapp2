@@ -57,7 +57,7 @@ public class AccountEventListener {
         );
         Long accountId = event.getAccountId();
         log.info("Received account-updated event for account id: {}", accountId);
-        cache.updateAccountFromCache(accountId, account);
+        cache.updateAccountInCache(accountId, account);
         acknowledgment.acknowledge();
     }
 

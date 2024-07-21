@@ -1,4 +1,4 @@
-package com.bank.transactionservice.event;
+package com.bank.transactionservice.event.transaction;
 
 import com.bank.transactionservice.util.TransactionStatus;
 import com.bank.transactionservice.util.TransactionType;
@@ -12,25 +12,30 @@ import java.time.LocalDateTime;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class TransactionDetailsEvent {
-    // TODO combine later with classes TransactionCreatedEvent and TransactionUpdatedEvent
-    private Long transactionId;
+public class TransactionUpdatedEvent {
+    // TODO combine later with classes TransactionCreatedEvent and TransactionDetailsEvent
+    private Long transactionId; // this field can't be removed
+    private BigDecimal oldAmount;
     private BigDecimal amount;
     private LocalDateTime transactionTime;
+    private TransactionType oldTransactionType;
     private TransactionType transactionType;
     private TransactionStatus transactionStatus;
+    private Long oldAccountSourceNumber;
     private Long accountSourceNumber;
+    private Long oldAccountDestinationNumber;
     private Long accountDestinationNumber;
 
-    // no transaction id
-    public TransactionDetailsEvent(BigDecimal amount, LocalDateTime transactionTime,
+    // no old amount, no old transaction type, no old account number fields
+    public TransactionUpdatedEvent(Long transactionId, BigDecimal amount, LocalDateTime transactionTime,
                                    TransactionType transactionType, TransactionStatus transactionStatus,
-                                   Long accountDestinationNumber, Long accountSourceNumber) {
+                                   Long accountSourceNumber, Long accountDestinationNumber) {
+        this.transactionId = transactionId;
         this.amount = amount;
         this.transactionTime = transactionTime;
         this.transactionType = transactionType;
         this.transactionStatus = transactionStatus;
-        this.accountDestinationNumber = accountDestinationNumber;
         this.accountSourceNumber = accountSourceNumber;
+        this.accountDestinationNumber = accountDestinationNumber;
     }
 }
