@@ -1,7 +1,7 @@
 package com.bank.accountservice.service;
 
-import com.bank.accountservice.repository.AccountRepository;
 import com.bank.accountservice.publisher.AccountEventPublisher;
+import com.bank.accountservice.repository.AccountRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -16,12 +16,11 @@ import java.util.List;
 @Slf4j
 public class AccountServiceImpl implements AccountService {
 
-    private final AccountEventPublisher publisher;
     private final AccountRepository repository;
+    private final AccountEventPublisher publisher;
 
     @Autowired
-    public AccountServiceImpl(AccountRepository repository,
-                              AccountEventPublisher publisher) {
+    public AccountServiceImpl(AccountRepository repository, AccountEventPublisher publisher) {
         this.repository = repository;
         this.publisher = publisher;
     }

@@ -17,12 +17,12 @@ import java.util.concurrent.CountDownLatch;
 @Slf4j
 public class AccountEventListener {
 
-    private final LatchService latchService;
+    private final LatchService latch;
     private final AccountCache cache;
 
     @Autowired
-    public AccountEventListener(LatchService latchService, AccountCache cache) {
-        this.latchService = latchService;
+    public AccountEventListener(LatchService latch, AccountCache cache) {
+        this.latch = latch;
         this.cache = cache;
     }
 
@@ -74,7 +74,7 @@ public class AccountEventListener {
         List<Account> accounts = event.getAccounts();
         log.info("Received all-accounts-received event with {} accounts", accounts.size());
         cache.addAllAccountsToCache(accounts);
-        CountDownLatch latch = latchService.getLatch();
+        CountDownLatch latch = this.latch.getLatch();
         if (latch != null) {
             latch.countDown();
         }

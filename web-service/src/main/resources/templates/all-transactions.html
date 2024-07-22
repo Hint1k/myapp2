@@ -7,6 +7,8 @@
     <title>All Transactions Page</title>
     <link rel="stylesheet" th:href="@{/styles.css}">
     <script th:src="@{/blockedTransactions.js}"></script>
+<!--    <script th:src="@{/signAmount.js}"></script>-->
+<!--    <script th:src="@{/signAmount2.js}"></script>-->
 </head>
 <body>
 <h1>All Transactions</h1>
@@ -19,14 +21,15 @@
     <tr>
         <th>Transaction ID</th>
         <th>Amount</th>
-        <th>Transaction Type</th>
+        <th>Transaction Status</th>
         <th>Account Source Number</th>
         <th>Account Destination Number</th>
         <th>Action</th>
     </tr>
     </thead>
     <tbody>
-    <tr th:each="transaction : ${transactions}" th:data-status="${transaction.transactionStatus}">
+    <tr th:each="transaction : ${transactions}" th:data-status="${transaction.transactionStatus}"
+        th:data-transaction-type="${transaction.transactionType}">
         <td th:text="${transaction.transactionId}"></td>
         <td th:text="${transaction.amount}"></td>
         <td th:text="${transaction.transactionStatus}"></td>

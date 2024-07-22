@@ -1,27 +1,28 @@
-package com.bank.webservice.validation;
+package com.bank.webservice.service;
 
-import com.bank.webservice.cache.AccountCache;
+import com.bank.webservice.cache.AccountCacheImpl;
 import com.bank.webservice.dto.Account;
 import com.bank.webservice.dto.Transaction;
 import com.bank.webservice.util.AccountStatus;
 import com.bank.webservice.util.TransactionType;
 import org.springframework.beans.TypeMismatchException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.springframework.validation.BindingResult;
 
 import java.util.Objects;
 
-@Component
-public class TransactionValidator {
+@Service
+public class TransactionValidationServiceImpl implements TransactionValidationService {
 
-    private final AccountCache cache;
+    private final AccountCacheImpl cache;
 
     @Autowired
-    public TransactionValidator(AccountCache cache) {
+    public TransactionValidationServiceImpl(AccountCacheImpl cache) {
         this.cache = cache;
     }
 
+    @Override
     public void validateTransaction(Transaction transaction, BindingResult bindingResult) {
         // Validating source account number
         String sourceAccountNumberString;

@@ -14,6 +14,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -25,14 +26,14 @@ import java.util.concurrent.TimeUnit;
 @RequestMapping("/api")
 public class AccountController {
 
-    private final LatchService latchService;
+    private final LatchService latch;
     private final AccountEventPublisher publisher;
     private final AccountCache cache;
     private static final int MAX_RESPONSE_TIME = 3; // seconds
 
     @Autowired
-    public AccountController(LatchService latchService, AccountEventPublisher publisher, AccountCache cache) {
-        this.latchService = latchService;
+    public AccountController(LatchService latch, AccountEventPublisher publisher, AccountCache cache) {
+        this.latch = latch;
         this.publisher = publisher;
         this.cache = cache;
     }
@@ -104,7 +105,7 @@ public class AccountController {
     public String getAllAccounts(Model model) {
         publisher.publishAllAccountsEvent();
         CountDownLatch latch = new CountDownLatch(1);
-        latchService.setLatch(latch);
+        this.latch.setLatch(latch);
         try {
             boolean latchResult = latch.await(MAX_RESPONSE_TIME, TimeUnit.SECONDS);
             if (latchResult) {
@@ -127,7 +128,7 @@ public class AccountController {
             Thread.currentThread().interrupt();
             return "loading-accounts";
         } finally {
-            latchService.resetLatch();
+            this.latch.resetLatch();
         }
     }
 }

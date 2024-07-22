@@ -18,12 +18,12 @@ import java.util.concurrent.CountDownLatch;
 public class TransactionEventListener {
 
     private final TransactionCache cache;
-    private final LatchService latchService;
+    private final LatchService latch;
 
     @Autowired
-    public TransactionEventListener(TransactionCache cache, LatchService latchService) {
+    public TransactionEventListener(TransactionCache cache, LatchService latch) {
         this.cache = cache;
-        this.latchService = latchService;
+        this.latch = latch;
     }
 
     @KafkaListener(topics = "transaction-created", groupId = "web-service")
@@ -72,7 +72,7 @@ public class TransactionEventListener {
         List<Transaction> transactions = event.getTransactions();
         log.info("Received all-transactions-received event with {} transactions", transactions.size());
         cache.addAllTransactionsToCache(transactions);
-        CountDownLatch latch = latchService.getLatch();
+        CountDownLatch latch = this.latch.getLatch();
         if (latch != null) {
             latch.countDown();
         }

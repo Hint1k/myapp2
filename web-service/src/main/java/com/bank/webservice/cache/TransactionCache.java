@@ -1,70 +1,22 @@
 package com.bank.webservice.cache;
 
 import com.bank.webservice.dto.Transaction;
-import com.bank.webservice.service.CacheService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.stereotype.Component;
 
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
-@Component
-public class TransactionCache {
+public interface TransactionCache {
 
-    // objects of different classes with the same id in cache cause errors
-    private static final String PREFIX = "transaction:";
-    private final CacheService cacheService;
+    void addTransactionToCache(Long transactionId, Transaction transaction);
 
-    private final RedisTemplate<String, Object> redisTemplate;
+    void addAllTransactionsToCache(List<Transaction> transactions);
 
-    @Autowired
-    public TransactionCache(CacheService cacheService, RedisTemplate<String, Object> redisTemplate) {
-        this.cacheService = cacheService;
-        this.redisTemplate = redisTemplate;
-    }
+    void updateTransactionFromCache(Long transactionId, Transaction transaction);
 
-    public void addTransactionToCache(Long transactionId, Transaction transaction) {
-        redisTemplate.opsForValue().set(PREFIX + transactionId.toString(), transaction);
-    }
+    void deleteTransactionFromCache(Long transactionId);
 
-    public void addAllTransactionsToCache(List<Transaction> transactions) {
-        for (Transaction transaction : transactions) {
-            redisTemplate.opsForValue().set(PREFIX + transaction.getTransactionId().toString(), transaction);
-        }
-    }
+    List<Transaction> getAllTransactionsFromCache();
 
-    public void updateTransactionFromCache(Long transactionId, Transaction transaction) {
-        String key = PREFIX + transactionId.toString();
-        if (Boolean.TRUE.equals(redisTemplate.hasKey(key))) {
-            redisTemplate.opsForValue().set(key, transaction);
-        } else {
-            throw new IllegalArgumentException("Transaction with ID " + transactionId
-                    + " does not exist in the cache.");
-        }
-    }
+    Transaction getTransactionFromCache(Long transactionId);
 
-    public void deleteTransactionFromCache(Long transactionId) {
-        redisTemplate.delete(PREFIX + transactionId.toString());
-    }
-
-    public List<Transaction> getAllTransactionsFromCache() {
-        // Retrieve all keys from Redis
-        Set<String> keys = redisTemplate.keys(PREFIX + "*");
-        return cacheService.getObjectsFromCache(keys, Transaction.class);
-    }
-
-    public Transaction getTransactionFromCache(Long transactionId) {
-        return (Transaction) redisTemplate.opsForValue().get(PREFIX + transactionId.toString());
-    }
-
-    public List<Transaction> getAccountTransactionsFromCache(Long accountNumber) {
-        List<Transaction> allTransactions = getAllTransactionsFromCache();
-        return allTransactions.stream()
-                .filter(t -> t.getAccountSourceNumber().equals(accountNumber) ||
-                        t.getAccountDestinationNumber().equals(accountNumber))
-                .distinct()
-                .collect(Collectors.toList());
-    }
+    List<Transaction> getAccountTransactionsFromCache(Long accountNumber);
 }
