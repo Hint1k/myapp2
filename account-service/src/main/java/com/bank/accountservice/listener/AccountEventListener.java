@@ -16,11 +16,11 @@ import org.springframework.stereotype.Component;
 @Slf4j
 public class AccountEventListener {
 
-    private final AccountService accountService;
+    private final AccountService service;
 
     @Autowired
-    public AccountEventListener(AccountService accountService) {
-        this.accountService = accountService;
+    public AccountEventListener(AccountService service) {
+        this.service = service;
     }
 
     @KafkaListener(topics = "account-creation-requested", groupId = "account-service")
@@ -36,7 +36,7 @@ public class AccountEventListener {
                 event.getCustomerId()
         );
         try {
-            accountService.saveAccount(account);
+            service.saveAccount(account);
             log.info("Saved account number: {}", account.getAccountNumber());
             acknowledgment.acknowledge();
         } catch (Exception e) {
@@ -59,7 +59,7 @@ public class AccountEventListener {
                 event.getCustomerId()
         );
         try {
-            accountService.updateAccount(account);
+            service.updateAccount(account);
             acknowledgment.acknowledge();
         } catch (Exception e) {
             log.error("Error updating account by id: {}", e.getMessage());
@@ -72,7 +72,7 @@ public class AccountEventListener {
         Long accountId = event.getAccountId();
         log.info("Received account-deletion-requested event for account id: {}", accountId);
         try {
-            accountService.deleteAccount(accountId);
+            service.deleteAccount(accountId);
             acknowledgment.acknowledge();
         } catch (Exception e) {
             log.error("Error deleting account by id: {}", e.getMessage());
@@ -84,7 +84,7 @@ public class AccountEventListener {
     public void handleAllAccountsEvent(Acknowledgment acknowledgment) {
         log.info("Received all-accounts-requested event");
         try {
-            accountService.findAllAccounts();
+            service.findAllAccounts();
             acknowledgment.acknowledge();
         } catch (Exception e) {
             log.error("Error finding all accounts: {}", e.getMessage());
@@ -97,7 +97,7 @@ public class AccountEventListener {
         Long accountId = event.getAccountId();
         log.info("Received account-details-requested event for account id: {}", accountId);
         try {
-            accountService.findAccountById(accountId);
+            service.findAccountById(accountId);
             acknowledgment.acknowledge();
         } catch (Exception e) {
             log.error("Error finding account by id: {}", e.getMessage());

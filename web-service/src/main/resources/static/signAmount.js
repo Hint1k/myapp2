@@ -1,36 +1,30 @@
-document.addEventListener("DOMContentLoaded", () => {
-    if (window.location.pathname.startsWith('/api/transactions/all-transactions/') &&
-        window.location.pathname !== '/api/transactions/all-transactions') {
+document.addEventListener('DOMContentLoaded', function() {
+    const transactionRows = document.querySelectorAll('tbody tr');
 
-        // Debugging: Ensure the script is running
-        console.log("Deposit Sign Script running on account-specific transactions page");
+    transactionRows.forEach(row => {
+        const amountCell = row.querySelector('td:nth-child(2)');
+        const typeCell = row.dataset.transactionType;
 
-        // Select all rows in the table
-        const transactionRows = document.querySelectorAll('tr[th\\:each]');
+        if (amountCell && window.location.pathname.endsWith('/all-transactions')) {
+            amountCell.textContent = amountCell.textContent.trim();
+        } else {
+            let prefix = '';
+            const isTransfer = typeCell === 'TRANSFER';
+            const sourceCell = row.querySelector('td:nth-child(4)').textContent.trim();
+            const destinationCell = row.querySelector('td:nth-child(5)').textContent.trim();
 
-        transactionRows.forEach(row => {
-            // Find the amount and transaction type cells
-            const amountCell = row.querySelector('td:nth-child(2)');
-            const transactionTypeCell = row.querySelector('td:nth-child(3)');
-
-            if (amountCell && transactionTypeCell) {
-                // Get text content from cells
-                const amountValue = amountCell.textContent.trim();
-                const transactionType = transactionTypeCell.textContent.trim();
-
-                // Debugging: Print the values obtained
-                console.log(`Amount Cell: ${amountValue}, Transaction Type Cell: ${transactionType}`);
-
-                // Check if the transaction is a deposit and format accordingly
-                if (transactionType === 'Deposit') {
-                    amountCell.textContent = '+' + amountValue;
-                }
-
-                // Debugging: Confirm the update
-                console.log(`Updated Amount Cell: ${amountCell.textContent}`);
+            if (isTransfer) {
+                prefix = sourceCell === destinationCell ? '' :
+                    (sourceCell === window.location.pathname.split('/').pop() ? '-' : '+');
+            } else if (typeCell === 'DEPOSIT') {
+                prefix = '+';
+            } else if (typeCell === 'WITHDRAWAL') {
+                prefix = '-';
             } else {
-                console.warn("Amount cell or Transaction Type cell not found");
+                console.warn("Unknown transaction type:", typeCell);
             }
-        });
-    }
+
+            amountCell.textContent = prefix + amountCell.textContent.trim();
+        }
+    });
 });

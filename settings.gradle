@@ -2,3 +2,5 @@ rootProject.name = 'myapp2'
 include 'account-service'
 include 'transaction-service'
 include 'web-service'
+include 'customer-service'
+
