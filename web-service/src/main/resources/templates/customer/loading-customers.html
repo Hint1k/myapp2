@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns="http://www.w3.org/1999/html">
+<head>
+    <meta charset="UTF-8">
+    <title th:if="${customerId != null}">Loading customer Details</title>
+    <title th:unless="${customerId != null}">Loading All customers</title>
+    <meta th:if="${customerId != null}" th:attr="http-equiv='refresh',
+    content='5;url=/api/customers/customer?customerId=' + ${customerId}">
+    <meta th:unless="${customerId != null}" http-equiv="refresh" content="5;url=/api/customers/all-customers">
+</head>
+<body>
+<h1 th:if="${customerId != null}">Loading Customer Details</h1>
+<h1 th:unless="${customerId != null}">Loading All Customers</h1>
+<p th:if="${customerId != null}">Please wait, Customer details are loading from the database...</p>
+<p th:unless="${customerId != null}">Please wait, All Customers are loading from the database...</p>
+</body>
+</html>

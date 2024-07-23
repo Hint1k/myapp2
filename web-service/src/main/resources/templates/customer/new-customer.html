@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns="http://www.w3.org/1999/html">
+<head>
+    <meta charset="UTF-8">
+    <title>New Customer Page</title>
+    <link rel="stylesheet" th:href="@{/styles.css}">
+</head>
+<body>
+<h1>Customer Details</h1>
+<form method="post" action="/api/customers" th:object="${customer}" th:action="@{/api/customers}">
+    <table>
+        <tbody>
+        <input type="hidden" id="customerId" name="customerId" th:field="*{customerId}"/>
+        <tr>
+            <td><label>Customer Number:</label></td>
+            <td>
+                <input type="text" id="customerNumber" name="customerNumber" th:field="*{customerNumber}"
+                       class="form-control readonly-field" placeholder="1, 2, 3, etc" readonly="readonly">
+            </td>
+            <td>
+                <span th:if="${#fields.hasErrors('customerNumber')}" class="error" th:errors="*{customerNumber}">
+                    Customer Number is invalid
+                </span>
+            </td>
+        </tr>
+        <tr>
+            <td><label>First Name:</label></td>
+            <td>
+                <input type="text" id="firstName" name="firstName" th:field="*{firstName}" class="form-control"
+                       placeholder="John">
+            </td>
+            <td>
+                <span th:if="${#fields.hasErrors('firstName')}" class="error" th:errors="*{firstName}">
+                    First Name is invalid
+                </span>
+            </td>
+        </tr>
+        <tr>
+            <td><label>Last Name:</label></td>
+            <td>
+                <input type="text" id="lastName" name="lastName" th:field="*{lastName}" class="form-control"
+                       placeholder="Smith">
+            </td>
+            <td>
+                <span th:if="${#fields.hasErrors('lastName')}" class="error" th:errors="*{lastName}">
+                    Last Name is invalid
+                </span>
+            </td>
+        </tr>
+        <tr>
+            <td><label>middleName:</label></td>
+            <td>
+                <input id="middleName" name="middleName" th:field="*{middleName}" class="form-control"
+                       placeholder="Alex">
+            </td>
+            <td>
+                <span th:if="${#fields.hasErrors('middleName')}" class="error" th:errors="*{middleName}">
+                    Middle Name is invalid
+                </span>
+            </td>
+        </tr>
+        <tr>
+            <td><label>Address:</label></td>
+            <td>
+                <input type="text" id="address" name="address" th:field="*{address}" class="form-control"
+                       placeholder="105005, Russia, Moscow, Main Street, 10, 1">
+            </td>
+            <td>
+                <span th:if="${#fields.hasErrors('address')}" class="error" th:errors="*{address}">
+                    Address is invalid
+                </span>
+            </td>
+        </tr>
+        <tr>
+            <td><label>Accounts:</label></td>
+            <td>
+                <input type="text" id="accounts" name="accounts" th:field="*{accounts}"
+                       class="form-control readonly-field" placeholder="1, 2, 3, etc" readonly="readonly">
+            </td>
+            <td>
+                <span th:if="${#fields.hasErrors('accounts')}" class="error" th:errors="*{accounts}">
+                    Accounts are invalid
+                </span>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <br>
+    <input type="submit" value="Save customer" class="save"/>
+</form>
+<!--<br>-->
+<!-- - Balance and open date cannot be changed manually. <br>-->
+<!-- - Balance can be changed automatically by creating / updating / deleting transactions. <br>-->
+<!--<br>-->
+<hr>
+<button type="button" onclick="history.go(-1)" class="go-button"> Go to previous page</button>
+<br><br>
+<a th:href="@{/index}">
+    <button type="button" class="update-button">Return to index page</button>
+</a>
+</body>
+</html>

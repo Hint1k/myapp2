@@ -17,7 +17,6 @@ public class AccountCacheImpl implements AccountCache {
     // objects of different classes with the same id in cache cause errors
     private static final String PREFIX = "account:";
     private final CacheService service;
-
     private final RedisTemplate<String, Object> redisTemplate;
 
     @Autowired
@@ -69,6 +68,7 @@ public class AccountCacheImpl implements AccountCache {
     public Account getAccountFromCacheByAccountNumber(Long accountNumber) {
         List<Account> accounts = getAllAccountsFromCache();
         return accounts.stream()
-                .filter(account -> account.getAccountNumber().equals(accountNumber)).findFirst().orElse(null);
+                .filter(account -> account.getAccountNumber().equals(accountNumber))
+                .findFirst().orElse(null);
     }
 }

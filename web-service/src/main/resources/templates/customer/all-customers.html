@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns="http://www.w3.org/1999/html">
+<head>
+    <meta charset="UTF-8">
+    <title>All Customers Page</title>
+    <link rel="stylesheet" th:href="@{/styles.css}">
+<!--    <script th:src="@{/frozenCustomers.js}"></script>-->
+</head>
+<body>
+<h1>All Customers</h1>
+<a th:href="@{/api/Customers/new-customer}">
+    <button>Create new customer</button>
+</a>
+<br><br>
+<table>
+    <thead>
+    <tr>
+        <th>Customer ID</th>
+        <th>Customer Number</th>
+        <th>First Name</th>
+        <th>Last Name</th>
+        <th>Accounts</th>
+        <th>Action</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="customer : ${customers}" th:data-status="${customer.customerStatus}">
+        <td th:text="${customer.customerId}"></td>
+        <td th:text="${customer.customerNumber}"></td>
+        <td th:text="${customer.firstName}"></td>
+        <td th:text="${customer.lastName}"></td>
+<!--        <td th:text="${customer.accounts}"></td>-->
+        <td>
+            <div class="button-container">
+                <form action="#" th:action="@{/api/customers/{customerId}(customerId=${customer.customerId})}"
+                      th:method="get">
+                    <button type="submit">Details</button>
+                </form>
+                <form action="#"
+                      th:action="@{/api/accounts/all-accounts/{customerNumber}(customerNumber=
+                      ${customer.customerNumber})}"
+                      th:method="get">
+                    <button type="submit">Accounts</button>
+                </form>
+                <form action="#" th:action="@{/api/customers/{customerId}(customerId=${customer.customerId})}"
+                      th:method="put">
+                    <button type="submit">Update</button>
+                </form>
+                <form action="#" th:action="@{/api/customers/{customerId}(customerId=${customer.customerId})}"
+                      th:method="delete"
+                      onclick="if(!(confirm('Are you sure to delete this customer?'))) return false">
+                    <button type="submit">Delete</button>
+                </form>
+            </div>
+        </td>
+    </tr>
+    </tbody>
+</table>
+<hr>
+<!--<br>-->
+<!-- - Deleting a Customer freezes all linked transactions.<br>-->
+<!-- - Frozen transactions can't be updated or deleted. <br>-->
+<!--<br>-->
+<button type="button" onclick="history.go(-1)" class="go-button"> Go to previous page</button>
+<br><br>
+<a th:href="@{/index}">
+    <button type="button" class="update-button">Return to index page</button>
+</a>
+</body>
+</html>

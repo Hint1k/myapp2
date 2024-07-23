@@ -18,7 +18,6 @@ public class TransactionCacheImpl implements TransactionCache {
     // objects of different classes with the same id in cache cause errors
     private static final String PREFIX = "transaction:";
     private final CacheService service;
-
     private final RedisTemplate<String, Object> redisTemplate;
 
     @Autowired

@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns="http://www.w3.org/1999/html">
+<head>
+    <meta charset="UTF-8">
+    <title>Customer Details Page</title>
+    <link rel="stylesheet" th:href="@{/styles.css}">
+</head>
+<body>
+<h1>Customer Details</h1>
+<table th:if="${customer}">
+    <tr>
+        <td>Customer Id:</td>
+        <td th:text="${customer.customerId}"></td>
+    </tr>
+    <tr>
+        <td>Customer Number:</td>
+        <td th:text="${customer.customerNumber}"></td>
+    </tr>
+    <tr>
+        <td>First Name:</td>
+        <td th:text="${customer.firstName}"></td>
+    </tr>
+    <tr>
+        <td>Last Name:</td>
+        <td th:text="${customer.lastName}"></td>
+    </tr>
+    <tr>
+        <td>Middle Name:</td>
+        <td th:text="${customer.middleName}"></td>
+    </tr>
+    <tr>
+        <td>Address:</td>
+        <td th:text="${customer.address}"></td>
+    </tr>
+    <tr>
+        <td>Accounts:</td>
+        <td th:text="${customer.accounts}"></td>
+    </tr>
+</table>
+<hr>
+<button type="button" onclick="history.go(-1)" class="go-button"> Go to previous page</button>
+<br><br>
+<a th:href="@{/index}">
+    <button type="button" class="update-button">Return to index page</button>
+</a>
+</body>
+</html>
