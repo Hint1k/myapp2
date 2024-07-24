@@ -29,9 +29,9 @@ public class CustomerEventPublisherImpl implements CustomerEventPublisher {
                 customer.getLastName(),
                 customer.getMiddleName(),
                 customer.getEmail(),
-                customer.getPhone(),
-                customer.getAccountNumbers(),
-                customer.getAddress()
+                customer.getPhone()
+//                , customer.getAddress()
+//              ,  customer.getAccountNumbers()
         );
         kafkaTemplate.send("customer-created", event);
         log.info("Published customer-created event for customer id: {}", event.getCustomerId());
@@ -48,9 +48,9 @@ public class CustomerEventPublisherImpl implements CustomerEventPublisher {
                 customer.getLastName(),
                 customer.getMiddleName(),
                 customer.getEmail(),
-                customer.getPhone(),
-                customer.getAccountNumbers(),
-                customer.getAddress()
+                customer.getPhone()
+//                , customer.getAddress()
+//              ,  customer.getAccountNumbers()
         );
         kafkaTemplate.send("customer-updated", event);
         log.info("Published customer-updated event for customer id: {}", event.getCustomerId());
@@ -85,9 +85,9 @@ public class CustomerEventPublisherImpl implements CustomerEventPublisher {
                 customer.getLastName(),
                 customer.getMiddleName(),
                 customer.getEmail(),
-                customer.getPhone(),
-                customer.getAccountNumbers(),
-                customer.getAddress()
+                customer.getPhone()
+//                , customer.getAddress()
+//              ,  customer.getAccountNumbers()
         );
         kafkaTemplate.send("customer-details-received", event);
         log.info("Published customer-details-received event for customer id: {}", event.getCustomerId());

@@ -52,7 +52,7 @@ public class TransactionController {
     private String showNewTransactionForm(Model model) {
         Transaction transaction = new Transaction();
         model.addAttribute("transaction", transaction);
-        return "new-transaction";
+        return "transaction/new-transaction";
     }
 
     @PostMapping("/transactions")
@@ -61,7 +61,7 @@ public class TransactionController {
         validator.validateTransaction(transaction, bindingResult);
         if (bindingResult.hasErrors()) {
             log.error("Transaction submission failed due to validation errors: {}", bindingResult.getAllErrors());
-            return "new-transaction";
+            return "transaction/new-transaction";
         }
         publisher.publishTransactionCreatedEvent(transaction);
         return "redirect:/index";
@@ -72,7 +72,7 @@ public class TransactionController {
         Transaction transaction = cache.getTransactionFromCache(transactionId);
         transaction.setTransactionStatus(TransactionStatus.PENDING);
         model.addAttribute("transaction", transaction);
-        return "transaction-update";
+        return "transaction/transaction-update";
     }
 
     @PostMapping("/transactions/transaction")
@@ -81,7 +81,7 @@ public class TransactionController {
         validator.validateTransaction(transaction, bindingResult);
         if (bindingResult.hasErrors()) {
             log.error("Transaction update failed due to validation errors: {}", bindingResult.getAllErrors());
-            return "transaction-update";
+            return "transaction/transaction-update";
         }
         publisher.publishTransactionUpdatedEvent(transaction);
         return "redirect:/index";
@@ -101,10 +101,10 @@ public class TransactionController {
         transaction = cache.getTransactionFromCache(transactionId);
         if (transaction != null) {
             model.addAttribute("transaction", transaction);
-            return "transaction-details";
+            return "transaction/transaction-details";
         } else {
             model.addAttribute("transactionId", transactionId);
-            return "loading-transactions";
+            return "transaction/loading-transactions";
         }
     }
 
@@ -137,7 +137,7 @@ public class TransactionController {
                 } else {
                     model.addAttribute("transactions", new ArrayList<>());
                 }
-                return "all-transactions";
+                return "transaction/all-transactions";
             } else {
                 String errorMessage = "The service is busy, please try again later.";
                 model.addAttribute("errorMessage", errorMessage);
@@ -146,7 +146,7 @@ public class TransactionController {
             }
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            return "loading-transactions";
+            return "transaction/loading-transactions";
         } finally {
             this.latch.resetLatch();
         }

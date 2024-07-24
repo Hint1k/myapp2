@@ -17,7 +17,7 @@
             <td><label>Customer Number:</label></td>
             <td>
                 <input type="text" id="customerNumber" name="customerNumber" th:field="*{customerNumber}"
-                       class="form-control readonly-field" placeholder="1, 2, 3, etc" readonly="readonly">
+                       class="form-control" placeholder="1, 2, 3, etc">
             </td>
             <td>
                 <span th:if="${#fields.hasErrors('customerNumber')}" class="error" th:errors="*{customerNumber}">
@@ -50,7 +50,7 @@
             </td>
         </tr>
         <tr>
-            <td><label>middleName:</label></td>
+            <td><label>Middle Name:</label></td>
             <td>
                 <input id="middleName" name="middleName" th:field="*{middleName}" class="form-control"
                        placeholder="Alex">
@@ -62,29 +62,53 @@
             </td>
         </tr>
         <tr>
-            <td><label>Address:</label></td>
+            <td><label>Email:</label></td>
             <td>
-                <input type="text" id="address" name="address" th:field="*{address}" class="form-control"
-                       placeholder="105005, Russia, Moscow, Main Street, 10, 1">
+                <input id="email" name="email" th:field="*{email}" class="form-control"
+                       placeholder="jda@bank.com">
             </td>
             <td>
-                <span th:if="${#fields.hasErrors('address')}" class="error" th:errors="*{address}">
-                    Address is invalid
+                <span th:if="${#fields.hasErrors('email')}" class="error" th:errors="*{email}">
+                   Email is invalid
                 </span>
             </td>
         </tr>
         <tr>
-            <td><label>Accounts:</label></td>
+            <td><label>Phone:</label></td>
             <td>
-                <input type="text" id="accounts" name="accounts" th:field="*{accounts}"
-                       class="form-control readonly-field" placeholder="1, 2, 3, etc" readonly="readonly">
+                <input id="phone" name="phone" th:field="*{phone}" class="form-control"
+                       placeholder="+7111222334455">
             </td>
             <td>
-                <span th:if="${#fields.hasErrors('accounts')}" class="error" th:errors="*{accounts}">
-                    Accounts are invalid
+                <span th:if="${#fields.hasErrors('phone')}" class="error" th:errors="*{phone}">
+                   Phone is invalid
                 </span>
             </td>
         </tr>
+<!--        <tr>-->
+<!--            <td><label>Address:</label></td>-->
+<!--            <td>-->
+<!--                <input type="text" id="address" name="address" th:field="*{address}" class="form-control"-->
+<!--                       placeholder="1, Main, Moscow, Moscow, 123456, Russia">-->
+<!--            </td>-->
+<!--            <td>-->
+<!--                <span th:if="${#fields.hasErrors('address')}" class="error" th:errors="*{address}">-->
+<!--                    Address is invalid-->
+<!--                </span>-->
+<!--            </td>-->
+<!--        </tr>-->
+<!--        <tr>-->
+<!--            <td><label>Accounts:</label></td>-->
+<!--            <td>-->
+<!--                <input type="text" id="accounts" name="accounts" th:field="*{accounts}"-->
+<!--                       class="form-control readonly-field" placeholder="1, 2, 3, etc" readonly="readonly">-->
+<!--            </td>-->
+<!--            <td>-->
+<!--                <span th:if="${#fields.hasErrors('accounts')}" class="error" th:errors="*{accounts}">-->
+<!--                    Accounts are invalid-->
+<!--                </span>-->
+<!--            </td>-->
+<!--        </tr>-->
         </tbody>
     </table>
     <br>

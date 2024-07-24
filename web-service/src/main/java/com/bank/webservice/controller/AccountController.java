@@ -47,7 +47,7 @@ public class AccountController {
     private String showNewAccountForm(Model model) {
         Account account = new Account();
         model.addAttribute("account", account);
-        return "new-account";
+        return "account/new-account";
     }
 
     @PostMapping("/accounts")
@@ -62,7 +62,7 @@ public class AccountController {
         if (bindingResult.hasErrors()) {
             log.error("Account saving failed due to validation errors: {}",
                     bindingResult.getAllErrors());
-            return "new-account";
+            return "account/new-account";
         }
         publisher.publishAccountCreatedEvent(newAccount);
         return "redirect:/index";
@@ -72,7 +72,7 @@ public class AccountController {
     public String showUpdateAccountForm(@PathVariable("accountId") Long accountId, Model model) {
         Account account = cache.getAccountFromCache(accountId);
         model.addAttribute("account", account);
-        return "account-update";
+        return "account/account-update";
     }
 
     @PostMapping("/accounts/account")
@@ -93,10 +93,10 @@ public class AccountController {
         Account account = cache.getAccountFromCache(accountId);
         if (account != null) {
             model.addAttribute("account", account);
-            return "account-details";
+            return "account/account-details";
         } else {
             model.addAttribute("accountId", accountId);
-            return "loading-accounts";
+            return "account/loading-accounts";
         }
     }
 
@@ -112,10 +112,10 @@ public class AccountController {
                 if (accounts != null && !accounts.isEmpty()) {
                     accounts.sort(Comparator.comparing(Account::getAccountId));
                     model.addAttribute("accounts", accounts);
-                    return "all-accounts";
+                    return "account/all-accounts";
                 } else { // returns empty table when no accounts in database
                     model.addAttribute("accounts", new ArrayList<>());
-                    return "all-accounts";
+                    return "account/all-accounts";
                 }
             } else {
                 String errorMessage = "The service is busy, please try again later.";
@@ -125,7 +125,7 @@ public class AccountController {
             }
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            return "loading-accounts";
+            return "account/loading-accounts";
         } finally {
             this.latch.resetLatch();
         }

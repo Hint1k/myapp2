@@ -39,9 +39,9 @@ public class CustomerEventListener {
                 event.getLastName(),
                 event.getMiddleName(),
                 event.getEmail(),
-                event.getPhone(),
-                event.getAccountNumbers(),
-                event.getAddress()
+                event.getPhone()
+//                , event.getAddress()
+//              ,  event.getAccountNumbers()
         );
         log.info("Received customer-created event for customer id: {}", event.getCustomerId());
         cache.addCustomerToCache(customer.getCustomerId(), customer);
@@ -58,9 +58,9 @@ public class CustomerEventListener {
                 event.getLastName(),
                 event.getMiddleName(),
                 event.getEmail(),
-                event.getPhone(),
-                event.getAccountNumbers(),
-                event.getAddress()
+                event.getPhone()
+//                , event.getAddress()
+//              ,  event.getAccountNumbers()
         );
         Long customerId = event.getCustomerId();
         log.info("Received customer-updated event for customer id: {}", customerId);
@@ -97,9 +97,9 @@ public class CustomerEventListener {
                 event.getLastName(),
                 event.getMiddleName(),
                 event.getEmail(),
-                event.getPhone(),
-                event.getAccountNumbers(),
-                event.getAddress()
+                event.getPhone()
+//                , event.getAddress()
+//              ,  event.getAccountNumbers()
         );
         log.info("Received customer-details-received event for customer id: {}", event.getCustomerId());
         cache.addCustomerToCache(customer.getCustomerId(), customer);

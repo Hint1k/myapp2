@@ -12,7 +12,7 @@
 <table th:if="${customer}">
     <tr>
         <td>Customer Id:</td>
-        <td th:text="${customer.customerId}"></td>
+        <td th:text="${customer.getCustomerId()}"></td>
     </tr>
     <tr>
         <td>Customer Number:</td>
@@ -31,13 +31,21 @@
         <td th:text="${customer.middleName}"></td>
     </tr>
     <tr>
-        <td>Address:</td>
-        <td th:text="${customer.address}"></td>
+        <td>Email:</td>
+        <td th:text="${customer.email}"></td>
     </tr>
     <tr>
-        <td>Accounts:</td>
-        <td th:text="${customer.accounts}"></td>
+        <td>Phone:</td>
+        <td th:text="${customer.phone}"></td>
     </tr>
+<!--    <tr>-->
+<!--        <td>Address:</td>-->
+<!--        <td th:text="${customer.address}"></td>-->
+<!--    </tr>-->
+<!--    <tr>-->
+<!--        <td>Accounts:</td>-->
+<!--        <td th:text="${customer.accounts}"></td>-->
+<!--    </tr>-->
 </table>
 <hr>
 <button type="button" onclick="history.go(-1)" class="go-button"> Go to previous page</button>

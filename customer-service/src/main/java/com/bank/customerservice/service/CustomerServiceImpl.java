@@ -33,6 +33,8 @@ public class CustomerServiceImpl implements CustomerService {
     @Override
     public void updateCustomer(Customer customer) {
         repository.save(customer);
+        publisher.publishCustomerUpdatedEvent(customer);
+        log.info("Customer with id: {} updated", customer.getCustomerId());
     }
 
     @Override
@@ -46,7 +48,7 @@ public class CustomerServiceImpl implements CustomerService {
         Long customerNumber = customer.getCustomerNumber();
         repository.deleteById(customerId);
         publisher.publishCustomerDeletedEvent(customerId, customerNumber);
-        log.info("Customer with id {} has been deleted", customerId);
+        log.info("Customer with id: {} has been deleted", customerId);
     }
 
     @Override

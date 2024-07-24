@@ -37,23 +37,26 @@ public class Customer {
     @Column(name = "phone")
     private String phone;
 
-    @ElementCollection
-    @Column(name = "account_number")
-    private List<Long> accountNumbers;
+//    @Embedded
+//    private Address address;
 
-    @Embedded
-    private Address address;
+//    @ElementCollection
+//    @Column(name = "account_number")
+//    private List<Long> accountNumbers;
 
     // no customer id
     public Customer(Long customerNumber, String firstName, String lastName, String middleName, String email,
-                    String phone, Address address, List<Long> accountNumbers) {
+                    String phone
+//            , Address address
+//            , List<Long> accountNumbers
+    ) {
         this.customerNumber = customerNumber;
         this.firstName = firstName;
         this.lastName = lastName;
         this.middleName = middleName;
         this.email = email;
         this.phone = phone;
-        this.address = address;
-        this.accountNumbers = accountNumbers;
+//        this.address = address;
+//        this.accountNumbers = accountNumbers;
     }
 }

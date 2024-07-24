@@ -39,22 +39,26 @@ public class Customer implements Serializable {
     @NotNull(message = "Phone is required")
     private String phone;
 
-    @NotNull(message = "Account number is required")
-    private List<Long> accountNumbers;
+//    @NotNull(message = "Address is required")
+//    private Address address;
 
-    @NotNull(message = "Address is required")
-    private Address address;
+//    @NotNull(message = "Account number is required")
+//    private List<Long> accountNumbers;
 
     // no customer id
     public Customer(Long customerNumber, String firstName, String lastName, String middleName, String email,
-                    String phone, List<Long> accountNumbers, Address address) {
+                    String phone) {
+//            , String addressString) {
+//        , List<Long> accountNumbers) {
         this.customerNumber = customerNumber;
         this.firstName = firstName;
         this.lastName = lastName;
         this.middleName = middleName;
         this.email = email;
         this.phone = phone;
-        this.accountNumbers = accountNumbers;
-        this.address = address;
+//        String[] addressParts = addressString.split(",");
+//        this.address = new Address(addressParts[0].trim(), addressParts[1].trim(), addressParts[2].trim(),
+//                addressParts[3].trim(), addressParts[4].trim(), addressParts[5].trim());
+//        this.accountNumbers = accountNumbers;
     }
 }

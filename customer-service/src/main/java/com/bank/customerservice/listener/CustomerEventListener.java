@@ -33,9 +33,9 @@ public class CustomerEventListener {
                 event.getLastName(),
                 event.getMiddleName(),
                 event.getEmail(),
-                event.getPhone(),
-                event.getAccountNumbers(),
-                event.getAddress()
+                event.getPhone()
+//              ,  event.getAddress()
+//              ,  event.getAccountNumbers()
         );
         try {
             service.saveCustomer(customer);
@@ -57,9 +57,9 @@ public class CustomerEventListener {
                 event.getLastName(),
                 event.getMiddleName(),
                 event.getEmail(),
-                event.getPhone(),
-                event.getAccountNumbers(),
-                event.getAddress()
+                event.getPhone()
+//              ,  event.getAddress()
+//              ,  event.getAccountNumbers()
         );
         try {
             service.updateCustomer(customer);

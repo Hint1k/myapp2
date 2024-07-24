@@ -19,19 +19,22 @@ public class CustomerDetailsEvent {
     private String middleName;
     private String email;
     private String phone;
-    private List<Long> accountNumbers;
-    private Address address;
+//    private Address address;
+//    private List<Long> accountNumbers;
 
     // no customer id
     public CustomerDetailsEvent(Long customerNumber, String firstName, String lastName, String middleName,
-                                String email, String phone, List<Long> accountNumbers, Address address) {
+                                String email, String phone
+//            , Address address
+//      , List<Long> accountNumbers
+      ) {
         this.customerNumber = customerNumber;
         this.firstName = firstName;
         this.lastName = lastName;
         this.middleName = middleName;
         this.email = email;
         this.phone = phone;
-        this.accountNumbers = accountNumbers;
-        this.address = address;
+//        this.address = address;
+//        this.accountNumbers = accountNumbers;
     }
 }

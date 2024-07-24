@@ -47,7 +47,7 @@ public class CustomerController {
     private String showNewCustomerForm(Model model) {
         Customer customer = new Customer();
         model.addAttribute("customer", customer);
-        return "new-customer";
+        return "customer/new-customer";
     }
 
     @PostMapping("/customers")
@@ -62,7 +62,7 @@ public class CustomerController {
         if (bindingResult.hasErrors()) {
             log.error("customer saving failed due to validation errors: {}",
                     bindingResult.getAllErrors());
-            return "new-customer";
+            return "customer/new-customer";
         }
         publisher.publishCustomerCreatedEvent(newCustomer);
         return "redirect:/index";
@@ -72,11 +72,11 @@ public class CustomerController {
     public String showUpdateCustomerForm(@PathVariable("customerId") Long customerId, Model model) {
         Customer customer = cache.getCustomerFromCache(customerId);
         model.addAttribute("customer", customer);
-        return "customer-update";
+        return "customer/customer-update";
     }
 
     @PostMapping("/customers/customer")
-    public String updatecustomer(@ModelAttribute("customer") Customer customer) {
+    public String updateCustomer(@ModelAttribute("customer") Customer customer) {
         publisher.publishCustomerUpdatedEvent(customer);
         return "redirect:/index";
     }
@@ -93,10 +93,10 @@ public class CustomerController {
         Customer customer = cache.getCustomerFromCache(customerId);
         if (customer != null) {
             model.addAttribute("customer", customer);
-            return "customer-details";
+            return "customer/customer-details";
         } else {
             model.addAttribute("customerId", customerId);
-            return "loading-customers";
+            return "customer/loading-customers";
         }
     }
 
@@ -112,10 +112,10 @@ public class CustomerController {
                 if (customers != null && !customers.isEmpty()) {
                     customers.sort(Comparator.comparing(Customer::getCustomerId));
                     model.addAttribute("customers", customers);
-                    return "all-customers";
+                    return "customer/all-customers";
                 } else { // returns empty table when no customers in database
                     model.addAttribute("customers", new ArrayList<>());
-                    return "all-customers";
+                    return "customer/all-customers";
                 }
             } else {
                 String errorMessage = "The service is busy, please try again later.";
@@ -125,7 +125,7 @@ public class CustomerController {
             }
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            return "loading-customers";
+            return "customer/loading-customers";
         } finally {
             this.latch.resetLatch();
         }

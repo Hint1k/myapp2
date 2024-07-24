@@ -29,7 +29,7 @@ services:
     ports:
       - "5433:5432"
     volumes:
-      - ./customer-service/src/main/resources/sql-scripts/init3.sql:/docker-entrypoint-initdb.d/init3.sql
+      - ./customer-service/src/main/resources/sql-scripts/init2.sql:/docker-entrypoint-initdb.d/init2.sql
     healthcheck:
       test: [ "CMD-SHELL", "pg_isready -U user" ]
       interval: 30s
@@ -47,7 +47,7 @@ services:
     ports:
       - "5434:5432"
     volumes:
-      - ./transaction-service/src/main/resources/sql-scripts/init2.sql:/docker-entrypoint-initdb.d/init2.sql
+      - ./transaction-service/src/main/resources/sql-scripts/init3.sql:/docker-entrypoint-initdb.d/init3.sql
     healthcheck:
       test: [ "CMD-SHELL", "pg_isready -U user" ]
       interval: 30s
@@ -83,7 +83,7 @@ services:
       dockerfile: Dockerfile
     container_name: customer-service
     environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-account:5432/myapp2
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-customer:5432/myapp2
       SPRING_DATASOURCE_USERNAME: user
       SPRING_DATASOURCE_PASSWORD: 123
       KAFKA_BOOTSTRAP_SERVERS: kafka:9092
