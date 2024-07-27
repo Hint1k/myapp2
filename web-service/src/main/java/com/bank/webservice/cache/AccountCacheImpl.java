@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Component
 @Slf4j
@@ -70,5 +71,14 @@ public class AccountCacheImpl implements AccountCache {
         return accounts.stream()
                 .filter(account -> account.getAccountNumber().equals(accountNumber))
                 .findFirst().orElse(null);
+    }
+
+    @Override
+    public List<Account> getCustomerAccountsFromCache(Long customerNumber) {
+        List<Account> allAccounts = getAllAccountsFromCache();
+        return allAccounts.stream()
+                .filter(a -> a.getCustomerNumber().equals(customerNumber))
+                .distinct()
+                .collect(Collectors.toList());
     }
 }

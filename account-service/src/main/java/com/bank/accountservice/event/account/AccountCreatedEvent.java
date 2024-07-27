@@ -21,19 +21,19 @@ public class AccountCreatedEvent {
     private AccountType accountType;
     private AccountStatus accountStatus;
     private LocalDate openDate;
-    private Long customerId;
+    private Long customerNumber;
 
     // no account id
     public AccountCreatedEvent(Long accountNumber, BigDecimal balance,
                                Currency currency, AccountType accountType,
                                AccountStatus accountStatus, LocalDate openDate,
-                               Long customerId) {
+                               Long customerNumber) {
         this.accountNumber = accountNumber;
         this.balance = balance;
         this.currency = currency;
         this.accountType = accountType;
         this.accountStatus = accountStatus;
         this.openDate = openDate;
-        this.customerId = customerId;
+        this.customerNumber = customerNumber;
     }
 }

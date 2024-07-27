@@ -42,20 +42,20 @@ public class Account {
     @Column(name = "open_date", nullable = false)
     private LocalDate openDate;
 
-    @Column(name = "customer_id")
-    private Long customerId;
+    @Column(name = "customer_number")
+    private Long customerNumber;
 
     // no account id
     public Account(Long accountNumber, BigDecimal balance,
                    Currency currency, AccountType accountType,
                    AccountStatus accountStatus, LocalDate openDate,
-                   Long customerId) {
+                   Long customerNumber) {
         this.accountNumber = accountNumber;
         this.balance = balance;
         this.currency = currency;
         this.accountType = accountType;
         this.accountStatus = accountStatus;
         this.openDate = openDate;
-        this.customerId = customerId;
+        this.customerNumber = customerNumber;
     }
 }

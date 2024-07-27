@@ -29,4 +29,4 @@
 **Customer service is only partially implemented:** 
 - Not all customer fields are present. <br>
 - No connection to account-service yet. <br>
-- No error proof yet / fields validation yet. <br>
+- No error proof / fields validation yet. <br>

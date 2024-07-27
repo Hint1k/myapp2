@@ -3,6 +3,8 @@ HELP.md
 .gradle
 build/
 app.log
+log/
+data/
 
 # IntelliJ IDEA
 .idea

@@ -29,7 +29,7 @@ public class AccountEventPublisherImpl implements AccountEventPublisher {
                 account.getAccountType(),
                 account.getAccountStatus(),
                 account.getOpenDate(),
-                account.getCustomerId()
+                account.getCustomerNumber()
         );
         kafkaTemplate.send("account-creation-requested", event);
         log.info("Published account-creation-requested event for account number: {}", event.getAccountNumber());
@@ -45,7 +45,7 @@ public class AccountEventPublisherImpl implements AccountEventPublisher {
                 account.getAccountType(),
                 account.getAccountStatus(),
                 account.getOpenDate(),
-                account.getCustomerId()
+                account.getCustomerNumber()
         );
         kafkaTemplate.send("account-update-requested", event);
         log.info("Published account-update-requested event for account id: {}", event.getAccountId());

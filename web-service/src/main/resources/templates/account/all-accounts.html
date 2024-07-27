@@ -21,7 +21,7 @@
         <th>Account Number</th>
         <th>Balance</th>
         <th>Account Status</th>
-        <th>Customer ID</th>
+        <th>Customer Number</th>
         <th>Action</th>
     </tr>
     </thead>
@@ -31,7 +31,7 @@
         <td th:text="${account.accountNumber}"></td>
         <td th:text="${account.balance}"></td>
         <td th:text="${account.accountStatus}"></td>
-        <td th:text="${account.customerId}"></td>
+        <td th:text="${account.customerNumber}"></td>
         <td>
             <div class="button-container">
                 <form action="#" th:action="@{/api/accounts/{accountId}(accountId=${account.accountId})}"

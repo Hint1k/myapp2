@@ -1,6 +1,5 @@
 package com.bank.customerservice.event;
 
-import com.bank.customerservice.entity.Address;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -13,29 +12,23 @@ import java.util.List;
 public class CustomerUpdatedEvent {
 
     // TODO remove the fields that cannot be updated later
+
     private Long customerId;
     private Long customerNumber;
-    private String firstName;
-    private String lastName;
-    private String middleName;
+    private String name;
     private String email;
     private String phone;
-//    private Address address;
-//    private List<Long> accountNumbers;
+    private String address;
+    private List<Long> accountNumbers;
 
     // no customer id
-    public CustomerUpdatedEvent(Long customerNumber, String firstName, String lastName, String middleName,
-                                String email, String phone
-//            , Address address
-//      , List<Long> accountNumbers
-    ) {
+    public CustomerUpdatedEvent(Long customerNumber, String name, String email, String phone, String address,
+                                List<Long> accountNumbers) {
         this.customerNumber = customerNumber;
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.middleName = middleName;
+        this.name = name;
         this.email = email;
         this.phone = phone;
-//        this.address = address;
-//        this.accountNumbers = accountNumbers;
+        this.address = address;
+        this.accountNumbers = accountNumbers;
     }
 }

@@ -48,7 +48,7 @@ public class Account implements Serializable {
     @NotNull(message = "Customer ID is required")
     @Min(value = 1)
     @Digits(integer = MAX_VALUE, fraction = 0, message = "Only whole numbers are allowed")
-    private Long customerId;
+    private Long customerNumber;
 
     {
         // sets account open date = current date
@@ -61,13 +61,13 @@ public class Account implements Serializable {
     public Account(Long accountNumber, BigDecimal balance,
                    Currency currency, AccountType accountType,
                    AccountStatus accountStatus, LocalDate openDate,
-                   Long customerId) {
+                   Long customerNumber) {
         this.accountNumber = accountNumber;
         this.balance = balance;
         this.currency = currency;
         this.accountType = accountType;
         this.accountStatus = accountStatus;
         this.openDate = openDate;
-        this.customerId = customerId;
+        this.customerNumber = customerNumber;
     }
 }

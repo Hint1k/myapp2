@@ -2,6 +2,7 @@ package com.bank.webservice.controller;
 
 import com.bank.webservice.cache.CustomerCache;
 import com.bank.webservice.dto.Customer;
+import com.bank.webservice.dto.Transaction;
 import com.bank.webservice.publisher.CustomerEventPublisher;
 import com.bank.webservice.service.LatchService;
 import jakarta.validation.Valid;
@@ -51,7 +52,8 @@ public class CustomerController {
     }
 
     @PostMapping("/customers")
-    public String createCustomer(@Valid @ModelAttribute("customer") Customer newCustomer, BindingResult bindingResult) {
+    public String createCustomer(@Valid @ModelAttribute("customer") Customer newCustomer,
+                                 BindingResult bindingResult) {
         List<Customer> customers = cache.getAllCustomersFromCache();
         boolean customerExists = customers.stream()
                 .anyMatch(customer -> customer.getCustomerNumber().equals(newCustomer.getCustomerNumber()));

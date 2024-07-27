@@ -102,25 +102,38 @@ public class AccountController {
 
     @GetMapping("/accounts/all-accounts")
     public String getAllAccounts(Model model) {
+        return handleAccountsRetrieval(model, null);
+    }
+
+    @GetMapping("/accounts/all-accounts/{customerNumber}")
+    public String getAccountsByCustomerNumber(@PathVariable("customerNumber") Long customerNumber, Model model) {
+        return handleAccountsRetrieval(model, customerNumber);
+    }
+
+    private String handleAccountsRetrieval(Model model, Long customerNumber) {
         publisher.publishAllAccountsEvent();
         CountDownLatch latch = new CountDownLatch(1);
         this.latch.setLatch(latch);
         try {
             boolean latchResult = latch.await(MAX_RESPONSE_TIME, TimeUnit.SECONDS);
             if (latchResult) {
-                List<Account> accounts = cache.getAllAccountsFromCache();
+                List<Account> accounts;
+                if (customerNumber == null) {
+                    accounts = cache.getAllAccountsFromCache();
+                } else {
+                    accounts = cache.getCustomerAccountsFromCache(customerNumber);
+                }
                 if (accounts != null && !accounts.isEmpty()) {
                     accounts.sort(Comparator.comparing(Account::getAccountId));
                     model.addAttribute("accounts", accounts);
-                    return "account/all-accounts";
-                } else { // returns empty table when no accounts in database
+                } else {
                     model.addAttribute("accounts", new ArrayList<>());
-                    return "account/all-accounts";
                 }
+                return "account/all-accounts";
             } else {
                 String errorMessage = "The service is busy, please try again later.";
                 model.addAttribute("errorMessage", errorMessage);
-                log.error("Timeout waiting for accounts: {}", errorMessage);
+                log.error("Timeout waiting for transactions: {}", errorMessage);
                 return "error";
             }
         } catch (InterruptedException e) {

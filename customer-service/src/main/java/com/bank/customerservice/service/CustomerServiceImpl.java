@@ -7,6 +7,7 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -24,6 +25,7 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
+    @Transactional
     public void saveCustomer(Customer customer) {
         repository.save(customer);
         publisher.publishCustomerCreatedEvent(customer);
@@ -31,6 +33,7 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
+    @Transactional
     public void updateCustomer(Customer customer) {
         repository.save(customer);
         publisher.publishCustomerUpdatedEvent(customer);
@@ -38,6 +41,7 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
+    @Transactional
     public void deleteCustomer(Long customerId) {
         Customer customer = repository.findById(customerId).orElse(null);
         if (customer == null) {
@@ -52,6 +56,7 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
+    @Transactional
     public List<Customer> findAllCustomers() {
         List<Customer> customers = repository.findAll();
         publisher.publishAllCustomersEvent(customers);
@@ -60,6 +65,7 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
+    @Transactional
     public Customer findCustomerById(Long customerId) {
         Customer customer = repository.findById(customerId).orElse(null);
         if (customer == null) {
@@ -72,6 +78,7 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
+    @Transactional
     public Customer findCustomerByItsNumber(Long customerNumber) {
         Customer customer = repository.findCustomerByItsNumber(customerNumber);
         if (customer == null) {

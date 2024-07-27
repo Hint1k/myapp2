@@ -19,44 +19,33 @@ public class Customer {
     @Column(name = "id")
     private Long customerId;
 
-    @Column(name = "customer_number", nullable = false)
+    @Column(name = "customer_number", nullable = false, unique = true)
     private Long customerNumber;
 
-    @Column(name = "first_name", nullable = false)
-    private String firstName;
+    @Column(name = "name", nullable = false)
+    private String name;
 
-    @Column(name = "last_name", nullable = false)
-    private String lastName;
-
-    @Column(name = "middle_name")
-    private String middleName;
-
-    @Column(name = "email", nullable = false, unique = true)
+    @Column(name = "email", nullable = false)
     private String email;
 
-    @Column(name = "phone")
+    @Column(name = "phone", nullable = false)
     private String phone;
 
-//    @Embedded
-//    private Address address;
+    @Column(name = "address", nullable = false)
+    private String address;
 
-//    @ElementCollection
-//    @Column(name = "account_number")
-//    private List<Long> accountNumbers;
+    @ElementCollection
+    @Column(name = "account_number", nullable = false)
+    private List<Long> accountNumbers;
 
     // no customer id
-    public Customer(Long customerNumber, String firstName, String lastName, String middleName, String email,
-                    String phone
-//            , Address address
-//            , List<Long> accountNumbers
-    ) {
+    public Customer(Long customerNumber, String name, String email, String phone, String address,
+                    List<Long> accountNumbers) {
         this.customerNumber = customerNumber;
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.middleName = middleName;
+        this.name = name;
         this.email = email;
         this.phone = phone;
-//        this.address = address;
-//        this.accountNumbers = accountNumbers;
+        this.address = address;
+        this.accountNumbers = accountNumbers;
     }
 }

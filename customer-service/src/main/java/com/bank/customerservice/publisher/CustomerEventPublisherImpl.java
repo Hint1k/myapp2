@@ -25,13 +25,11 @@ public class CustomerEventPublisherImpl implements CustomerEventPublisher {
         CustomerCreatedEvent event = new CustomerCreatedEvent(
                 customer.getCustomerId(),
                 customer.getCustomerNumber(),
-                customer.getFirstName(),
-                customer.getLastName(),
-                customer.getMiddleName(),
+                customer.getName(),
                 customer.getEmail(),
-                customer.getPhone()
-//                , customer.getAddress()
-//              ,  customer.getAccountNumbers()
+                customer.getPhone(),
+                customer.getAddress(),
+                customer.getAccountNumbers()
         );
         kafkaTemplate.send("customer-created", event);
         log.info("Published customer-created event for customer id: {}", event.getCustomerId());
@@ -44,13 +42,11 @@ public class CustomerEventPublisherImpl implements CustomerEventPublisher {
                 // TODO remove fields that cannot be updated later
                 customer.getCustomerId(),
                 customer.getCustomerNumber(),
-                customer.getFirstName(),
-                customer.getLastName(),
-                customer.getMiddleName(),
+                customer.getName(),
                 customer.getEmail(),
-                customer.getPhone()
-//                , customer.getAddress()
-//              ,  customer.getAccountNumbers()
+                customer.getPhone(),
+                customer.getAddress(),
+                customer.getAccountNumbers()
         );
         kafkaTemplate.send("customer-updated", event);
         log.info("Published customer-updated event for customer id: {}", event.getCustomerId());
@@ -81,13 +77,11 @@ public class CustomerEventPublisherImpl implements CustomerEventPublisher {
         CustomerDetailsEvent event = new CustomerDetailsEvent(
                 customer.getCustomerId(),
                 customer.getCustomerNumber(),
-                customer.getFirstName(),
-                customer.getLastName(),
-                customer.getMiddleName(),
+                customer.getName(),
                 customer.getEmail(),
-                customer.getPhone()
-//                , customer.getAddress()
-//              ,  customer.getAccountNumbers()
+                customer.getPhone(),
+                customer.getAddress(),
+                customer.getAccountNumbers()
         );
         kafkaTemplate.send("customer-details-received", event);
         log.info("Published customer-details-received event for customer id: {}", event.getCustomerId());

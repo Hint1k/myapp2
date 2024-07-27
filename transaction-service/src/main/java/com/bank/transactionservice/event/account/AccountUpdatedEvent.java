@@ -23,5 +23,5 @@ public class AccountUpdatedEvent {
     private AccountType accountType;
     private AccountStatus accountStatus; // this field can be updated
     private LocalDate openDate;
-    private Long customerId;
+    private Long customerNumber;
 }

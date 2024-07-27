@@ -36,7 +36,7 @@ public class AccountEventListener {
                 event.getAccountType(),
                 event.getAccountStatus(),
                 event.getOpenDate(),
-                event.getCustomerId()
+                event.getCustomerNumber()
         );
         log.info("Received account-created event for account id: {}", event.getAccountId());
         cache.addAccountToCache(account.getAccountId(), account);
@@ -53,7 +53,7 @@ public class AccountEventListener {
                 event.getAccountType(),
                 event.getAccountStatus(),
                 event.getOpenDate(),
-                event.getCustomerId()
+                event.getCustomerNumber()
         );
         Long accountId = event.getAccountId();
         log.info("Received account-updated event for account id: {}", accountId);
@@ -91,7 +91,7 @@ public class AccountEventListener {
                 event.getAccountType(),
                 event.getAccountStatus(),
                 event.getOpenDate(),
-                event.getCustomerId()
+                event.getCustomerNumber()
         );
         log.info("Received account-details-received event for account id: {}", event.getAccountId());
         cache.addAccountToCache(account.getAccountId(), account);

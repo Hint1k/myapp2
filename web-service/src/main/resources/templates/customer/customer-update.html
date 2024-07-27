@@ -26,38 +26,14 @@
             </td>
         </tr>
         <tr>
-            <td><label>First Name:</label></td>
+            <td><label>Customer Name:</label></td>
             <td>
-                <input type="text" id="firstName" name="firstName" th:field="*{firstName}" class="form-control"
-                       placeholder="John">
+                <input type="text" id="name" name="name" th:field="*{name}" class="form-control"
+                       placeholder="John Doe">
             </td>
             <td>
-                <span th:if="${#fields.hasErrors('firstName')}" class="error" th:errors="*{firstName}">
-                    First Name is invalid
-                </span>
-            </td>
-        </tr>
-        <tr>
-            <td><label>Last Name:</label></td>
-            <td>
-                <input type="text" id="lastName" name="lastName" th:field="*{lastName}" class="form-control"
-                       placeholder="Smith">
-            </td>
-            <td>
-                <span th:if="${#fields.hasErrors('lastName')}" class="error" th:errors="*{lastName}">
-                    Last Name is invalid
-                </span>
-            </td>
-        </tr>
-        <tr>
-            <td><label>Middle Name:</label></td>
-            <td>
-                <input id="middleName" name="middleName" th:field="*{middleName}" class="form-control"
-                    placeholder="Alex">
-            </td>
-            <td>
-                <span th:if="${#fields.hasErrors('middleName')}" class="error" th:errors="*{middleName}">
-                    Middle Name is invalid
+                <span th:if="${#fields.hasErrors('name')}" class="error" th:errors="*{name}">
+                    Customer Name is invalid
                 </span>
             </td>
         </tr>
@@ -85,30 +61,30 @@
                 </span>
             </td>
         </tr>
-<!--        <tr>-->
-<!--            <td><label>Address:</label></td>-->
-<!--            <td>-->
-<!--                <input type="text" id="address" name="address" th:field="*{address}" class="form-control"-->
-<!--                       placeholder="105005, Russia, Moscow, Main Street, 10, 1">-->
-<!--            </td>-->
-<!--            <td>-->
-<!--                <span th:if="${#fields.hasErrors('address')}" class="error" th:errors="*{address}">-->
-<!--                    Address is invalid-->
-<!--                </span>-->
-<!--            </td>-->
-<!--        </tr>-->
-<!--        <tr>-->
-<!--            <td><label>Accounts:</label></td>-->
-<!--            <td>-->
-<!--                <input type="text" id="accounts" name="accounts" th:field="*{accounts}"-->
-<!--                       class="form-control readonly-field" placeholder="1, 2, 3, etc" readonly="readonly">-->
-<!--            </td>-->
-<!--            <td>-->
-<!--                <span th:if="${#fields.hasErrors('accounts')}" class="error" th:errors="*{accounts}">-->
-<!--                    Accounts are invalid-->
-<!--                </span>-->
-<!--            </td>-->
-<!--        </tr>-->
+        <tr>
+            <td><label>Address:</label></td>
+            <td>
+                <input type="text" id="address" name="address" th:field="*{address}" class="form-control"
+                       placeholder="10 Main st., Boston, USA">
+            </td>
+            <td>
+                <span th:if="${#fields.hasErrors('address')}" class="error" th:errors="*{address}">
+                    Address is invalid
+                </span>
+            </td>
+        </tr>
+        <tr>
+            <td><label>Account Numbers:</label></td>
+            <td>
+                <input type="text" id="accountNumbers" name="accountNumbers" th:field="*{accountNumbers}"
+                       class="form-control" placeholder="1, 2, 3, etc">
+            </td>
+            <td>
+                 <span th:if="${#fields.hasErrors('accountNumbers')}" class="error" th:errors="*{accountNumbers}">
+                   Account Numbers are invalid
+                 </span>
+            </td>
+        </tr>
         </tbody>
     </table>
     <br>

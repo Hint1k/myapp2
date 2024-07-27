@@ -1,5 +1,3 @@
-version: '2.27.0'
-
 services:
   postgres-account:
     image: postgres:16

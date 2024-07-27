@@ -19,16 +19,8 @@
         <td th:text="${customer.customerNumber}"></td>
     </tr>
     <tr>
-        <td>First Name:</td>
-        <td th:text="${customer.firstName}"></td>
-    </tr>
-    <tr>
-        <td>Last Name:</td>
-        <td th:text="${customer.lastName}"></td>
-    </tr>
-    <tr>
-        <td>Middle Name:</td>
-        <td th:text="${customer.middleName}"></td>
+        <td>Name:</td>
+        <td th:text="${customer.name}"></td>
     </tr>
     <tr>
         <td>Email:</td>
@@ -38,14 +30,14 @@
         <td>Phone:</td>
         <td th:text="${customer.phone}"></td>
     </tr>
-<!--    <tr>-->
-<!--        <td>Address:</td>-->
-<!--        <td th:text="${customer.address}"></td>-->
-<!--    </tr>-->
-<!--    <tr>-->
-<!--        <td>Accounts:</td>-->
-<!--        <td th:text="${customer.accounts}"></td>-->
-<!--    </tr>-->
+    <tr>
+        <td>Address:</td>
+        <td th:text="${customer.address}"></td>
+    </tr>
+    <tr>
+        <td>Accounts:</td>
+        <td th:text="${customer.accountNumbers}"></td>
+    </tr>
 </table>
 <hr>
 <button type="button" onclick="history.go(-1)" class="go-button"> Go to previous page</button>

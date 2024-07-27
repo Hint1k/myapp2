@@ -33,7 +33,7 @@ public class AccountEventListener {
                 event.getAccountType(),
                 event.getAccountStatus(),
                 event.getOpenDate(),
-                event.getCustomerId()
+                event.getCustomerNumber()
         );
         try {
             service.saveAccount(account);
@@ -56,7 +56,7 @@ public class AccountEventListener {
                 event.getAccountType(),
                 event.getAccountStatus(),
                 event.getOpenDate(),
-                event.getCustomerId()
+                event.getCustomerNumber()
         );
         try {
             service.updateAccount(account);

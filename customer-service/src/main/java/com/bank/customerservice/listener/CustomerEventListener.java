@@ -29,13 +29,11 @@ public class CustomerEventListener {
         Customer customer = new Customer(
                 event.getCustomerId(),
                 event.getCustomerNumber(),
-                event.getFirstName(),
-                event.getLastName(),
-                event.getMiddleName(),
+                event.getName(),
                 event.getEmail(),
-                event.getPhone()
-//              ,  event.getAddress()
-//              ,  event.getAccountNumbers()
+                event.getPhone(),
+                event.getAddress(),
+                event.getAccountNumbers()
         );
         try {
             service.saveCustomer(customer);
@@ -53,13 +51,11 @@ public class CustomerEventListener {
         Customer customer = new Customer(
                 event.getCustomerId(),
                 event.getCustomerNumber(),
-                event.getFirstName(),
-                event.getLastName(),
-                event.getMiddleName(),
+                event.getName(),
                 event.getEmail(),
-                event.getPhone()
-//              ,  event.getAddress()
-//              ,  event.getAccountNumbers()
+                event.getPhone(),
+                event.getAddress(),
+                event.getAccountNumbers()
         );
         try {
             service.updateCustomer(customer);

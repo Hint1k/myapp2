@@ -25,13 +25,11 @@ public class CustomerEventPublisherImpl implements CustomerEventPublisher {
         CustomerCreatedEvent event = new CustomerCreatedEvent(
                 customer.getCustomerId(),
                 customer.getCustomerNumber(),
-                customer.getFirstName(),
-                customer.getLastName(),
-                customer.getMiddleName(),
+                customer.getName(),
                 customer.getEmail(),
-                customer.getPhone()
-//                , customer.getAddress()
-//              ,  customer.getAccountNumbers()
+                customer.getPhone(),
+                customer.getAddress(),
+                customer.getAccountNumbers()
         );
         kafkaTemplate.send("customer-creation-requested", event);
         log.info("Published customer-creation-requested event for customer number: {}", event.getCustomerNumber());
@@ -43,13 +41,11 @@ public class CustomerEventPublisherImpl implements CustomerEventPublisher {
                 // TODO remove fields that cannot be updated later
                 customer.getCustomerId(),
                 customer.getCustomerNumber(),
-                customer.getFirstName(),
-                customer.getLastName(),
-                customer.getMiddleName(),
+                customer.getName(),
                 customer.getEmail(),
-                customer.getPhone()
-//                , customer.getAddress()
-//              ,  customer.getAccountNumbers()
+                customer.getPhone(),
+                customer.getAddress(),
+                customer.getAccountNumbers()
         );
         kafkaTemplate.send("customer-update-requested", event);
         log.info("Published customer-update-requested event for customer id: {}", event.getCustomerId());
@@ -83,17 +79,6 @@ public class CustomerEventPublisherImpl implements CustomerEventPublisher {
                 null,
                 null
         );
-//        CustomerDetailsEvent event = new CustomerDetailsEvent(
-//                customerId,
-//                null,
-//                null,
-//                null,
-//                null,
-//                null,
-//                null,
-//                null,
-//                null
-//        );
         kafkaTemplate.send("customer-details-requested", event);
         log.info("Published customer-details-requested event for customer id: {}", event.getCustomerId());
     }
