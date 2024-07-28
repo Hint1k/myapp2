@@ -9,6 +9,12 @@
     <script th:src="@{/frozenAccounts.js}"></script>
 </head>
 <body>
+<noscript>
+    <div class="warning">
+        **Warning:** This application requires JavaScript to function properly.
+        Please enable JavaScript in your browser settings to continue.
+    </div>
+</noscript>
 <h1>All Accounts</h1>
 <a th:href="@{/api/accounts/new-account}">
     <button>Create new account</button>

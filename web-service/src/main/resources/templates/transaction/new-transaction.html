@@ -9,6 +9,12 @@
     <script th:src="@{/transactionTypes.js}"></script>
 </head>
 <body>
+<noscript>
+    <div class="warning">
+        **Warning:** This application requires JavaScript to function properly.
+        Please enable JavaScript in your browser settings to continue.
+    </div>
+</noscript>
 <h1>Transaction Details</h1>
 <form method="post" action="/api/transactions" th:object="${transaction}" th:action="@{/api/transactions}">
     <table>

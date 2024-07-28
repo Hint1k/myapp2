@@ -8,6 +8,12 @@
     <link rel="stylesheet" th:href="@{/styles.css}">
 </head>
 <body>
+<noscript>
+    <div class="warning">
+        **Warning:** This application requires JavaScript to function properly.
+        Please enable JavaScript in your browser settings to continue.
+    </div>
+</noscript>
 <h1>Customer Details</h1>
 <table th:if="${customer}">
     <tr>

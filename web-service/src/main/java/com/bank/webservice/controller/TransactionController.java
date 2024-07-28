@@ -4,7 +4,7 @@ import com.bank.webservice.cache.TransactionCache;
 import com.bank.webservice.dto.Transaction;
 import com.bank.webservice.publisher.TransactionEventPublisher;
 import com.bank.webservice.service.LatchService;
-import com.bank.webservice.service.TransactionValidationService;
+import com.bank.webservice.service.ValidationService;
 import com.bank.webservice.util.TransactionStatus;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
@@ -30,12 +30,12 @@ public class TransactionController {
     private final TransactionEventPublisher publisher;
     private final TransactionCache cache;
     private final LatchService latch;
-    private final TransactionValidationService validator;
+    private final ValidationService validator;
     private static final int MAX_RESPONSE_TIME = 3; // seconds
 
     @Autowired
     public TransactionController(TransactionEventPublisher publisher, TransactionCache cache, LatchService latch,
-                                 TransactionValidationService validator) {
+                                 ValidationService validator) {
         this.publisher = publisher;
         this.cache = cache;
         this.latch = latch;

@@ -27,6 +27,5 @@
 - Frozen & suspended transactions are read-only. <br>
 
 **Customer service is only partially implemented:** 
-- Not all customer fields are present. <br>
 - No connection to account-service yet. <br>
-- No error proof / fields validation yet. <br>
+- Partial error proof / fields validation. <br>

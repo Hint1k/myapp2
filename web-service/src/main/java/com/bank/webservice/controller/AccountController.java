@@ -4,6 +4,7 @@ import com.bank.webservice.cache.AccountCache;
 import com.bank.webservice.dto.Account;
 import com.bank.webservice.publisher.AccountEventPublisher;
 import com.bank.webservice.service.LatchService;
+import com.bank.webservice.service.ValidationService;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,13 +29,16 @@ public class AccountController {
     private final LatchService latch;
     private final AccountEventPublisher publisher;
     private final AccountCache cache;
+    private final ValidationService validator;
     private static final int MAX_RESPONSE_TIME = 3; // seconds
 
     @Autowired
-    public AccountController(LatchService latch, AccountEventPublisher publisher, AccountCache cache) {
+    public AccountController(LatchService latch, AccountEventPublisher publisher,
+                             AccountCache cache, ValidationService validator) {
         this.latch = latch;
         this.publisher = publisher;
         this.cache = cache;
+        this.validator = validator;
     }
 
     // Cutting off the spaces entered by user to avoid errors
@@ -52,16 +56,10 @@ public class AccountController {
 
     @PostMapping("/accounts")
     public String createAccount(@Valid @ModelAttribute("account") Account newAccount, BindingResult bindingResult) {
-        List<Account> accounts = cache.getAllAccountsFromCache();
-        boolean accountExists = accounts.stream()
-                .anyMatch(account -> account.getAccountNumber().equals(newAccount.getAccountNumber()));
-        if (accountExists) {
-            bindingResult.rejectValue("accountNumber", "error.account",
-                    "Account with the same number already exists.");
-        }
+        validator.validateAccountIsNotExist(newAccount, bindingResult);
+        validator.validateCustomerExists(newAccount, bindingResult);
         if (bindingResult.hasErrors()) {
-            log.error("Account saving failed due to validation errors: {}",
-                    bindingResult.getAllErrors());
+            log.error("Account saving failed due to validation errors: {}", bindingResult.getAllErrors());
             return "account/new-account";
         }
         publisher.publishAccountCreatedEvent(newAccount);
@@ -76,8 +74,13 @@ public class AccountController {
     }
 
     @PostMapping("/accounts/account")
-    public String updateAccount(@ModelAttribute("account") Account account) {
-        publisher.publishAccountUpdatedEvent(account);
+    public String updateAccount(@ModelAttribute("account") Account newAccount, BindingResult bindingResult) {
+        validator.validateCustomerExists(newAccount, bindingResult);
+        if (bindingResult.hasErrors()) {
+            log.error("Account update failed due to validation errors: {}", bindingResult.getAllErrors());
+            return "account/account-update";
+        }
+        publisher.publishAccountUpdatedEvent(newAccount);
         return "redirect:/index";
     }
 

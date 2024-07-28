@@ -35,6 +35,7 @@ public class Customer {
     private String address;
 
     @ElementCollection
+    @CollectionTable(name = "customer_accounts", joinColumns = @JoinColumn(name = "customer_id"))
     @Column(name = "account_number", nullable = false)
     private List<Long> accountNumbers;
 

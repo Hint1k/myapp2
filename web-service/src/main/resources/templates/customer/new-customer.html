@@ -8,6 +8,12 @@
     <link rel="stylesheet" th:href="@{/styles.css}">
 </head>
 <body>
+<noscript>
+    <div class="warning">
+        **Warning:** This application requires JavaScript to function properly.
+        Please enable JavaScript in your browser settings to continue.
+    </div>
+</noscript>
 <h1>Customer Details</h1>
 <form method="post" action="/api/customers" th:object="${customer}" th:action="@{/api/customers}">
     <table>
@@ -77,7 +83,7 @@
             <td><label>Account Numbers:</label></td>
             <td>
                 <input type="text" id="accountNumbers" name="accountNumbers" th:field="*{accountNumbers}"
-                       class="form-control" placeholder="1, 2, 3, etc">
+                       class="form-control readonly-field" placeholder="1, 2, 3, etc" readonly="readonly">
             </td>
             <td>
                  <span th:if="${#fields.hasErrors('accountNumbers')}" class="error" th:errors="*{accountNumbers}">
@@ -90,10 +96,10 @@
     <br>
     <input type="submit" value="Save customer" class="save"/>
 </form>
-<!--<br>-->
-<!-- - Balance and open date cannot be changed manually. <br>-->
+<br>
+ - Account numbers can be added using customer update operation or account CRUD operations. <br>
 <!-- - Balance can be changed automatically by creating / updating / deleting transactions. <br>-->
-<!--<br>-->
+<br>
 <hr>
 <button type="button" onclick="history.go(-1)" class="go-button"> Go to previous page</button>
 <br><br>

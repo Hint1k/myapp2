@@ -1,7 +1,9 @@
 package com.bank.webservice.service;
 
-import com.bank.webservice.cache.AccountCacheImpl;
+import com.bank.webservice.cache.AccountCache;
+import com.bank.webservice.cache.CustomerCache;
 import com.bank.webservice.dto.Account;
+import com.bank.webservice.dto.Customer;
 import com.bank.webservice.dto.Transaction;
 import com.bank.webservice.util.AccountStatus;
 import com.bank.webservice.util.TransactionType;
@@ -10,16 +12,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.BindingResult;
 
+import java.util.List;
 import java.util.Objects;
 
 @Service
-public class TransactionValidationServiceImpl implements TransactionValidationService {
+public class ValidationServiceImpl implements ValidationService {
 
-    private final AccountCacheImpl cache;
+    private final AccountCache accountCache;
+    private final CustomerCache customerCache;
 
     @Autowired
-    public TransactionValidationServiceImpl(AccountCacheImpl cache) {
-        this.cache = cache;
+    public ValidationServiceImpl(AccountCache accountCache, CustomerCache customerCache) {
+        this.accountCache = accountCache;
+        this.customerCache = customerCache;
     }
 
     @Override
@@ -39,7 +44,7 @@ public class TransactionValidationServiceImpl implements TransactionValidationSe
                     "Account number has to be 1 or greater");
             return;
         }
-        Account sourceAccount = cache.getAccountFromCacheByAccountNumber(sourceAccountNumber);
+        Account sourceAccount = accountCache.getAccountFromCacheByAccountNumber(sourceAccountNumber);
         if (sourceAccount != null) {
             AccountStatus sourceAccountStatus = sourceAccount.getAccountStatus();
             if (!sourceAccountStatus.equals(AccountStatus.ACTIVE)) {
@@ -74,7 +79,7 @@ public class TransactionValidationServiceImpl implements TransactionValidationSe
                         "Two account numbers must be different");
                 return;
             }
-            Account destinationAccount = cache.getAccountFromCacheByAccountNumber(destinationAccountNumber);
+            Account destinationAccount = accountCache.getAccountFromCacheByAccountNumber(destinationAccountNumber);
             if (destinationAccount != null) {
                 AccountStatus destinationAccountStatus = destinationAccount.getAccountStatus();
                 if (!destinationAccountStatus.equals(AccountStatus.ACTIVE)) {
@@ -85,6 +90,53 @@ public class TransactionValidationServiceImpl implements TransactionValidationSe
                 bindingResult.rejectValue("accountDestinationNumber", "error.transaction",
                         "This account does not exist. Try another account");
             }
+        }
+    }
+
+    @Override
+    public void validateCustomer(Customer newCustomer, BindingResult bindingResult) {
+        List<Customer> customers = customerCache.getAllCustomersFromCache();
+        boolean customerExists = customers.stream()
+                .anyMatch(customer -> customer.getCustomerNumber().equals(newCustomer.getCustomerNumber()));
+        if (customerExists) {
+            bindingResult.rejectValue("customerNumber", "error.customer",
+                    "Customer with the such number already exist.");
+        }
+        // TODO add validation for other customer fields later
+    }
+
+    @Override
+    public void validateCustomerExists(Account newAccount, BindingResult bindingResult) {
+        List<Customer> customers = customerCache.getAllCustomersFromCache();
+        boolean customerExists = customers.stream()
+                .anyMatch(customer -> customer.getCustomerNumber().equals(newAccount.getCustomerNumber()));
+        if (!customerExists) {
+            bindingResult.rejectValue("customerNumber", "error.account",
+                    "Customer with the such number does not exist.");
+        }
+    }
+
+    @Override
+    public void validateAccountIsNotExist(Account newAccount, BindingResult bindingResult){
+        List<Account> accounts = accountCache.getAllAccountsFromCache();
+        boolean accountExists = accounts.stream()
+                .anyMatch(account -> account.getAccountNumber().equals(newAccount.getAccountNumber()));
+        if (accountExists) {
+            bindingResult.rejectValue("accountNumber", "error.account",
+                    "Account with the same number already exists.");
+        }
+    }
+
+    @Override
+    public void validateMultipleAccountsBelongToCustomer(Customer oldCustomer, BindingResult bindingResult) {
+        // TODO validate later that accounts numbers are a valid numbers.
+        List<Account> accounts = accountCache.getAllAccountsFromCache();
+        List<Account> matchingAccounts = accounts.stream()
+                .filter(account -> oldCustomer.getAccountNumbers().contains(account.getAccountNumber()))
+                .toList();
+        for (Account account : matchingAccounts) {
+            bindingResult.rejectValue("accountNumbers", "error.customer",
+                    "Account number " + account.getAccountNumber() + " already belong to this customer.");
         }
     }
 }

@@ -10,6 +10,12 @@
     <script th:src="@{/signAmount.js}"></script>
 </head>
 <body>
+<noscript>
+    <div class="warning">
+        **Warning:** This application requires JavaScript to function properly.
+        Please enable JavaScript in your browser settings to continue.
+    </div>
+</noscript>
 <h1>All Transactions</h1>
 <a th:href="@{/api/transactions/new-transaction}">
     <button>Create new transaction</button>

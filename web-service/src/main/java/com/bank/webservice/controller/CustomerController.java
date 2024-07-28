@@ -2,9 +2,9 @@ package com.bank.webservice.controller;
 
 import com.bank.webservice.cache.CustomerCache;
 import com.bank.webservice.dto.Customer;
-import com.bank.webservice.dto.Transaction;
 import com.bank.webservice.publisher.CustomerEventPublisher;
 import com.bank.webservice.service.LatchService;
+import com.bank.webservice.service.ValidationService;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,13 +29,16 @@ public class CustomerController {
     private final LatchService latch;
     private final CustomerEventPublisher publisher;
     private final CustomerCache cache;
+    private final ValidationService validator;
     private static final int MAX_RESPONSE_TIME = 3; // seconds
 
     @Autowired
-    public CustomerController(LatchService latch, CustomerEventPublisher publisher, CustomerCache cache) {
+    public CustomerController(LatchService latch, CustomerEventPublisher publisher,
+                              CustomerCache cache, ValidationService validator) {
         this.latch = latch;
         this.publisher = publisher;
         this.cache = cache;
+        this.validator = validator;
     }
 
     // Cutting off the spaces entered by user to avoid errors
@@ -54,16 +57,9 @@ public class CustomerController {
     @PostMapping("/customers")
     public String createCustomer(@Valid @ModelAttribute("customer") Customer newCustomer,
                                  BindingResult bindingResult) {
-        List<Customer> customers = cache.getAllCustomersFromCache();
-        boolean customerExists = customers.stream()
-                .anyMatch(customer -> customer.getCustomerNumber().equals(newCustomer.getCustomerNumber()));
-        if (customerExists) {
-            bindingResult.rejectValue("customerNumber", "error.customer",
-                    "customer with the same number already exists.");
-        }
+        validator.validateCustomer(newCustomer, bindingResult);
         if (bindingResult.hasErrors()) {
-            log.error("customer saving failed due to validation errors: {}",
-                    bindingResult.getAllErrors());
+            log.error("customer saving failed due to validation errors: {}", bindingResult.getAllErrors());
             return "customer/new-customer";
         }
         publisher.publishCustomerCreatedEvent(newCustomer);
@@ -78,8 +74,13 @@ public class CustomerController {
     }
 
     @PostMapping("/customers/customer")
-    public String updateCustomer(@ModelAttribute("customer") Customer customer) {
-        publisher.publishCustomerUpdatedEvent(customer);
+    public String updateCustomer(@ModelAttribute("customer") Customer oldCustomer, BindingResult bindingResult) {
+        validator.validateMultipleAccountsBelongToCustomer(oldCustomer, bindingResult);
+        if (bindingResult.hasErrors()) {
+            log.error("customer update failed due to validation errors: {}", bindingResult.getAllErrors());
+            return "customer/customer-update";
+        }
+        publisher.publishCustomerUpdatedEvent(oldCustomer);
         return "redirect:/index";
     }
 
