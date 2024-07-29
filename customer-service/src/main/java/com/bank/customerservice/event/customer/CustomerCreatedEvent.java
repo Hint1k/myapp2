@@ -1,10 +1,8 @@
-package com.bank.customerservice.event;
+package com.bank.customerservice.event.customer;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -17,11 +15,11 @@ public class CustomerCreatedEvent {
     private String email;
     private String phone;
     private String address;
-    private List<Long> accountNumbers;
+    private String accountNumbers;
 
     // no customer id
     public CustomerCreatedEvent(Long customerNumber, String name, String email, String phone, String address,
-                                List<Long> accountNumbers) {
+                                String accountNumbers) {
         this.customerNumber = customerNumber;
         this.name = name;
         this.email = email;

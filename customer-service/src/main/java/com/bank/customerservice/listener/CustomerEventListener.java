@@ -1,10 +1,10 @@
 package com.bank.customerservice.listener;
 
 import com.bank.customerservice.entity.Customer;
-import com.bank.customerservice.event.CustomerCreatedEvent;
-import com.bank.customerservice.event.CustomerDeletedEvent;
-import com.bank.customerservice.event.CustomerDetailsEvent;
-import com.bank.customerservice.event.CustomerUpdatedEvent;
+import com.bank.customerservice.event.customer.CustomerCreatedEvent;
+import com.bank.customerservice.event.customer.CustomerDeletedEvent;
+import com.bank.customerservice.event.customer.CustomerDetailsEvent;
+import com.bank.customerservice.event.customer.CustomerUpdatedEvent;
 import com.bank.customerservice.service.CustomerService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;

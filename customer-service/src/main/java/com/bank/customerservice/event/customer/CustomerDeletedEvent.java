@@ -1,4 +1,4 @@
-package com.bank.customerservice.event;
+package com.bank.customerservice.event.customer;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

@@ -12,8 +12,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.BindingResult;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.regex.Pattern;
 
 @Service
 public class ValidationServiceImpl implements ValidationService {
@@ -102,7 +104,6 @@ public class ValidationServiceImpl implements ValidationService {
             bindingResult.rejectValue("customerNumber", "error.customer",
                     "Customer with the such number already exist.");
         }
-        // TODO add validation for other customer fields later
     }
 
     @Override
@@ -117,7 +118,7 @@ public class ValidationServiceImpl implements ValidationService {
     }
 
     @Override
-    public void validateAccountIsNotExist(Account newAccount, BindingResult bindingResult){
+    public void validateAccountIsNotExist(Account newAccount, BindingResult bindingResult) {
         List<Account> accounts = accountCache.getAllAccountsFromCache();
         boolean accountExists = accounts.stream()
                 .anyMatch(account -> account.getAccountNumber().equals(newAccount.getAccountNumber()));
@@ -129,14 +130,68 @@ public class ValidationServiceImpl implements ValidationService {
 
     @Override
     public void validateMultipleAccountsBelongToCustomer(Customer oldCustomer, BindingResult bindingResult) {
-        // TODO validate later that accounts numbers are a valid numbers.
+        String accountNumbersString = oldCustomer.getAccountNumbers();
+
+        // Checking if customer has no accounts, it is allowed to have none
+        if (accountNumbersString == null || accountNumbersString.isEmpty()) {
+            return;
+        }
+
+        // Normalizing user input of account numbers
+        accountNumbersString = accountNumbersString.replaceAll("\\s+", ","); // removing spaces
+        accountNumbersString = accountNumbersString.replaceAll("^,|,$", ""); // removing wrong commas
+        oldCustomer.setAccountNumbers(accountNumbersString);
+
+        // Checking if string contains only digits divided by comma
+        List<Long> accountNumbersList = new ArrayList<>();
+
+        String[] accountNumbersArray = accountNumbersString.split(",");
+        Pattern digitPattern = Pattern.compile("^\\d+$");
+        for (String accountNumber : accountNumbersArray) {
+            if (!digitPattern.matcher(accountNumber).matches()) {
+                bindingResult.rejectValue("accountNumbers", "error.customer",
+                        "Account numbers must be digits divided by comma or space."
+                                + "No any other symbol is allowed");
+                break;
+            } else {
+                accountNumbersList.add(Long.parseLong(accountNumber));
+            }
+        }
+
+        // Checking if accounts exist
         List<Account> accounts = accountCache.getAllAccountsFromCache();
-        List<Account> matchingAccounts = accounts.stream()
-                .filter(account -> oldCustomer.getAccountNumbers().contains(account.getAccountNumber()))
+        List<Long> nonExistingAccountNumbers = accountNumbersList.stream()
+                .filter(number -> accounts.stream()
+                        .noneMatch(account -> account.getAccountNumber().equals(number)))
                 .toList();
-        for (Account account : matchingAccounts) {
+        if (!nonExistingAccountNumbers.isEmpty()) {
+            StringBuilder errorMessageBuilder = new StringBuilder("Following account numbers do not exist: ");
+            for (Long nonExistingAccountNumber : nonExistingAccountNumbers) {
+                errorMessageBuilder.append(nonExistingAccountNumber).append(", ");
+            }
+            String errorMessage = errorMessageBuilder.toString();
             bindingResult.rejectValue("accountNumbers", "error.customer",
-                    "Account number " + account.getAccountNumber() + " already belong to this customer.");
+                    errorMessage);
+        }
+
+        // Checking if account numbers already belong to another customer
+        List<Account> matchingAccounts = accounts.stream()
+                .filter(account -> accountNumbersList.contains(account.getAccountNumber()))
+                .filter(account -> {
+                    String customerNumber = String.valueOf(account.getCustomerNumber());
+                    return customerNumber != null && !customerNumber.isEmpty()
+                            && !customerNumber.equals(String.valueOf(oldCustomer.getCustomerNumber()));
+                })
+                .toList();
+        if (!matchingAccounts.isEmpty()) {
+            StringBuilder errorMessageBuilder =
+                    new StringBuilder("Following account numbers already belong to another customer: ");
+            for (Account matchingAccount : matchingAccounts) {
+                errorMessageBuilder.append(matchingAccount.getAccountNumber()).append(", ");
+            }
+            String errorMessage = errorMessageBuilder.toString();
+            bindingResult.rejectValue("accountNumbers", "error.customer",
+                    errorMessage);
         }
     }
 }

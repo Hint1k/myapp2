@@ -26,6 +26,6 @@
 - Deleted transactions refunds linked accounts. <br>
 - Frozen & suspended transactions are read-only. <br>
 
-**Customer service is only partially implemented:** 
-- No connection to account-service yet. <br>
+**Customer service is not fully implemented yet:** 
+- Partial connection with account-service. <br>
 - Partial error proof / fields validation. <br>

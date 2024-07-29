@@ -20,5 +20,5 @@ public interface AccountCache {
 
     Account getAccountFromCacheByAccountNumber(Long accountNumber);
 
-    List<Account> getCustomerAccountsFromCache(Long customerNumber);
+    List<Account> getAccountsFromCacheByCustomerNumber(Long customerNumber);
 }

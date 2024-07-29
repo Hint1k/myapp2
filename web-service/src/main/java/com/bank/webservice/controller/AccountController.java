@@ -124,7 +124,7 @@ public class AccountController {
                 if (customerNumber == null) {
                     accounts = cache.getAllAccountsFromCache();
                 } else {
-                    accounts = cache.getCustomerAccountsFromCache(customerNumber);
+                    accounts = cache.getAccountsFromCacheByCustomerNumber(customerNumber);
                 }
                 if (accounts != null && !accounts.isEmpty()) {
                     accounts.sort(Comparator.comparing(Account::getAccountId));

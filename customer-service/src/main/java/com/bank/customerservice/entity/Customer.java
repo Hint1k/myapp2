@@ -5,8 +5,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
-
 @Entity
 @Table(name = "customer")
 @Data
@@ -34,14 +32,12 @@ public class Customer {
     @Column(name = "address", nullable = false)
     private String address;
 
-    @ElementCollection
-    @CollectionTable(name = "customer_accounts", joinColumns = @JoinColumn(name = "customer_id"))
-    @Column(name = "account_number", nullable = false)
-    private List<Long> accountNumbers;
+    @Column(name = "account_numbers") // customer may not have any accounts
+    private String accountNumbers;
 
     // no customer id
     public Customer(Long customerNumber, String name, String email, String phone, String address,
-                    List<Long> accountNumbers) {
+                    String accountNumbers) {
         this.customerNumber = customerNumber;
         this.name = name;
         this.email = email;

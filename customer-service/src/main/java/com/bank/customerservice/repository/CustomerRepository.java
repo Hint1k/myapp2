@@ -8,5 +8,8 @@ public interface CustomerRepository extends JpaRepository<Customer, Long> {
 
     // ?1 represents first argument of the method, i.e. customerNumber
     @Query("SELECT a FROM Customer a WHERE a.customerNumber = ?1")
-    Customer findCustomerByItsNumber(Long customerNumber);
+    Customer findCustomerByCustomerNumber(Long customerNumber);
+
+    @Query("SELECT a FROM Customer a WHERE a.accountNumbers LIKE CONCAT('%', ?1, '%')")
+    Customer findCustomerByAccountNumber(String accountNumber);
 }

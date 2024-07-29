@@ -17,4 +17,8 @@ public interface CustomerService {
     Customer findCustomerById(Long customerId);
 
     Customer findCustomerByItsNumber(Long customerNumber);
+
+    Customer findCustomerByAccountNumber(String accountNumber);
+
+    void updateCustomerAccount(Long customerNumber, String accountNumber);
 }

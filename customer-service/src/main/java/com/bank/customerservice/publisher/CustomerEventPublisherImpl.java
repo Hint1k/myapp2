@@ -1,7 +1,7 @@
 package com.bank.customerservice.publisher;
 
 import com.bank.customerservice.entity.Customer;
-import com.bank.customerservice.event.*;
+import com.bank.customerservice.event.customer.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.core.KafkaTemplate;

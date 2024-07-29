@@ -115,11 +115,10 @@ public class CustomerController {
                 if (customers != null && !customers.isEmpty()) {
                     customers.sort(Comparator.comparing(Customer::getCustomerId));
                     model.addAttribute("customers", customers);
-                    return "customer/all-customers";
                 } else { // returns empty table when no customers in database
                     model.addAttribute("customers", new ArrayList<>());
-                    return "customer/all-customers";
                 }
+                return "customer/all-customers";
             } else {
                 String errorMessage = "The service is busy, please try again later.";
                 model.addAttribute("errorMessage", errorMessage);

@@ -74,7 +74,7 @@ public class AccountCacheImpl implements AccountCache {
     }
 
     @Override
-    public List<Account> getCustomerAccountsFromCache(Long customerNumber) {
+    public List<Account> getAccountsFromCacheByCustomerNumber(Long customerNumber) {
         List<Account> allAccounts = getAllAccountsFromCache();
         return allAccounts.stream()
                 .filter(a -> a.getCustomerNumber().equals(customerNumber))

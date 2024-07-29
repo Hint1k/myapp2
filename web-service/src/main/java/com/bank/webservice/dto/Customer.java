@@ -1,14 +1,11 @@
 package com.bank.webservice.dto;
 
-import jakarta.validation.constraints.Digits;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
-import java.util.List;
 
 import static java.lang.Integer.MAX_VALUE;
 
@@ -28,20 +25,24 @@ public class Customer implements Serializable {
     private String name;
 
     @NotNull(message = "Email is required")
+    @Pattern(regexp = "^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,4}$",
+            message = "Email format must be name@server.domain, name may include . and _")
     private String email;
 
     @NotNull(message = "Phone is required")
+    @Pattern(regexp = "^\\+\\d{11}$",
+            message = "Phone number must contain \"+\" and 11 digits with no spaces or symbols in between")
     private String phone;
 
     @NotNull(message = "Address is required")
     private String address;
 
-    @NotNull(message = "Account number is required")
-    private List<Long> accountNumbers;
+    // A customer may not have any accounts
+    private String accountNumbers;
 
     // no customer id
     public Customer(Long customerNumber, String name, String email, String phone, String address,
-                    List<Long> accountNumbers) {
+                    String accountNumbers) {
         this.customerNumber = customerNumber;
         this.name = name;
         this.email = email;
