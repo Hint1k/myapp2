@@ -33,6 +33,10 @@ th, td {
     background-color: lightgray;
 }
 
+.zero-accounts {
+    background-color: lightgray;
+}
+
 .readonly-field {
     background-color: #e9ecef;
     opacity: 0.6;

@@ -43,4 +43,13 @@ public class AccountEventListener {
         }
         acknowledgment.acknowledge();
     }
+
+    @KafkaListener(topics = "suspend-transaction-requested", groupId = "transaction-service")
+    public void handleSuspendTransactionEvent(AccountUpdatedEvent event, Acknowledgment acknowledgment) {
+        log.info("Received suspend-transaction-requested event for transaction id: {}", event.getAccountId());
+        if (!event.getAccountStatus().equals(AccountStatus.ACTIVE)) {
+            service.suspendOrUnsuspendTransactions(event.getAccountNumber(), "suspend");
+        }
+        acknowledgment.acknowledge();
+    }
 }

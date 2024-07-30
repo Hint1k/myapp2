@@ -15,6 +15,4 @@ public interface AccountService {
     List<Account> findAllAccounts();
 
     Account findAccountById(Long accountId);
-
-    Account findAccountByItsNumber(Long accountNumber);
 }

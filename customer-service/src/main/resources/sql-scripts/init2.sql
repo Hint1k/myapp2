@@ -26,4 +26,6 @@ create table customer
 );
 
 insert into customer (customer_number, name, email, phone, address, account_numbers)
-values (1, 'John Doe', 'jda@bank.com', '+19999999999', 'Boston, USA', '1');
+values (1, 'John Doe', 'john@bank.com', '+19999999991', 'Boston, USA', '1'),
+       (2, 'Jane Doe', 'jane@bank.com', '+19999999992', 'Boston, USA', '2'),
+       (3, 'Alex Smith', 'alex@bank.com', '+19999999993', 'Boston, USA', '3');

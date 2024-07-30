@@ -27,4 +27,6 @@ create table transaction
 
 insert into transaction (amount, transaction_time, transaction_type, transaction_status, account_source,
                          account_destination)
-values (100.00, '2024-06-07 13:21:02.312872', 'DEPOSIT', 'APPROVED', 1, 1);
+values (100.00, '2024-06-07 13:21:02.312872', 'DEPOSIT', 'APPROVED', 1, 1),
+       (100.00, '2024-06-07 13:21:02.312872', 'DEPOSIT', 'APPROVED', 2, 2),
+       (100.00, '2024-06-07 13:21:02.312872', 'DEPOSIT', 'APPROVED', 3, 3);

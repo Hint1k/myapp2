@@ -3,6 +3,7 @@ package com.bank.transactionservice.service;
 import com.bank.transactionservice.entity.Transaction;
 import com.bank.transactionservice.publisher.TransactionEventPublisher;
 import com.bank.transactionservice.repository.TransactionRepository;
+import com.bank.transactionservice.util.AccountStatus;
 import com.bank.transactionservice.util.TransactionStatus;
 import com.bank.transactionservice.util.TransactionType;
 import jakarta.persistence.EntityNotFoundException;
@@ -43,22 +44,22 @@ public class TransactionServiceImpl implements TransactionService {
         Long transactionId = newTransaction.getTransactionId();
         Transaction oldTransaction = repository.findById(transactionId).orElse(null);
         if (oldTransaction == null) {
-            // TODO return message to the web-service
-            throw new EntityNotFoundException("Transaction with id " + transactionId + " not found");
-        }
-        BigDecimal oldAmount = oldTransaction.getAmount();
-        TransactionType oldTransactionType = oldTransaction.getTransactionType();
-        Long oldSourceAccountNumber = oldTransaction.getAccountSourceNumber();
-        Long oldDestinationAccountNumber;
-        if (Objects.equals(oldTransactionType, TransactionType.TRANSFER)) {
-            oldDestinationAccountNumber = oldTransaction.getAccountDestinationNumber();
+            handleNullTransaction(transactionId);
         } else {
-            oldDestinationAccountNumber = oldSourceAccountNumber;
+            BigDecimal oldAmount = oldTransaction.getAmount();
+            TransactionType oldTransactionType = oldTransaction.getTransactionType();
+            Long oldSourceAccountNumber = oldTransaction.getAccountSourceNumber();
+            Long oldDestinationAccountNumber;
+            if (Objects.equals(oldTransactionType, TransactionType.TRANSFER)) {
+                oldDestinationAccountNumber = oldTransaction.getAccountDestinationNumber();
+            } else {
+                oldDestinationAccountNumber = oldSourceAccountNumber;
+            }
+            repository.save(newTransaction); // JPA repository should merge instead of save
+            publisher.publishTransactionUpdatedEvent(newTransaction, oldAmount, oldTransactionType,
+                    oldSourceAccountNumber, oldDestinationAccountNumber);
+            log.info("Transaction with id: {} updated", transactionId);
         }
-        repository.save(newTransaction); // JPA repository should merge instead of save
-        publisher.publishTransactionUpdatedEvent(newTransaction, oldAmount, oldTransactionType,
-                oldSourceAccountNumber, oldDestinationAccountNumber);
-        log.info("Transaction with id: {} updated", transactionId);
     }
 
     @Override
@@ -66,8 +67,7 @@ public class TransactionServiceImpl implements TransactionService {
     public void deleteTransaction(Long transactionId) {
         Transaction transaction = repository.findById(transactionId).orElse(null);
         if (transaction == null) {
-            // TODO return message to the web-service
-            throw new EntityNotFoundException("Transaction with id " + transactionId + " not found");
+            handleNullTransaction(transactionId);
         }
         repository.deleteById(transactionId);
         publisher.publishTransactionDeletedEvent(transaction);
@@ -88,8 +88,7 @@ public class TransactionServiceImpl implements TransactionService {
     public Transaction findTransactionById(Long transactionId) {
         Transaction transaction = repository.findById(transactionId).orElse(null);
         if (transaction == null) {
-            // TODO return message to the web-service
-            throw new EntityNotFoundException("Transaction with id " + transactionId + " not found");
+            handleNullTransaction(transactionId);
         }
         publisher.publishTransactionDetailsEvent(transaction);
         log.info("Retrieved transaction with id: {}", transactionId);
@@ -101,13 +100,13 @@ public class TransactionServiceImpl implements TransactionService {
     public void handleTransactionFailure(Long transactionId) {
         Transaction transaction = repository.findById(transactionId).orElse(null);
         if (transaction == null) {
-            // TODO return message to the web-service
-            throw new EntityNotFoundException("Transaction with id " + transactionId + " not found");
+            handleNullTransaction(transactionId);
+        } else {
+            transaction.setTransactionStatus(TransactionStatus.FAILED);
+            repository.save(transaction);
+            publisher.publishTransactionDetailsEvent(transaction);
+            log.info("Failed transaction with id: {}", transactionId);
         }
-        transaction.setTransactionStatus(TransactionStatus.FAILED);
-        repository.save(transaction);
-        publisher.publishTransactionDetailsEvent(transaction);
-        log.info("Failed transaction with id: {}", transactionId);
     }
 
     @Override
@@ -115,13 +114,13 @@ public class TransactionServiceImpl implements TransactionService {
     public void handleTransactionApproval(Long transactionId) {
         Transaction transaction = repository.findById(transactionId).orElse(null);
         if (transaction == null) {
-            // TODO return message to the web-service
-            throw new EntityNotFoundException("Transaction with id " + transactionId + " not found");
+            handleNullTransaction(transactionId);
+        } else {
+            transaction.setTransactionStatus(TransactionStatus.APPROVED);
+            repository.save(transaction);
+            publisher.publishTransactionDetailsEvent(transaction);
+            log.info("Approved transaction with id: {}", transactionId);
         }
-        transaction.setTransactionStatus(TransactionStatus.APPROVED);
-        repository.save(transaction);
-        publisher.publishTransactionDetailsEvent(transaction);
-        log.info("Approved transaction with id: {}", transactionId);
     }
 
     @Override
@@ -158,5 +157,11 @@ public class TransactionServiceImpl implements TransactionService {
         }
         log.info("Suspended {} transactions", transactions.size());
         publisher.publishAllTransactionsEvent(transactions);
+    }
+
+    private void handleNullTransaction(Long transactionId) {
+        // TODO return message to the web-service
+        log.error("Transaction with id {} not found", transactionId);
+        throw new EntityNotFoundException("Transaction with id " + transactionId + " not found");
     }
 }

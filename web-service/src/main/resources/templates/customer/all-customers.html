@@ -6,7 +6,7 @@
     <meta charset="UTF-8">
     <title>All Customers Page</title>
     <link rel="stylesheet" th:href="@{/styles.css}">
-<!--    <script th:src="@{/frozenCustomers.js}"></script>-->
+    <script th:src="@{/javascripts/zeroAccounts.js}"></script>
 </head>
 <body>
 <noscript>
@@ -32,7 +32,6 @@
     </thead>
     <tbody>
     <tr th:each="customer : ${customers}">
-<!--        th:data-status="${customer.customerStatus}">-->
         <td th:text="${customer.customerId}"></td>
         <td th:text="${customer.customerNumber}"></td>
         <td th:text="${customer.name}"></td>
@@ -64,10 +63,10 @@
     </tbody>
 </table>
 <hr>
-<!--<br>-->
-<!-- - Deleting a Customer freezes all linked transactions.<br>-->
-<!-- - Frozen transactions can't be updated or deleted. <br>-->
-<!--<br>-->
+<br>
+- Deleting a customer sets the linked account status to inactive. <br>
+- Other customer CRUD operations change the linked account data respectively. <br>
+<br>
 <button type="button" onclick="history.go(-1)" class="go-button"> Go to previous page</button>
 <br><br>
 <a th:href="@{/index}">

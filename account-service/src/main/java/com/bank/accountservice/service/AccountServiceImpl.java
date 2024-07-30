@@ -46,14 +46,13 @@ public class AccountServiceImpl implements AccountService {
     public void deleteAccount(Long accountId) {
         Account account = repository.findById(accountId).orElse(null);
         if (account == null) {
-            // TODO return message to the web-service
-            log.error("Account with id: {} not found", accountId);
-            throw new EntityNotFoundException("Account with id " + accountId + " not found");
+            handleNullAccount(accountId);
+        } else {
+            Long accountNumber = account.getAccountNumber();
+            repository.deleteById(accountId);
+            publisher.publishAccountDeletedEvent(accountId, accountNumber);
+            log.info("Account with id: {} deleted", accountId);
         }
-        Long accountNumber = account.getAccountNumber();
-        repository.deleteById(accountId);
-        publisher.publishAccountDeletedEvent(accountId, accountNumber);
-        log.info("Account with id: {} deleted", accountId);
     }
 
     @Override
@@ -70,25 +69,16 @@ public class AccountServiceImpl implements AccountService {
     public Account findAccountById(Long accountId) {
         Account account = repository.findById(accountId).orElse(null);
         if (account == null) {
-            // TODO return message to the web-service
-            log.error("Account with id: {} not found", accountId);
-            throw new EntityNotFoundException("Account with id " + accountId + " not found");
+            handleNullAccount(accountId);
         }
         publisher.publishAccountDetailsEvent(account);
         log.info("Retrieved account with id: {}", accountId);
         return account;
     }
 
-    @Override
-    @Transactional
-    public Account findAccountByItsNumber(Long accountNumber) {
-        Account account = repository.findAccountByItsNumber(accountNumber);
-        if (account == null) {
-            // TODO return message to the web-service
-            log.error("Account with number: {} not found", accountNumber);
-            throw new EntityNotFoundException("Account with number " + accountNumber + " not found");
-        }
-        log.info("Retrieved account with number: {}", accountNumber);
-        return account;
+    private void handleNullAccount(Long accountId) {
+        // TODO return message to the web-service
+        log.error("Account with id: {} not found", accountId);
+        throw new EntityNotFoundException("Account with id " + accountId + " not found");
     }
 }

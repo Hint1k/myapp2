@@ -19,13 +19,5 @@
 - Performing CRUD operations on accounts, transactions and customers.
 
 **Additional info:**
-
-- Account status (active / non-active) dictates linked transactions status (approved / suspended). <br>
-- Deleted account freezes linked transactions. <br>
-- Changed transaction amount updates linked account balances. <br>
-- Deleted transactions refunds linked accounts. <br>
-- Frozen & suspended transactions are read-only. <br>
-
-**Customer service is not fully implemented yet:** 
-- Partial connection with account-service. <br>
-- Partial error proof / fields validation. <br>
+- Customer and Transaction CRUD operations update linked accounts. <br>
+- Account CRUD operations update linked customer and transactions. <br>

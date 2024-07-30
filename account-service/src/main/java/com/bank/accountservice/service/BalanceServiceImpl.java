@@ -110,7 +110,7 @@ public class BalanceServiceImpl implements BalanceService {
 
     @Override
     public Account getAccountFromDatabase(Long accountNumber, Long transactionId) {
-        Account account = repository.findAccountByItsNumber(accountNumber);
+        Account account = repository.findAccountByAccountNumber(accountNumber);
         if (account == null) {
             return null;
         }

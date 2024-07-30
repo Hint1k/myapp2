@@ -27,4 +27,6 @@ create table account
 );
 
 insert into account (account_number, balance, currency, account_type, status, open_date, customer_number)
-values (1, 100.00, 'USD', 'SAVINGS', 'ACTIVE', '2024-05-24', 1);
+values (1, 100.00, 'USD', 'SAVINGS', 'ACTIVE', '2024-05-24', 1),
+       (2, 100.00, 'USD', 'SAVINGS', 'ACTIVE', '2024-05-25', 2),
+       (3, 100.00, 'USD', 'SAVINGS', 'ACTIVE', '2024-05-26', 3);
