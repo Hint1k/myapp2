@@ -10,7 +10,7 @@ public class LatchServiceImpl implements LatchService {
     private volatile CountDownLatch latch;
 
     @Override
-    public void setLatch(CountDownLatch latch){
+    public void setLatch(CountDownLatch latch) {
         this.latch = latch;
     }
 
@@ -19,8 +19,8 @@ public class LatchServiceImpl implements LatchService {
         return latch;
     }
 
-    @Override
-    public void resetLatch() {
+    @Override // synchronized to avoid race conditions
+    public synchronized void resetLatch() {
         latch = null;
     }
 }

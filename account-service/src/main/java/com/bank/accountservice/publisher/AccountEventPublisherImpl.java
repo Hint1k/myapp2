@@ -90,21 +90,4 @@ public class AccountEventPublisherImpl implements AccountEventPublisher {
         log.info("Published account-details-received event for account id: {}", event.getAccountId());
         // TODO add check later with completableFuture
     }
-
-    @Override
-    public void publishSuspendTransactionEvent(Account account) {
-        AccountUpdatedEvent event = new AccountUpdatedEvent(
-                account.getAccountId(),
-                account.getAccountNumber(),
-                null,
-                null,
-                null,
-                account.getAccountStatus(),
-                null,
-                null
-        );
-        kafkaTemplate.send("suspend-transaction-requested", event);
-        log.info("Published suspend-transaction-requested event for account id: {}", event.getAccountId());
-        // TODO add check later with completableFuture
-    }
 }

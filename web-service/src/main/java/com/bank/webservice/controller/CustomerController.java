@@ -16,10 +16,12 @@ import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 @Controller
 @Slf4j
@@ -113,7 +115,7 @@ public class CustomerController {
             if (latchResult) {
                 List<Customer> customers = cache.getAllCustomersFromCache();
                 if (customers != null && !customers.isEmpty()) {
-                    customers.sort(Comparator.comparing(Customer::getCustomerId));
+                    sortCustomers(customers);
                     model.addAttribute("customers", customers);
                 } else { // returns empty table when no customers in database
                     model.addAttribute("customers", new ArrayList<>());
@@ -131,5 +133,19 @@ public class CustomerController {
         } finally {
             this.latch.resetLatch();
         }
+    }
+
+    private void sortCustomers(List<Customer> customers) {
+        // Sort customers by ID
+        customers.sort(Comparator.comparing(Customer::getCustomerId));
+
+        // Sort account numbers within each customer in ascending order
+        customers.forEach(customer -> customer.setAccountNumbers(
+                Arrays.stream(customer.getAccountNumbers().split(","))
+                        .map(Long::parseLong)
+                        .sorted(Long::compareTo)
+                        .map(Object::toString)
+                        .collect(Collectors.joining(","))
+        ));
     }
 }

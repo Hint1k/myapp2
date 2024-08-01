@@ -28,6 +28,10 @@ public class AccountEventListener {
 
     @KafkaListener(topics = "account-updated", groupId = "customer-service")
     public void handleAccountUpdatedEvent(AccountUpdatedEvent event, Acknowledgment acknowledgment) {
+        if (!event.getCustomerNumber().equals(0L)) {
+            // this condition is to ignore account updated events intended for transaction update only
+            return;
+        }
         log.info("Received account-updated event for account number: {}", event.getAccountNumber());
         service.updateCustomerDueToAccountChange(event.getCustomerNumber(), String.valueOf(event.getAccountNumber()));
         acknowledgment.acknowledge();

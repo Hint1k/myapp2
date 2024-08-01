@@ -38,10 +38,12 @@ public class CustomerServiceImpl implements CustomerService {
     private void removeCustomerNumberFromAccount(Long customerNumber) {
         Account account = repository.findAccountByCustomerNumber(customerNumber);
         if (account != null) {
-            account.setCustomerNumber(0L); // 0 means no customer assigned to this account
+            /* "0L" = no customer assigned. It is needed for customer-service module of the project.
+            It helps to ignore unrelated account updates. */
+            account.setCustomerNumber(0L);
             account.setAccountStatus(AccountStatus.INACTIVE); // status changed since no customer assigned
             updateAccount(account);
-            publisher.publishSuspendTransactionEvent(account);
+            publisher.publishAccountUpdatedEvent(account);
         }
     }
 

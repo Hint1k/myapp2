@@ -35,6 +35,24 @@ services:
       retries: 5
     restart: unless-stopped
 
+  postgres-gateway:
+    image: postgres:16
+    container_name: postgres-gateway
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: 123
+      POSTGRES_DB: myapp2
+    ports:
+      - "5434:5432"
+    volumes:
+      - ./gateway-service/src/main/resources/sql-scripts/init3.sql:/docker-entrypoint-initdb.d/init3.sql
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U user" ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    restart: unless-stopped
+
   postgres-transaction:
     image: postgres:16
     container_name: postgres-transaction
@@ -43,9 +61,9 @@ services:
       POSTGRES_PASSWORD: 123
       POSTGRES_DB: myapp2
     ports:
-      - "5434:5432"
+      - "5435:5432"
     volumes:
-      - ./transaction-service/src/main/resources/sql-scripts/init3.sql:/docker-entrypoint-initdb.d/init3.sql
+      - ./transaction-service/src/main/resources/sql-scripts/init4.sql:/docker-entrypoint-initdb.d/init4.sql
     healthcheck:
       test: [ "CMD-SHELL", "pg_isready -U user" ]
       interval: 30s
@@ -67,7 +85,7 @@ services:
       - postgres-account
       - kafka
     ports:
-      - "8081:8080"
+      - "8084:8080"
     healthcheck:
       test: [ "CMD-SHELL", "nc -z localhost 8080" ]
       interval: 30s
@@ -87,6 +105,28 @@ services:
       KAFKA_BOOTSTRAP_SERVERS: kafka:9092
     depends_on:
       - postgres-customer
+      - kafka
+    ports:
+      - "8083:8080"
+    healthcheck:
+      test: [ "CMD-SHELL", "nc -z localhost 8080" ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    restart: unless-stopped
+
+  gateway-service:
+    build:
+      context: ./gateway-service
+      dockerfile: Dockerfile
+    container_name: gateway-service
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-gateway:5432/myapp2
+      SPRING_DATASOURCE_USERNAME: user
+      SPRING_DATASOURCE_PASSWORD: 123
+      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+    depends_on:
+      - postgres-gateway
       - kafka
     ports:
       - "8082:8080"
@@ -111,7 +151,23 @@ services:
       - postgres-transaction
       - kafka
     ports:
-      - "8083:8080"
+      - "8081:8080"
+    healthcheck:
+      test: [ "CMD-SHELL", "nc -z localhost 8080" ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    restart: unless-stopped
+
+  web-service:
+    build:
+      context: ./web-service
+      dockerfile: Dockerfile
+    container_name: web-service
+    depends_on:
+      - kafka
+    ports:
+      - "8080:8080"
     healthcheck:
       test: [ "CMD-SHELL", "nc -z localhost 8080" ]
       interval: 30s
@@ -145,22 +201,6 @@ services:
       - "6379:6379"
     healthcheck:
       test: [ "CMD", "redis-cli", "ping" ]
-      interval: 30s
-      timeout: 10s
-      retries: 5
-    restart: unless-stopped
-
-  web-service:
-    build:
-      context: ./web-service
-      dockerfile: Dockerfile
-    container_name: web-service
-    depends_on:
-      - kafka
-    ports:
-      - "8080:8080"
-    healthcheck:
-      test: [ "CMD-SHELL", "nc -z localhost 8080" ]
       interval: 30s
       timeout: 10s
       retries: 5

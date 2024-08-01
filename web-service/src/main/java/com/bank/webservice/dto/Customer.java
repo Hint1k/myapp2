@@ -22,6 +22,7 @@ public class Customer implements Serializable {
     private Long customerNumber;
 
     @NotNull(message = "Name is required")
+    @Pattern(regexp = "^[a-zA-Z]+$", message = "Name must only contain letters")
     private String name;
 
     @NotNull(message = "Email is required")

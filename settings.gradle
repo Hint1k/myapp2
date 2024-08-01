@@ -3,4 +3,5 @@ include 'account-service'
 include 'transaction-service'
 include 'web-service'
 include 'customer-service'
+include 'gateway-service'
 

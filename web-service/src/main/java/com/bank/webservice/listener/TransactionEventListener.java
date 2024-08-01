@@ -72,7 +72,7 @@ public class TransactionEventListener {
         List<Transaction> transactions = event.getTransactions();
         log.info("Received all-transactions-received event with {} transactions", transactions.size());
         cache.addAllTransactionsToCache(transactions);
-        CountDownLatch latch = this.latch.getLatch();
+        CountDownLatch latch = this.latch.getLatch(); // latch initialisation is in TransactionController clas
         if (latch != null) {
             latch.countDown();
         }

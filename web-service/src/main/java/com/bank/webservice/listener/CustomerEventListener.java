@@ -77,7 +77,7 @@ public class CustomerEventListener {
         List<Customer> customers = event.getCustomers();
         log.info("Received all-customers-received event with {} customers", customers.size());
         cache.addAllCustomersToCache(customers);
-        CountDownLatch latch = this.latch.getLatch();
+        CountDownLatch latch = this.latch.getLatch(); // latch initialisation is in CustomerController class
         if (latch != null) {
             latch.countDown();
         }

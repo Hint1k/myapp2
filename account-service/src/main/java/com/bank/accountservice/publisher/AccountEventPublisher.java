@@ -15,6 +15,4 @@ public interface AccountEventPublisher {
     void publishAllAccountsEvent(List<Account> accounts);
 
     void publishAccountDetailsEvent(Account account);
-
-    void publishSuspendTransactionEvent(Account account);
 }

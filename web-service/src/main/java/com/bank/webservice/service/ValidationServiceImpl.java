@@ -170,8 +170,7 @@ public class ValidationServiceImpl implements ValidationService {
                 errorMessageBuilder.append(nonExistingAccountNumber).append(", ");
             }
             String errorMessage = errorMessageBuilder.toString();
-            bindingResult.rejectValue("accountNumbers", "error.customer",
-                    errorMessage);
+            bindingResult.rejectValue("accountNumbers", "error.customer", errorMessage);
         }
 
         // Checking if account numbers already belong to another customer
@@ -186,12 +185,18 @@ public class ValidationServiceImpl implements ValidationService {
         if (!matchingAccounts.isEmpty()) {
             StringBuilder errorMessageBuilder =
                     new StringBuilder("Following account numbers already belong to another customer: ");
+            boolean hasErrors = false;
             for (Account matchingAccount : matchingAccounts) {
-                errorMessageBuilder.append(matchingAccount.getAccountNumber()).append(", ");
+                if (!matchingAccount.getCustomerNumber().equals(0L)) {
+                    errorMessageBuilder.append(matchingAccount.getAccountNumber()).append(", ");
+                    hasErrors = true;
+                } // no errors if customer number = 0, since it means no customer assigned.
             }
-            String errorMessage = errorMessageBuilder.toString();
-            bindingResult.rejectValue("accountNumbers", "error.customer",
-                    errorMessage);
+            if (hasErrors) {
+                String errorMessage = errorMessageBuilder.toString().trim();
+                errorMessage = errorMessage.replaceAll(",$", ""); // removing last commas
+                bindingResult.rejectValue("accountNumbers", "error.customer", errorMessage);
+            }
         }
     }
 }

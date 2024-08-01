@@ -74,7 +74,7 @@ public class AccountEventListener {
         List<Account> accounts = event.getAccounts();
         log.info("Received all-accounts-received event with {} accounts", accounts.size());
         cache.addAllAccountsToCache(accounts);
-        CountDownLatch latch = this.latch.getLatch();
+        CountDownLatch latch = this.latch.getLatch(); // latch initialisation is in AccountController class
         if (latch != null) {
             latch.countDown();
         }
