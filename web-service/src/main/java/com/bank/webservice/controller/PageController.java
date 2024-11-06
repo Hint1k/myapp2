@@ -15,4 +15,9 @@ public class PageController {
     public String showErrorPage() {
         return "error";
     }
+
+    @GetMapping("/login")
+    public String showLoginPage() {
+        return "gateway/login";
+    }
 }

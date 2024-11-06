@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns="http://www.w3.org/1999/html" >
+<head>
+    <meta charset="UTF-8">
+    <title>Successful registration confirmation page</title>
+</head>
+<body>
+<h1> Success </h1>
+The registration is complete.
+<br> <br>
+Please return back to the login page and
+<br>
+use your newly created credentials to access the system:
+<br>
+<hr>
+<a th:href="@{/}">
+    <button type="button" class="update-button">Return back</button>
+</a>
+</body>
+</html>
