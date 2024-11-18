@@ -13,6 +13,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.JdbcUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import javax.sql.DataSource;
 
@@ -21,10 +22,12 @@ import javax.sql.DataSource;
 @Slf4j
 public class SecurityConfig {
 
+    private final JwtFilter jwtFilter;
     private final DataSource securityDataSource;
 
     @Autowired
-    public SecurityConfig(DataSource securityDataSource) {
+    public SecurityConfig(JwtFilter jwtFilter, DataSource securityDataSource) {
+        this.jwtFilter = jwtFilter;
         this.securityDataSource = securityDataSource;
     }
 
@@ -43,7 +46,11 @@ public class SecurityConfig {
         try {
             http.csrf(AbstractHttpConfigurer::disable)
                     .authorizeHttpRequests((authorize) -> authorize
-                            .anyRequest().permitAll());
+                            .requestMatchers("/index").hasAnyRole("ADMIN")
+                            .requestMatchers("/login").permitAll()
+                            .anyRequest().authenticated()
+                    )
+                    .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
             return http.build();
         } catch (Exception e) {
             log.error("Error configuring security filter chain", e);
@@ -56,8 +63,7 @@ public class SecurityConfig {
         AuthenticationManagerBuilder authenticationManager = http.getSharedObject(AuthenticationManagerBuilder.class);
         try {
             authenticationManager.jdbcAuthentication()
-                    .dataSource(securityDataSource)
-                    .passwordEncoder(passwordEncoder());
+                    .dataSource(securityDataSource).passwordEncoder(passwordEncoder());
             return authenticationManager.build();
         } catch (Exception e) {
             log.error("Error in AuthenticationManager", e);

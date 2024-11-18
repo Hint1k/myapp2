@@ -1,57 +1,54 @@
 package com.bank.webservice.controller;
 
-import com.bank.webservice.dto.Credentials;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.web.reactive.function.BodyInserters;
+import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Mono;
 
-import java.util.Objects;
+import java.util.Map;
 
 @Controller
+@Slf4j
 public class LoginController {
 
-    private final ObjectMapper objectMapper;
-    private final RestTemplate restTemplate;
+    private final WebClient webClient;
+    private final static String URL = "http://gateway-service:8080/login";
 
     @Autowired
-    public LoginController(ObjectMapper objectMapper, RestTemplate restTemplate) {
-        this.objectMapper = objectMapper;
-        this.restTemplate = restTemplate;
+    public LoginController(WebClient webClient) {
+        this.webClient = webClient;
     }
 
     @PostMapping("/login")
-    public String loginUser(@RequestParam String username, @RequestParam String password, Model model) {
-        String gatewayUrl = "http://gateway-service:8080/login";
-        Credentials credentials = new Credentials(username, password);
-        credentials.setUsername(username);
-        credentials.setPassword(password);
+    public Mono<String> login(@RequestParam String username, @RequestParam String password, Model model) {
+        Map<String, String> credentials = Map.of("username", username, "password", password);
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("Content-Type", "application/json");
-
-        try {
-            HttpEntity<String> requestEntity = new HttpEntity<>(objectMapper.writeValueAsString(credentials), headers);
-            ResponseEntity<String> response =
-                    restTemplate.exchange(gatewayUrl, HttpMethod.POST, requestEntity, String.class);
-
-            if (Objects.requireNonNull(response.getBody()).contains("authenticated")) {
-                return "redirect:/index";
-            } else {
-                model.addAttribute("error", "Invalid credentials");
-                return "gateway/login";
-            }
-        } catch (JsonProcessingException e) {
-            model.addAttribute("error", "An error occurred while processing your request.");
-            return "gateway/login";
-        }
+        return webClient.post()
+                .uri(URL)
+                .body(BodyInserters.fromValue(credentials))
+                .retrieve()
+                .onStatus(HttpStatusCode::is4xxClientError, clientResponse -> {
+                    if (clientResponse.statusCode() == HttpStatus.UNAUTHORIZED) {
+                        return Mono.error(new RuntimeException("Invalid credentials"));
+                    }
+                    return Mono.error(new RuntimeException("Unexpected client error occurred."));
+                })
+                .onStatus(HttpStatusCode::is5xxServerError, clientResponse ->
+                        Mono.error(new RuntimeException("An internal server error occurred. Please try again.")))
+                .bodyToMono(String.class)
+                .flatMap(response -> {
+                    model.addAttribute("token", response);
+                    return Mono.just("redirect:/index");
+                })
+                .onErrorResume(RuntimeException.class, ex -> {
+                    model.addAttribute("errorMessage", ex.getMessage());
+                    return Mono.just("gateway/login");
+                });
     }
 }
