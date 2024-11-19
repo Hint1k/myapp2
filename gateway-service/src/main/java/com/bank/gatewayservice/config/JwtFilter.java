@@ -8,13 +8,14 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Component
 @Slf4j
@@ -36,17 +37,25 @@ public class JwtFilter extends OncePerRequestFilter {
         String jwtToken = null;
 
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
-            log.info("JWT detected: {}", jwtToken);
             jwtToken = authHeader.substring(7);
+            if (jwtToken.startsWith("{\"token\":\"") && jwtToken.endsWith("\"}")) {
+                jwtToken = jwtToken.substring(10, jwtToken.length() - 2);
+            }
             username = jwtUtil.extractUsername(jwtToken);
         }
 
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             if (jwtUtil.validateToken(jwtToken, username)) {
+                List<String> roles = jwtUtil.extractRoles(jwtToken);
                 UsernamePasswordAuthenticationToken authentication =
-                        new UsernamePasswordAuthenticationToken(username, null, List.of());
-                authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                        new UsernamePasswordAuthenticationToken(username, null, roles.stream()
+                                .map(SimpleGrantedAuthority::new)
+                                .collect(Collectors.toList()));
                 SecurityContextHolder.getContext().setAuthentication(authentication);
+
+            } else {
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                return;
             }
         }
 

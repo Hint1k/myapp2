@@ -8,7 +8,9 @@ import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
 import java.util.Date;
+import java.util.List;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Component
 public class JwtUtil {
@@ -23,8 +25,8 @@ public class JwtUtil {
         this.secretKey = Keys.hmacShaKeyFor(secretKey.getBytes());
     }
 
-    public String generateToken(String username) {
-        return Jwts.builder().subject(username).issuedAt(new Date())
+    public String generateToken(String username, List<String> roles) {
+        return Jwts.builder().subject(username).claim("roles", roles).issuedAt(new Date())
                 .expiration(new Date(System.currentTimeMillis() + jwtExpirationInMs))
                 .signWith(secretKey, Jwts.SIG.HS512).compact(); // HS512 is an algorithm for signing tokens
     }
@@ -49,5 +51,13 @@ public class JwtUtil {
 
     private boolean isTokenExpired(String token) {
         return extractClaim(token, Claims::getExpiration).before(new Date());
+    }
+
+    public List<String> extractRoles(String token) {
+        Claims claims = extractAllClaims(token);
+        List<?> roles = claims.get("roles", List.class);
+        return roles.stream()
+                .map(Object::toString)
+                .collect(Collectors.toList());
     }
 }
