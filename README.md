@@ -13,13 +13,14 @@
 - Account-service - handles account CRUD operations and account-database <br>
 - Transaction-service - handles transaction CRUD operations and transaction-database <br>
 - Customer-service - handles customer CRUD operations and customer-database <br>
-- Gateway-service - handles user authentication process and user-database <br>
+- Gateway-service - handles user authentication / authorization process and user-database <br>
 
 **User actions available:** <br>
 
-- Performing CRUD operations on accounts, transactions and customers.
-- User authentication process is only partially implemented
+- Performing CRUD operations on accounts, transactions and customers. <br>
+- User authentication / authorization process is only partially implemented. <br>
 
-**Additional info:**
+**Additional info:** <br>
+
 - Customer and Transaction CRUD operations update linked accounts. <br>
 - Account CRUD operations update linked customer and transactions. <br>

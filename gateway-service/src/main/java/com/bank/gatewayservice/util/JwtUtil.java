@@ -60,4 +60,17 @@ public class JwtUtil {
                 .map(Object::toString)
                 .collect(Collectors.toList());
     }
+
+    public String extractTokenFromHeader(String authHeader) {
+        String token = authHeader.substring(7);
+        if (token.startsWith("{\"token\":\"") && token.endsWith("\"}")) {
+            return token.substring(10, token.length() - 2);
+        }
+        return token;
+    }
+
+    public long getRemainingValidity(String token) {
+        Date expirationDate = extractClaim(token, Claims::getExpiration);
+        return expirationDate.getTime() - System.currentTimeMillis();
+    }
 }

@@ -1,20 +1,17 @@
 package com.bank.webservice.controller;
 
-import jakarta.servlet.http.HttpSession;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.*;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Controller
 @Slf4j
@@ -30,79 +27,53 @@ public class LoginController {
     }
 
     @PostMapping("/login")
-    public Mono<String> login(@RequestParam String username, @RequestParam String password, Model model,
-                              HttpSession session) {
-
+    public Mono<String> login(@RequestParam String username, @RequestParam String password, Model model) {
         Map<String, String> credentials = Map.of("username", username, "password", password);
 
-        return webClient.post()
-                .uri(AUTH_URL)
-                .body(BodyInserters.fromValue(credentials))
-                .retrieve()
-                .onStatus(HttpStatusCode::is4xxClientError, clientResponse -> {
-                    if (clientResponse.statusCode() == HttpStatus.UNAUTHORIZED) {
-                        return Mono.error(new RuntimeException("Invalid credentials"));
-                    }
-                    return Mono.error(new RuntimeException("Unexpected client error occurred."));
-                })
-                .onStatus(HttpStatusCode::is5xxServerError, clientResponse ->
-                        Mono.error(new RuntimeException("An internal server error occurred. Please try again.")))
-                .bodyToMono(String.class)
-                .flatMap(token -> {
-                    // Store the token in the session
-                    session.setAttribute("jwtToken", token);
-                    return Mono.just("redirect:/index");
-                })
-                .onErrorResume(RuntimeException.class, ex -> {
-                    model.addAttribute("errorMessage", ex.getMessage());
-                    return Mono.just("gateway/login");
-                });
-    }
-
-    @GetMapping("/index")
-    public Mono<String> showIndex(HttpSession session, Model model) {
-        String token = (String) session.getAttribute("jwtToken");
-        if (token == null) {
-            return Mono.just("redirect:/login");
-        }
-
-//        return webClient.get()
-//                .uri(VERIFY_URL)
-//                .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
-//                .retrieve()
-//                .onStatus(HttpStatusCode::is4xxClientError, clientResponse -> {
-//                    if (clientResponse.statusCode() == HttpStatus.FORBIDDEN) {
-//                        return Mono.error(new RuntimeException("Access Denied"));
-//                    }
-//                    return Mono.error(new RuntimeException("Unexpected client error occurred."));
-//                })
-//                .onStatus(HttpStatusCode::is5xxServerError, clientResponse ->
-//                        Mono.error(new RuntimeException("An internal server error occurred. Please try again.")))
-//                .bodyToMono(String.class)
-//                .flatMap(response -> Mono.just("index")) // Authorized
-//                .onErrorResume(RuntimeException.class, ex -> {
-//                    if ("Access Denied".equals(ex.getMessage())) {
-//                        return Mono.just("access-denied");
-//                    }
-//                    return Mono.just("redirect:/login");
-//                });
-
-        return webClient.get()
-                .uri(VERIFY_URL)
-                .headers(headers -> headers.setBearerAuth(token))
-                .retrieve()
-                .bodyToMono(Map.class)
+        return webClient.post().uri(AUTH_URL).bodyValue(credentials).retrieve().bodyToMono(Map.class)
                 .flatMap(response -> {
-                    List<String> roles = (List<String>) response.get("roles");
-                    if (roles.contains("ROLE_ADMIN")) {
-                        return Mono.just("index");
-                    } else {
-                        return Mono.just("access-denied");
-                    }
+                    String token = (String) response.get("token");
+                    // Call gateway-service to verify roles
+                    return webClient.get()
+                            .uri(VERIFY_URL)
+                            .header("Authorization", "Bearer " + token)
+                            .retrieve()
+                            .bodyToMono(Map.class)
+                            .flatMap(verificationResponse -> {
+                                 // handling unchecked cast
+                                Optional<Object> rolesObject = Optional.ofNullable(verificationResponse.get("roles"));
+                                List<String> roles = rolesObject.filter(List.class::isInstance)
+                                        .map(obj -> (List<?>) obj) // Cast to List<?> safely
+                                        .map(list -> list.stream()
+                                                .filter(String.class::isInstance)
+                                                .map(String.class::cast)
+                                                .toList()
+                                        )
+                                        .orElseGet(() -> {
+                                            log.warn("Roles are either null or not a list of strings");
+                                            return List.of(); // Default to empty list if roles are invalid
+                                        });
+
+                                // Store roles and token in the session or model
+                                model.addAttribute("token", token);
+                                model.addAttribute("roles", roles);
+
+                                // Redirect based on roles
+                                if (roles.contains("ROLE_ADMIN")) {
+                                    return Mono.just("redirect:/admin/index");
+                                } else if (roles.contains("ROLE_MANAGER")) {
+                                    return Mono.just("redirect:/manager/index");
+                                } else if (roles.contains("ROLE_USER")) {
+                                    return Mono.just("redirect:/user/index");
+                                } else {
+                                    return Mono.just("redirect:/access-denied");
+                                }
+                            });
                 })
                 .onErrorResume(e -> {
-                    model.addAttribute("errorMessage", "Token validation failed");
-                    return Mono.just("redirect:/login");
+                    model.addAttribute("errorMessage",
+                            "Invalid credentials or access denied.");
+                    return Mono.just("gateway/login");
                 });
     }
 }

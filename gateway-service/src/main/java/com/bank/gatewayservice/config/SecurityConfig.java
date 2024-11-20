@@ -1,5 +1,6 @@
 package com.bank.gatewayservice.config;
 
+import com.bank.gatewayservice.filter.JwtFilter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -46,7 +47,9 @@ public class SecurityConfig {
         try {
             http.csrf(AbstractHttpConfigurer::disable)
                     .authorizeHttpRequests((authorize) -> authorize
-                            .requestMatchers("/index").hasAnyRole("ADMIN")
+                            .requestMatchers("/admin/**").hasRole("ADMIN")
+                            .requestMatchers("/manager/**").hasRole("MANAGER")
+                            .requestMatchers("/user/**").hasRole("USER")
                             .requestMatchers("/login", "/verify").permitAll()
                             .anyRequest().authenticated()
                     )
