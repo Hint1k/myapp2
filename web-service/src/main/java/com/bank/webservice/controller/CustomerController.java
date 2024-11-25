@@ -65,7 +65,7 @@ public class CustomerController {
             return "customer/new-customer";
         }
         publisher.publishCustomerCreatedEvent(newCustomer);
-        return "redirect:/index";
+        return "redirect:/home";
     }
 
     @PutMapping("/customers/{customerId}")
@@ -83,13 +83,13 @@ public class CustomerController {
             return "customer/customer-update";
         }
         publisher.publishCustomerUpdatedEvent(oldCustomer);
-        return "redirect:/index";
+        return "redirect:/home";
     }
 
     @DeleteMapping("/customers/{customerId}")
     public String deleteCustomer(@PathVariable("customerId") Long customerId) {
         publisher.publishCustomerDeletedEvent(customerId);
-        return "redirect:/index";
+        return "redirect:/home";
     }
 
     @GetMapping("/customers/{customerId}")

@@ -64,6 +64,7 @@ public class UserController {
             log.info("Generated new token for user {}: {}", username, jwtToken);
 
             // Cache the new token
+            log.info("Storing token in Redis for user {}: {}", username, jwtToken);
             redisTemplate.opsForValue().set("token:" + username, jwtToken, Duration.ofMinutes(60));
 
             return ResponseEntity.ok(Map.of("token", jwtToken));

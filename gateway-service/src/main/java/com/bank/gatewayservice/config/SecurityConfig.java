@@ -50,6 +50,7 @@ public class SecurityConfig {
                             .requestMatchers("/admin/**").hasRole("ADMIN")
                             .requestMatchers("/manager/**").hasRole("MANAGER")
                             .requestMatchers("/user/**").hasRole("USER")
+                            .requestMatchers("/proxy/**").authenticated()
                             .requestMatchers("/login", "/verify").permitAll()
                             .anyRequest().authenticated()
                     )

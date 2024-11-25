@@ -35,11 +35,14 @@ public class JwtFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
 
+        log.info("JWT filter invoked for URL: {}", request.getRequestURI());
+
         final String authHeader = request.getHeader("Authorization");
         String username = null;
         String token = null;
 
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
+            log.warn("Token expired for user {}: {}", username, token);
             token = jwtUtil.extractTokenFromHeader(authHeader);
             username = jwtUtil.extractUsername(token);
         }
@@ -48,8 +51,17 @@ public class JwtFilter extends OncePerRequestFilter {
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             // Fetch the token from Redis cache using the key "token:<username>"
             String cachedToken = (String) redisTemplate.opsForValue().get("token:" + username);
+            log.info("Fetching cached token from Redis for user {}: {}", username, cachedToken);
 
-            if (cachedToken != null && cachedToken.equals(token)) { // Validate cached token matches the received token
+            if (cachedToken != null && cachedToken.equals(token)) {
+                // Validate cached token matches the received token
+                if (jwtUtil.isTokenExpired(token)) {
+                    log.warn("Token expired for user {}: {}", username, token);
+                    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                    return;
+                }
+
+                // Token is valid and not expired, authenticate the user
                 List<String> roles = jwtUtil.extractRoles(token);
                 UsernamePasswordAuthenticationToken authentication =
                         new UsernamePasswordAuthenticationToken(username, null, roles.stream()

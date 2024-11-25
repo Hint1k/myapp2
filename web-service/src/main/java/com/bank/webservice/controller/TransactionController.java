@@ -64,7 +64,7 @@ public class TransactionController {
             return "transaction/new-transaction";
         }
         publisher.publishTransactionCreatedEvent(transaction);
-        return "redirect:/index";
+        return "redirect:/home";
     }
 
     @PutMapping("/transactions/{transactionId}")
@@ -84,13 +84,13 @@ public class TransactionController {
             return "transaction/transaction-update";
         }
         publisher.publishTransactionUpdatedEvent(transaction);
-        return "redirect:/index";
+        return "redirect:/home";
     }
 
     @DeleteMapping("/transactions/{transactionId}")
     public String deleteTransaction(@PathVariable("transactionId") Long transactionId) {
         publisher.publishTransactionDeletedEvent(transactionId);
-        return "redirect:/index";
+        return "redirect:/home";
     }
 
     @GetMapping("/transactions/{transactionId}")

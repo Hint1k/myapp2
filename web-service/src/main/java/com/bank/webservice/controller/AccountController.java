@@ -63,7 +63,7 @@ public class AccountController {
             return "account/new-account";
         }
         publisher.publishAccountCreatedEvent(newAccount);
-        return "redirect:/index";
+        return "redirect:/home";
     }
 
     @PutMapping("/accounts/{accountId}")
@@ -81,13 +81,13 @@ public class AccountController {
             return "account/account-update";
         }
         publisher.publishAccountUpdatedEvent(newAccount);
-        return "redirect:/index";
+        return "redirect:/home";
     }
 
     @DeleteMapping("/accounts/{accountId}")
     public String deleteAccount(@PathVariable("accountId") Long accountId) {
         publisher.publishAccountDeletedEvent(accountId);
-        return "redirect:/index";
+        return "redirect:/home";
     }
 
     @GetMapping("/accounts/{accountId}")

@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns="http://www.w3.org/1999/html">
+<head>
+    <meta charset="UTF-8">
+    <title>Index page</title>
+    <link rel="stylesheet" th:href="@{/styles.css}">
+</head>
+<body>
+<noscript>
+    <div class="warning">
+        **Warning:** This application requires JavaScript to function properly.
+        Please enable JavaScript in your browser settings to continue.
+    </div>
+</noscript>
+<h1>Welcome</h1>
+<br>
+<a th:href="@{/api/accounts/all-accounts}">
+    <button>Show all accounts</button>
+</a>
+<br><br>
+<a th:href="@{/api/transactions/all-transactions}">
+    <button>Show all transactions</button>
+</a>
+<br><br>
+<a th:href="@{/api/customers/all-customers}">
+    <button>Show all customers</button>
+</a>
+<br><br>
+<a th:href="@{/registration}">
+    <button>Show registration success page</button>
+</a>
+</body>
+</html>
