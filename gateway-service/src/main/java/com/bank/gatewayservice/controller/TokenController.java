@@ -14,12 +14,12 @@ import java.util.Map;
 
 @RestController
 @Slf4j
-public class AuthController {
+public class TokenController {
 
     private final JwtUtil jwtUtil;
 
     @Autowired
-    public AuthController(JwtUtil jwtUtil) {
+    public TokenController(JwtUtil jwtUtil) {
         this.jwtUtil = jwtUtil;
     }
 

@@ -42,9 +42,9 @@ public class JwtFilter extends OncePerRequestFilter {
         String token = null;
 
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
-            log.warn("Token expired for user {}: {}", username, token);
             token = jwtUtil.extractTokenFromHeader(authHeader);
             username = jwtUtil.extractUsername(token);
+            log.info("Extracted token: {} for user: {}", token, username);
         }
 
         // Check if username is present and token validation is required

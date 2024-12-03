@@ -3,9 +3,9 @@
 - Banking app <br>
 - Microservice architecture <br>
 - Event-driven approach <br>
-- Maximum microservices decoupling (no shared libraries, separate databases)
-- Multi-threading and asynchronous programming <br>
+- Maximum microservices decoupling (no shared libraries, separate databases) <br>
 - Secure API Gateway <br>
+- JWT Token-Based Authentication for every request <br>
 
 **The current state of the app:**<br>
 
@@ -24,3 +24,7 @@
 
 - Customer and Transaction CRUD operations update linked accounts. <br>
 - Account CRUD operations update linked customer and transactions. <br>
+
+**To log in, use the following credentials:** <br>
+- Username: admin <br>
+- Password: 123 <br> 
