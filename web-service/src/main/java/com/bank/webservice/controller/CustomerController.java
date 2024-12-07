@@ -4,7 +4,9 @@ import com.bank.webservice.cache.CustomerCache;
 import com.bank.webservice.dto.Customer;
 import com.bank.webservice.publisher.CustomerEventPublisher;
 import com.bank.webservice.service.LatchService;
+import com.bank.webservice.service.RoleService;
 import com.bank.webservice.service.ValidationService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,15 +34,17 @@ public class CustomerController {
     private final CustomerEventPublisher publisher;
     private final CustomerCache cache;
     private final ValidationService validator;
+    private final RoleService role;
     private static final int MAX_RESPONSE_TIME = 3; // seconds
 
     @Autowired
     public CustomerController(LatchService latch, CustomerEventPublisher publisher,
-                              CustomerCache cache, ValidationService validator) {
+                              CustomerCache cache, ValidationService validator, RoleService role) {
         this.latch = latch;
         this.publisher = publisher;
         this.cache = cache;
         this.validator = validator;
+        this.role = role;
     }
 
     // Cutting off the spaces entered by user to avoid errors
@@ -106,7 +110,7 @@ public class CustomerController {
     }
 
     @GetMapping("/customers/all-customers")
-    public String getAllCustomers(Model model) {
+    public String getAllCustomers(Model model, HttpServletRequest request) {
         publisher.publishAllCustomersEvent();
         CountDownLatch latch = new CountDownLatch(1);
         this.latch.setLatch(latch);
@@ -120,6 +124,7 @@ public class CustomerController {
                 } else { // returns empty table when no customers in database
                     model.addAttribute("customers", new ArrayList<>());
                 }
+                role.addRoleToModel(request, model);
                 return "customer/all-customers";
             } else {
                 String errorMessage = "The service is busy, please try again later.";

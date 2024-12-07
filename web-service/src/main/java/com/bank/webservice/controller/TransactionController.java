@@ -4,8 +4,10 @@ import com.bank.webservice.cache.TransactionCache;
 import com.bank.webservice.dto.Transaction;
 import com.bank.webservice.publisher.TransactionEventPublisher;
 import com.bank.webservice.service.LatchService;
+import com.bank.webservice.service.RoleService;
 import com.bank.webservice.service.ValidationService;
 import com.bank.webservice.util.TransactionStatus;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,15 +33,17 @@ public class TransactionController {
     private final TransactionCache cache;
     private final LatchService latch;
     private final ValidationService validator;
+    private final RoleService role;
     private static final int MAX_RESPONSE_TIME = 3; // seconds
 
     @Autowired
     public TransactionController(TransactionEventPublisher publisher, TransactionCache cache, LatchService latch,
-                                 ValidationService validator) {
+                                 ValidationService validator, RoleService role) {
         this.publisher = publisher;
         this.cache = cache;
         this.latch = latch;
         this.validator = validator;
+        this.role = role;
     }
 
     // Cutting off the spaces entered by user to avoid errors
@@ -109,16 +113,17 @@ public class TransactionController {
     }
 
     @GetMapping("/transactions/all-transactions")
-    public String getAllTransactions(Model model) {
-        return handleTransactionsRetrieval(model, null);
+    public String getAllTransactions(Model model, HttpServletRequest request) {
+        return handleTransactionsRetrieval(model, request,null);
     }
 
     @GetMapping("/transactions/all-transactions/{accountNumber}")
-    public String getTransactionsByAccountNumber(@PathVariable("accountNumber") Long accountNumber, Model model) {
-        return handleTransactionsRetrieval(model, accountNumber);
+    public String getTransactionsByAccountNumber(@PathVariable("accountNumber") Long accountNumber, Model model,
+                                                 HttpServletRequest request) {
+        return handleTransactionsRetrieval(model, request, accountNumber);
     }
 
-    private String handleTransactionsRetrieval(Model model, Long accountNumber) {
+    private String handleTransactionsRetrieval(Model model, HttpServletRequest request, Long accountNumber) {
         publisher.publishAllTransactionsEvent();
         CountDownLatch latch = new CountDownLatch(1);
         this.latch.setLatch(latch);
@@ -137,6 +142,7 @@ public class TransactionController {
                 } else {
                     model.addAttribute("transactions", new ArrayList<>());
                 }
+                role.addRoleToModel(request, model);
                 return "transaction/all-transactions";
             } else {
                 String errorMessage = "The service is busy, please try again later.";

@@ -4,8 +4,8 @@
 - Microservice architecture <br>
 - Event-driven approach <br>
 - Maximum microservices decoupling (no shared libraries, separate databases) <br>
-- Secure API Gateway <br>
-- JWT Token-Based Authentication for every request <br>
+- Secure API Gateway  <br>
+- JWT Token-Based Authentication <br>
 
 **The current state of the app:**<br>
 
@@ -26,5 +26,6 @@
 - Account CRUD operations update linked customer and transactions. <br>
 
 **To log in, use the following credentials:** <br>
-- Username: admin <br>
-- Password: 123 <br> 
+
+- Usernames: admin or manager<br>
+- Password: 123 <br>

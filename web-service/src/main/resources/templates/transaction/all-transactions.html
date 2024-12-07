@@ -17,10 +17,10 @@
     </div>
 </noscript>
 <h1>All Transactions</h1>
-<a th:href="@{/api/transactions/new-transaction}">
+<a th:if="${role == 'ROLE_ADMIN'}" th:href="@{/api/transactions/new-transaction}">
     <button>Create new transaction</button>
+    <br><br>
 </a>
-<br><br>
 <table>
     <thead>
     <tr>
@@ -47,12 +47,12 @@
                       th:method="get">
                     <button type="submit">Details</button>
                 </form>
-                <form action="#"
+                <form th:if="${role == 'ROLE_ADMIN'}" action="#"
                       th:action="@{/api/transactions/{transactionId}(transactionId=${transaction.transactionId})}"
                       th:method="put">
                     <button type="submit" class="update-button">Update</button>
                 </form>
-                <form action="#"
+                <form th:if="${role == 'ROLE_ADMIN'}" action="#"
                       th:action="@{/api/transactions/{transactionId}(transactionId=${transaction.transactionId})}"
                       th:method="delete"
                       onclick="if(!(confirm('Are you sure to delete this transaction?'))) return false">

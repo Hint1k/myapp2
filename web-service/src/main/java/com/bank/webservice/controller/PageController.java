@@ -43,4 +43,9 @@ public class PageController {
     public String showRegistrationSuccessfulPage() {
         return "registration-successful";
     }
+
+    @GetMapping("/access-denied")
+    public String showAccessDeniedPage() {
+        return "access-denied";
+    }
 }

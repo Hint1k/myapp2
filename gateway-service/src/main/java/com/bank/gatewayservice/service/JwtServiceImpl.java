@@ -1,10 +1,10 @@
-package com.bank.gatewayservice.util;
+package com.bank.gatewayservice.service;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import javax.crypto.SecretKey;
 import java.util.Date;
@@ -12,15 +12,14 @@ import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-@Component
-public class JwtUtil {
-
+@Service
+public class JwtServiceImpl implements JwtService {
     private final SecretKey secretKey;
 
     @Value("${jwt.expiration}")
     private long jwtExpirationInMs;
 
-    public JwtUtil(@Value("${jwt.secret}") String secretKey) {
+    public JwtServiceImpl(@Value("${jwt.secret}") String secretKey) {
         // Generate a SecretKey instance from the provided string
         this.secretKey = Keys.hmacShaKeyFor(secretKey.getBytes());
     }
@@ -40,7 +39,7 @@ public class JwtUtil {
         return extractClaim(token, Claims::getSubject);
     }
 
-    private  <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
+    private <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
         final Claims claims = extractAllClaims(token);
         return claimsResolver.apply(claims);
     }

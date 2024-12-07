@@ -4,7 +4,9 @@ import com.bank.webservice.cache.AccountCache;
 import com.bank.webservice.dto.Account;
 import com.bank.webservice.publisher.AccountEventPublisher;
 import com.bank.webservice.service.LatchService;
+import com.bank.webservice.service.RoleService;
 import com.bank.webservice.service.ValidationService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,15 +32,17 @@ public class AccountController {
     private final AccountEventPublisher publisher;
     private final AccountCache cache;
     private final ValidationService validator;
+    private final RoleService role;
     private static final int MAX_RESPONSE_TIME = 3; // seconds
 
     @Autowired
     public AccountController(LatchService latch, AccountEventPublisher publisher,
-                             AccountCache cache, ValidationService validator) {
+                             AccountCache cache, ValidationService validator, RoleService role) {
         this.latch = latch;
         this.publisher = publisher;
         this.cache = cache;
         this.validator = validator;
+        this.role = role;
     }
 
     // Cutting off the spaces entered by user to avoid errors
@@ -104,16 +108,17 @@ public class AccountController {
     }
 
     @GetMapping("/accounts/all-accounts")
-    public String getAllAccounts(Model model) {
-        return handleAccountsRetrieval(model, null);
+    public String getAllAccounts(Model model, HttpServletRequest request) {
+        return handleAccountsRetrieval(model, request, null);
     }
 
     @GetMapping("/accounts/all-accounts/{customerNumber}")
-    public String getAccountsByCustomerNumber(@PathVariable("customerNumber") Long customerNumber, Model model) {
-        return handleAccountsRetrieval(model, customerNumber);
+    public String getAccountsByCustomerNumber(@PathVariable("customerNumber") Long customerNumber, Model model,
+                                              HttpServletRequest request) {
+        return handleAccountsRetrieval(model, request, customerNumber);
     }
 
-    private String handleAccountsRetrieval(Model model, Long customerNumber) {
+    private String handleAccountsRetrieval(Model model, HttpServletRequest request, Long customerNumber) {
         publisher.publishAllAccountsEvent();
         CountDownLatch latch = new CountDownLatch(1);
         this.latch.setLatch(latch);
@@ -132,6 +137,7 @@ public class AccountController {
                 } else {
                     model.addAttribute("accounts", new ArrayList<>());
                 }
+                role.addRoleToModel(request, model);
                 return "account/all-accounts";
             } else {
                 String errorMessage = "The service is busy, please try again later.";

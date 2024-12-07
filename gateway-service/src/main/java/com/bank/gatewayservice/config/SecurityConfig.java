@@ -1,6 +1,6 @@
 package com.bank.gatewayservice.config;
 
-import com.bank.gatewayservice.filter.JwtFilter;
+import com.bank.gatewayservice.service.FilterServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -23,12 +23,12 @@ import javax.sql.DataSource;
 @Slf4j
 public class SecurityConfig {
 
-    private final JwtFilter jwtFilter;
+    private final FilterServiceImpl filterServiceImpl;
     private final DataSource securityDataSource;
 
     @Autowired
-    public SecurityConfig(JwtFilter jwtFilter, DataSource securityDataSource) {
-        this.jwtFilter = jwtFilter;
+    public SecurityConfig(FilterServiceImpl filterServiceImpl, DataSource securityDataSource) {
+        this.filterServiceImpl = filterServiceImpl;
         this.securityDataSource = securityDataSource;
     }
 
@@ -47,14 +47,10 @@ public class SecurityConfig {
         try {
             http.csrf(AbstractHttpConfigurer::disable)
                     .authorizeHttpRequests((authorize) -> authorize
-                            .requestMatchers("/admin/**").hasRole("ADMIN")
-                            .requestMatchers("/manager/**").hasRole("MANAGER")
-                            .requestMatchers("/user/**").hasRole("USER")
-                            .requestMatchers("/proxy/**").authenticated()
                             .requestMatchers("/login", "/verify").permitAll()
                             .anyRequest().authenticated()
                     )
-                    .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+                    .addFilterBefore(filterServiceImpl, UsernamePasswordAuthenticationFilter.class);
             return http.build();
         } catch (Exception e) {
             log.error("Error configuring security filter chain", e);

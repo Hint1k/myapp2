@@ -1,6 +1,6 @@
 package com.bank.gatewayservice.controller;
 
-import com.bank.gatewayservice.util.JwtUtil;
+import com.bank.gatewayservice.service.JwtService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -16,11 +16,11 @@ import java.util.Map;
 @Slf4j
 public class TokenController {
 
-    private final JwtUtil jwtUtil;
+    private final JwtService jwtService;
 
     @Autowired
-    public TokenController(JwtUtil jwtUtil) {
-        this.jwtUtil = jwtUtil;
+    public TokenController(JwtService jwtService) {
+        this.jwtService = jwtService;
     }
 
     @GetMapping("/verify")
@@ -33,18 +33,18 @@ public class TokenController {
             }
 
             // Extract the token from the header
-            String token = jwtUtil.extractTokenFromHeader(authHeader);
+            String token = jwtService.extractTokenFromHeader(authHeader);
             log.info("Received token in verify endpoint: {}", token);
 
             // Direct token validation via JwtUtil
-            String username = jwtUtil.extractUsername(token);
-            if (!jwtUtil.validateToken(token, username)) {
+            String username = jwtService.extractUsername(token);
+            if (!jwtService.validateToken(token, username)) {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                         .body(Map.of("error", "Invalid or expired token"));
             }
 
             // Extract roles and prepare response
-            List<String> roles = jwtUtil.extractRoles(token);
+            List<String> roles = jwtService.extractRoles(token);
             Map<String, Object> response = Map.of("username", username, "roles", roles);
 
             return ResponseEntity.ok(response);

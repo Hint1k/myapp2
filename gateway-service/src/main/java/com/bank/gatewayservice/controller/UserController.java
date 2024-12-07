@@ -1,6 +1,6 @@
 package com.bank.gatewayservice.controller;
 
-import com.bank.gatewayservice.util.JwtUtil;
+import com.bank.gatewayservice.service.JwtService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -22,14 +22,14 @@ import java.util.stream.Collectors;
 @Slf4j
 public class UserController {
 
-    private final JwtUtil jwtUtil;
+    private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
     private final RedisTemplate<String, Object> redisTemplate;
 
     @Autowired
-    public UserController(JwtUtil jwtUtil, AuthenticationManager authenticationManager,
+    public UserController(JwtService jwtService, AuthenticationManager authenticationManager,
                           RedisTemplate<String, Object> redisTemplate) {
-        this.jwtUtil = jwtUtil;
+        this.jwtService = jwtService;
         this.authenticationManager = authenticationManager;
         this.redisTemplate = redisTemplate;
     }
@@ -47,7 +47,7 @@ public class UserController {
             // Check if a valid token exists in Redis
             String cachedToken = (String) redisTemplate.opsForValue().get("token:" + username);
             if (cachedToken != null) {
-                long remainingValidity = jwtUtil.getRemainingValidity(cachedToken);
+                long remainingValidity = jwtService.getRemainingValidity(cachedToken);
                 if (remainingValidity > 0) {
                     log.info("Token found in cache for user {}: {}", username, cachedToken);
                     log.info("Remaining validity: {} ms", remainingValidity);
@@ -59,7 +59,7 @@ public class UserController {
             List<String> roles = authentication.getAuthorities().stream().map(GrantedAuthority::getAuthority)
                     .collect(Collectors.toList());
 
-            String jwtToken = jwtUtil.generateToken(username, roles);
+            String jwtToken = jwtService.generateToken(username, roles);
             log.info("Authentication successful for user: {}", username);
             log.info("Generated new token for user {}: {}", username, jwtToken);
 
