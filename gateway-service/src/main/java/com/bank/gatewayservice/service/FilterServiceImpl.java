@@ -8,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -16,6 +17,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 
 import java.io.IOException;
+import java.util.Comparator;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -27,6 +29,7 @@ public class FilterServiceImpl extends OncePerRequestFilter implements FilterSer
     private final JwtService jwtService;
     private final RedisTemplate<String, Object> redisTemplate;
     private final HandlerExceptionResolver exceptionResolver;
+    private final List<String> priorityOrder = List.of("ROLE_ADMIN", "ROLE_MANAGER", "ROLE_USER");
 
     @Autowired
     public FilterServiceImpl(JwtService jwtService, RedisTemplate<String, Object> redisTemplate,
@@ -37,8 +40,8 @@ public class FilterServiceImpl extends OncePerRequestFilter implements FilterSer
     }
 
     @Override
-    public void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
-                                    FilterChain filterChain) {
+    public void doFilterInternal(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response,
+                                 @NonNull FilterChain filterChain) {
         try {
             log.info("JWT filter invoked for URL: {}", request.getRequestURI());
 
@@ -82,7 +85,8 @@ public class FilterServiceImpl extends OncePerRequestFilter implements FilterSer
                     log.info("Validating access for target URI: {}", targetURI);
 
                     // Validate access based on target URI
-                    validateRoleAccess(targetURI, roles, response);
+                    String httpMethod = request.getMethod();
+                    validateRoleAccess(targetURI, roles, response, httpMethod);
 
                     if (response.isCommitted()) {
                         return;
@@ -108,36 +112,36 @@ public class FilterServiceImpl extends OncePerRequestFilter implements FilterSer
         }
     }
 
-    private void validateRoleAccess(String requestURI, List<String> roles, HttpServletResponse response)
-            throws IOException {
+    private void validateRoleAccess(String requestURI, List<String> roles, HttpServletResponse response,
+                                    String httpMethod) throws IOException {
         log.info("Validating access for Request URI: {}", requestURI);
 
-        // Trim roles for comparison
-        List<String> trimmedRoles = roles.stream()
-                .map(String::trim)
-                .collect(Collectors.toList());
-        log.info("Trimmed User roles: {}", trimmedRoles);
+        // Priority order: ROLE_ADMIN > ROLE_MANAGER > ROLE_USER
+        String highestRole = roles.stream().filter(priorityOrder::contains)
+                .min(Comparator.comparingInt(priorityOrder::indexOf)).orElse(null);
 
-        // Iterate over RestrictedUri enum to find a match
+        if (highestRole == null) {
+            log.warn("No valid role found for user with roles: {}", roles);
+            response.sendError(HttpServletResponse.SC_FORBIDDEN, "Access Denied");
+            return;
+        }
+
+        log.info("Highest role determined: {}", highestRole);
+
+        // Check access based on highest role and request type
         for (RestrictedUri restrictedUri : RestrictedUri.values()) {
-            String pattern = convertUriToPattern(restrictedUri.getPath()); // if it is a no-digits path, it is allowed
-            log.info("Checking if URI matches pattern: {} -> {}", requestURI, pattern);
-
-            // Check for an exact match or a valid placeholder match
+            String pattern = convertUriToPattern(restrictedUri.getPath());
             if (requestURI.equals(restrictedUri.getPath()) || requestURI.matches(pattern)) {
-                String requiredRole = "ROLE_ADMIN"; // Restricted URIs require ROLE_ADMIN
-                log.info("Match found for URI: {}. Required role: {}", restrictedUri.getPath(), requiredRole);
-
-                // Check if the user has the required role
-                if (trimmedRoles.stream().noneMatch(role -> role.equals(requiredRole))) {
-                    log.warn("Access denied for user with roles: {} on URL: {}", roles, requestURI);
+                if ("PUT".equals(httpMethod) && !"ROLE_ADMIN".equals(highestRole)) {
+                    log.warn("Access denied for user with role: {} on URL: {}", highestRole, requestURI);
                     response.sendError(HttpServletResponse.SC_FORBIDDEN, "Access Denied");
                     return;
                 }
+                log.info("Access granted for user with role: {} on URI: {}", highestRole, requestURI);
+                return;
             }
         }
-
-        log.info("Access granted to user for URI: {}", requestURI); // Allow access if no restricted URI matches
+        log.info("Access granted to user for URI: {}", requestURI);
     }
 
     private String convertUriToPattern(String path) {

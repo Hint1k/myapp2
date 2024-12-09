@@ -4,7 +4,7 @@
       xmlns="http://www.w3.org/1999/html">
 <head>
     <meta charset="UTF-8">
-    <title>Index page</title>
+    <title>Main page</title>
     <link rel="stylesheet" th:href="@{/styles.css}">
 </head>
 <body>
@@ -14,7 +14,7 @@
         Please enable JavaScript in your browser settings to continue.
     </div>
 </noscript>
-<h1>Welcome</h1>
+<h1>Welcome to main page</h1>
 <br>
 <a th:href="@{/api/accounts/all-accounts}">
     <button>Show all accounts</button>
@@ -26,6 +26,10 @@
 <br><br>
 <a th:href="@{/api/customers/all-customers}">
     <button>Show all customers</button>
+</a>
+<br><br><br><br>
+<a th:href="@{/index}">
+    <button type="submit" class="btn btn-primary">Back to login page</button>
 </a>
 </body>
 </html>
