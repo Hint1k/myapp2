@@ -33,7 +33,7 @@ public class FilterServiceImpl extends OncePerRequestFilter implements FilterSer
 
     @Override
     public void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
-                                    FilterChain filterChain) { // errors thrown here handled by Spring default handler
+                                 FilterChain filterChain) { // errors thrown here handled by Spring default handler
         try {
             HttpSession session = request.getSession(false);
             if (session != null) {
@@ -100,6 +100,7 @@ public class FilterServiceImpl extends OncePerRequestFilter implements FilterSer
 
         // Skip filtering for certain pages, and resources, so there will be no several requests instead of one
         return path.equals("/index") || path.equals("/access-denied") || path.equals("/error") || path.equals("/login")
-                || path.endsWith(".css") || path.endsWith(".js") || path.endsWith(".ico") || path.endsWith(".html");
+                || path.equals("/register") || path.endsWith(".css") || path.endsWith(".js") || path.endsWith(".ico")
+                || path.endsWith(".html");
     }
 }

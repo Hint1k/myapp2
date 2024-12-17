@@ -2,7 +2,6 @@ package com.bank.gatewayservice.service;
 
 import com.bank.gatewayservice.entity.Role;
 import com.bank.gatewayservice.entity.User;
-import com.bank.gatewayservice.repository.RoleRepository;
 import com.bank.gatewayservice.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -16,14 +15,11 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-    private final RoleRepository roleRepository;
 
     @Autowired
-    public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder,
-                           RoleRepository roleRepository) {
+    public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
-        this.roleRepository = roleRepository;
     }
 
     @Override
@@ -35,9 +31,10 @@ public class UserServiceImpl implements UserService {
         String username = user.getUsername();
 
         Role role = new Role();
-        role.setUser(user);
         role.setUsername(username);
-        role.setAuthority("ROLE_CUSTOMER"); // TODO add different user roles later
+        role.setAuthority("ROLE_USER");
+        role.setUser(user);
+
         user.setRole(role);
 
         userRepository.save(user);
