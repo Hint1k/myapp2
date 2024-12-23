@@ -109,6 +109,16 @@ public class AccountController {
 
     @GetMapping("/accounts/all-accounts")
     public String getAllAccounts(Model model, HttpServletRequest request) {
+        // Check if the customer number is present in the request attribute (set by FilterServiceImpl)
+        String customerNumber = (String) request.getAttribute("customerNumber");
+
+        if (customerNumber != null) {
+            log.info("Filtering accounts for customer number: {}", customerNumber);
+            // Delegate to getAccountsByCustomerNumber to handle customer-specific filtering
+            return getAccountsByCustomerNumber(Long.parseLong(customerNumber), model, request);
+        }
+
+        // If no customer number, retrieve all accounts
         return handleAccountsRetrieval(model, request, null);
     }
 

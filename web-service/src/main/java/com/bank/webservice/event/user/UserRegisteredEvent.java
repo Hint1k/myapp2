@@ -12,7 +12,7 @@ public class UserRegisteredEvent {
     private Long userId;
     private String firstName;
     private String lastName;
-    private String email;
+    private Long customerNumber;
     private String username;
     private String password;
 }

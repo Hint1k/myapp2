@@ -55,11 +55,27 @@ public class TokenServiceImpl implements TokenService {
                     .exchange(VERIFY_URL, HttpMethod.GET, entity, new ParameterizedTypeReference<>() {
                     });
 
+            // Log the response headers
+            HttpHeaders responseHeaders = responseEntity.getHeaders();
+            log.info("Response headers received from gateway-service:");
+            responseHeaders.forEach((key, value) -> log.info("Header: {} -> {}", key, value));
+
             // Log the response body
             if (responseEntity.getBody() == null) {
                 log.error("Received null response body from gateway-service for token validation.");
             } else {
                 log.info("Received response from gateway-service: {}", responseEntity.getBody());
+            }
+
+            // Extract and log the customer number
+            String customerNumber = responseHeaders.getFirst("X-Customer-Number");
+            log.info("Customer number in TokenServiceImpl: {}", customerNumber);
+
+            // Store in the current request context so it is accessible in FilterServiceImpl
+            if (customerNumber != null && RequestContextHolder.getRequestAttributes() != null) {
+                ServletRequestAttributes attributes =
+                        (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+                attributes.getRequest().setAttribute("X-Customer-Number", customerNumber);
             }
 
             return responseEntity.getBody();

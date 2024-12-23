@@ -26,7 +26,7 @@ public class UserEventListener {
         User user = new User(
                 event.getFirstName(),
                 event.getLastName(),
-                event.getEmail(),
+                event.getCustomerNumber(),
                 event.getUsername(),
                 event.getPassword()
         );

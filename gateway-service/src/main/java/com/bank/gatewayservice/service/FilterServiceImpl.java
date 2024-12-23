@@ -1,5 +1,6 @@
 package com.bank.gatewayservice.service;
 
+import com.bank.gatewayservice.entity.User;
 import com.bank.gatewayservice.util.RestrictedUri;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.HttpServletRequest;
@@ -7,6 +8,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -29,14 +31,17 @@ public class FilterServiceImpl extends OncePerRequestFilter implements FilterSer
     private final JwtService jwtService;
     private final RedisTemplate<String, Object> redisTemplate;
     private final HandlerExceptionResolver exceptionResolver;
+    private final UserService userService;
     private final List<String> priorityOrder = List.of("ROLE_ADMIN", "ROLE_MANAGER", "ROLE_USER");
 
     @Autowired
     public FilterServiceImpl(JwtService jwtService, RedisTemplate<String, Object> redisTemplate,
-                             @Qualifier("handlerExceptionResolver") HandlerExceptionResolver exceptionResolver) {
+                             @Qualifier("handlerExceptionResolver") HandlerExceptionResolver exceptionResolver,
+                             @Lazy UserService userService) { // @Lazy to avoid circular dependency among 3 classes
         this.jwtService = jwtService;
         this.redisTemplate = redisTemplate;
         this.exceptionResolver = exceptionResolver;
+        this.userService = userService;
     }
 
     @Override
@@ -80,6 +85,16 @@ public class FilterServiceImpl extends OncePerRequestFilter implements FilterSer
                     // Token is valid and not expired, authenticate the user
                     List<String> roles = jwtService.extractRoles(token);
 
+                    // Check for ROLE_USER and fetch customerNumber
+                    if (roles.contains("ROLE_USER")) {
+                        User user = userService.findUserByUsername(username);
+                        if (user != null && user.getCustomerNumber() != null) {
+                            response.addHeader("X-Customer-Number", user.getCustomerNumber().toString());
+                            log.info("Added customer number {} to response header for user {}",
+                                    user.getCustomerNumber(), username);
+                        }
+                    }
+
                     // Extract actual target URI from the request
                     String targetURI = extractTargetURI(request);
                     log.info("Validating access for target URI: {}", targetURI);
@@ -103,6 +118,10 @@ public class FilterServiceImpl extends OncePerRequestFilter implements FilterSer
                     return;
                 }
             }
+            // logging the response before proceeding
+            response.getHeaderNames().forEach(header ->
+                    log.info("Response header: {} -> {}", header, response.getHeader(header))
+            );
 
             filterChain.doFilter(request, response);
         } catch (Exception e) {

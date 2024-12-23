@@ -24,7 +24,7 @@ public class UserEventPublisherImpl implements UserEventPublisher {
                 user.getUserId(),
                 user.getFirstName(),
                 user.getLastName(),
-                user.getEmail(),
+                user.getCustomerNumber(),
                 user.getUsername(),
                 user.getPassword()
         );

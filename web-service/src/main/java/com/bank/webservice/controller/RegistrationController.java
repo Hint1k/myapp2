@@ -117,7 +117,7 @@ public class RegistrationController {
         User user = new User();
         user.setUsername(username);
         user.setPassword(password);
-        user.setEmail(customer.getEmail());
+        user.setCustomerNumber(customer.getCustomerNumber());
         user.setFirstName(customer.getName().split(" ")[0]);
         user.setLastName(customer.getName().split(" ")[1]);
         userPublisher.publishUserRegisteredEvent(user);

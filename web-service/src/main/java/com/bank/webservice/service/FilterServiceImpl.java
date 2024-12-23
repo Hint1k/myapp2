@@ -63,6 +63,16 @@ public class FilterServiceImpl extends OncePerRequestFilter implements FilterSer
                             request.setAttribute("username", username);
                             request.setAttribute("roles", roles);
                             log.info("Authorization successful: username={}, roles={}", username, roles);
+
+                            // Check for ROLE_USER and customerNumber
+                            String customerNumber = (String) request.getAttribute("X-Customer-Number");
+                            log.info("Customer number in FilterServiceImpl: {}", customerNumber);
+                            if (roles.contains("ROLE_USER") && customerNumber != null) {
+                                log.info("ROLE_USER detected with customer number: {}", customerNumber);
+
+                                // Add the customer number to the request attributes for downstream processing
+                                request.setAttribute("customerNumber", customerNumber);
+                            }
                         } else {
                             log.warn("Token verification response is null. Redirecting to login.");
                             response.sendRedirect("/index");

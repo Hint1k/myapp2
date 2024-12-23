@@ -111,13 +111,40 @@ public class CustomerController {
 
     @GetMapping("/customers/all-customers")
     public String getAllCustomers(Model model, HttpServletRequest request) {
+        // Check if the customer number is present in the request attribute (set by FilterServiceImpl)
+        String customerNumber = (String) request.getAttribute("customerNumber");
+
+        if (customerNumber != null) {
+            log.info("Filtering customers for customer number: {}", customerNumber);
+            // Delegate to getCustomerByCustomerNumber to handle customer-specific filtering
+            return getCustomerByCustomerNumber(Long.parseLong(customerNumber), model, request);
+        }
+
+        // If no customer number, retrieve all customers
+        return handleCustomersRetrieval(model, request, null);
+    }
+
+    @GetMapping("/customers/all-customers/{customerNumber}")
+    public String getCustomerByCustomerNumber(@PathVariable("customerNumber") Long customerNumber, Model model,
+                                              HttpServletRequest request) {
+        return handleCustomersRetrieval(model, request, customerNumber);
+    }
+
+    private String handleCustomersRetrieval(Model model, HttpServletRequest request, Long customerNumber) {
         publisher.publishAllCustomersEvent();
         CountDownLatch latch = new CountDownLatch(1);
         this.latch.setLatch(latch);
         try {
             boolean latchResult = latch.await(MAX_RESPONSE_TIME, TimeUnit.SECONDS);
             if (latchResult) {
-                List<Customer> customers = cache.getAllCustomersFromCache();
+                List<Customer> customers;
+                if (customerNumber == null) {
+                    customers = cache.getAllCustomersFromCache();
+                } else {
+                    Customer customer = cache.getCustomerFromCache(customerNumber);
+                    customers = new ArrayList<>();
+                    customers.add(customer);
+                }
                 if (customers != null && !customers.isEmpty()) {
                     sortCustomers(customers);
                     model.addAttribute("customers", customers);

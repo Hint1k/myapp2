@@ -114,7 +114,17 @@ public class TransactionController {
 
     @GetMapping("/transactions/all-transactions")
     public String getAllTransactions(Model model, HttpServletRequest request) {
-        return handleTransactionsRetrieval(model, request,null);
+        // Check if the customer number is present in the request attribute (set by FilterServiceImpl)
+        String customerNumber = (String) request.getAttribute("customerNumber");
+
+        if (customerNumber != null) {
+            log.info("Filtering transactions for customer number: {}", customerNumber);
+            // Delegate to getAccountsByCustomerNumber to handle customer-specific filtering
+            return getTransactionsByAccountNumber(Long.parseLong(customerNumber), model, request);
+        }
+
+        // If no customer number, retrieve all transactions
+        return handleTransactionsRetrieval(model, request, null);
     }
 
     @GetMapping("/transactions/all-transactions/{accountNumber}")
