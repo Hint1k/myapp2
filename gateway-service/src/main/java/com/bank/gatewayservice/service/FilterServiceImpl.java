@@ -22,6 +22,8 @@ import java.io.IOException;
 import java.util.Comparator;
 import java.util.Enumeration;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 @Service
@@ -85,9 +87,10 @@ public class FilterServiceImpl extends OncePerRequestFilter implements FilterSer
                     // Token is valid and not expired, authenticate the user
                     List<String> roles = jwtService.extractRoles(token);
 
+                    User user = userService.findUserByUsername(username);
                     // Check for ROLE_USER and fetch customerNumber
-                    if (roles.contains("ROLE_USER")) {
-                        User user = userService.findUserByUsername(username);
+                    if (roles.contains("ROLE_USER") && !roles.contains("ROLE_ADMIN")
+                            && !roles.contains("ROLE_MANAGER")) {
                         if (user != null && user.getCustomerNumber() != null) {
                             response.addHeader("X-Customer-Number", user.getCustomerNumber().toString());
                             log.info("Added customer number {} to response header for user {}",
@@ -101,7 +104,7 @@ public class FilterServiceImpl extends OncePerRequestFilter implements FilterSer
 
                     // Validate access based on target URI
                     String httpMethod = request.getMethod();
-                    validateRoleAccess(targetURI, roles, response, httpMethod);
+                    validateRoleAccess(targetURI, roles, response, user);
 
                     if (response.isCommitted()) {
                         return;
@@ -131,41 +134,124 @@ public class FilterServiceImpl extends OncePerRequestFilter implements FilterSer
         }
     }
 
-    private void validateRoleAccess(String requestURI, List<String> roles, HttpServletResponse response,
-                                    String httpMethod) throws IOException {
-        log.info("Validating access for Request URI: {}", requestURI);
+    private void validateRoleAccess(String requestURI, List<String> roles, HttpServletResponse response, User user)
+            throws IOException {
+        log.info("Starting validation for Request URI: {}", requestURI);
+        log.info("User roles: {}", roles);
+        log.info("User customerNumber: {}", user.getCustomerNumber());
 
-        // Priority order: ROLE_ADMIN > ROLE_MANAGER > ROLE_USER
-        String highestRole = roles.stream().filter(priorityOrder::contains)
-                .min(Comparator.comparingInt(priorityOrder::indexOf)).orElse(null);
+        // Find the highest priority role
+        String highestRole = roles.stream()
+                .filter(priorityOrder::contains)
+                .min(Comparator.comparingInt(priorityOrder::indexOf))
+                .orElse(null);
 
+        log.info("Determined highest role: {}", highestRole);
+
+        // If no valid role is found, deny access
         if (highestRole == null) {
             log.warn("No valid role found for user with roles: {}", roles);
-            response.sendError(HttpServletResponse.SC_FORBIDDEN, "Access Denied");
+            response.sendError(HttpServletResponse.SC_FORBIDDEN, "Access Denied - No valid role");
             return;
         }
 
-        log.info("Highest role determined: {}", highestRole);
+        // Apply restrictions only for ROLE_USER
+        if ("ROLE_USER".equals(highestRole)) {
+            for (RestrictedUri restrictedUri : RestrictedUri.values()) {
+                String pattern = convertUriToPattern(restrictedUri.getPath());
+                log.info("Checking against RestrictedUri: {}, Pattern: {}", restrictedUri.getPath(), pattern);
 
-        // Check access based on highest role and request type
-        for (RestrictedUri restrictedUri : RestrictedUri.values()) {
-            String pattern = convertUriToPattern(restrictedUri.getPath());
-            if (requestURI.equals(restrictedUri.getPath()) || requestURI.matches(pattern)) {
-                if ("PUT".equals(httpMethod) && !"ROLE_ADMIN".equals(highestRole)) {
-                    log.warn("Access denied for user with role: {} on URL: {}", highestRole, requestURI);
-                    response.sendError(HttpServletResponse.SC_FORBIDDEN, "Access Denied");
+                if (requestURI.matches(pattern)) {
+                    log.info("Matched URI with restricted URI: {}", restrictedUri.getPath());
+
+                    // Unconditionally restrict certain URIs
+                    if (restrictedUri == RestrictedUri.API_CUSTOMERS_NEW ||
+                            restrictedUri == RestrictedUri.API_ACCOUNTS_NEW ||
+                            restrictedUri == RestrictedUri.API_TRANSACTIONS_NEW) {
+                        log.warn("Access denied: Restricted URI {} for ROLE_USER.", requestURI);
+                        response.sendError(HttpServletResponse.SC_FORBIDDEN, "Access Denied - Restricted URI");
+                        return;
+                    }
+
+                    // Validate ownership for customer-specific URIs
+                    if (restrictedUri == RestrictedUri.API_CUSTOMERS_ID) {
+                        log.info("Validating customer ownership for URI: {}", requestURI);
+                        String customerId = extractResourceId(requestURI, pattern);
+                        if (!customerId.equals(user.getCustomerNumber().toString())) {
+                            log.warn("Access denied: Customer ID mismatch for URI: {} (expected: {}, found: {})",
+                                    requestURI, user.getCustomerNumber(), customerId);
+                            response.sendError(HttpServletResponse.SC_FORBIDDEN, "Access Denied - Customer mismatch");
+                            return;
+                        }
+                    } else if (restrictedUri == RestrictedUri.API_ACCOUNTS_ID) {
+                        log.info("Validating account ownership for URI: {}", requestURI);
+                        String accountId = extractResourceId(requestURI, pattern);
+                        if (!accountId.equals(user.getCustomerNumber().toString())) {
+                            log.warn("Access denied: Account ID mismatch for URI: {} (expected: {}, found: {})",
+                                    requestURI, user.getCustomerNumber(), accountId);
+                            response.sendError(HttpServletResponse.SC_FORBIDDEN, "Access Denied - Account mismatch");
+                            return;
+                        }
+                    } else if (restrictedUri == RestrictedUri.API_TRANSACTIONS_ID) {
+                        log.info("Validating transaction ownership for URI: {}", requestURI);
+                        String transactionId = extractResourceId(requestURI, pattern);
+                        if (!transactionId.equals(user.getCustomerNumber().toString())) {
+                            log.warn("Access denied: Transaction ID mismatch for URI: {} (expected: {}, found: {})",
+                                    requestURI, user.getCustomerNumber(), transactionId);
+                            response.sendError(HttpServletResponse.SC_FORBIDDEN, "Access Denied - Transaction mismatch");
+                            return;
+                        }
+                    }
+
+                    // If ownership is validated, grant access
+                    log.info("Access granted for user with role: {} on URI: {}", highestRole, requestURI);
                     return;
                 }
-                log.info("Access granted for user with role: {} on URI: {}", highestRole, requestURI);
-                return;
             }
         }
-        log.info("Access granted to user for URI: {}", requestURI);
+
+        // Restrict access for ROLE_MANAGER to only specific restricted URIs in RestrictedUri
+        if ("ROLE_MANAGER".equals(highestRole)) {
+            for (RestrictedUri restrictedUri : RestrictedUri.values()) {
+                if (restrictedUri == RestrictedUri.API_CUSTOMERS_NEW ||
+                        restrictedUri == RestrictedUri.API_ACCOUNTS_NEW ||
+                        restrictedUri == RestrictedUri.API_TRANSACTIONS_NEW) {
+                    String pattern = convertUriToPattern(restrictedUri.getPath());
+                    if (requestURI.matches(pattern)) {
+                        log.warn("Access denied: Restricted URI {} for ROLE_MANAGER.", requestURI);
+                        response.sendError(HttpServletResponse.SC_FORBIDDEN, "Access Denied - Restricted URI");
+                        return;
+                    }
+                }
+            }
+        }
+
+        // Allow access to non-restricted URIs or for higher roles
+        log.info("Request URI: {} is not restricted or user has sufficient privileges. Allowing access.", requestURI);
     }
 
     private String convertUriToPattern(String path) {
         // Replace {placeholder} with regex to match digits only
         return path.replaceAll("\\{[^/]+}", "\\\\d+"); // Restrict to numeric placeholders
+    }
+
+    private String extractResourceId(String requestURI, String pattern) {
+        try {
+            // Create a regex pattern with a capturing group for the resource ID
+            String regex = pattern.replace("\\d+", "(\\d+)");
+            Pattern compiledPattern = Pattern.compile(regex);
+            Matcher matcher = compiledPattern.matcher(requestURI);
+
+            if (matcher.find()) {
+                // Return the captured group (resource ID)
+                return matcher.group(1);
+            } else {
+                throw new IllegalArgumentException("Request URI does not match the expected pattern: " + pattern);
+            }
+        } catch (Exception e) {
+            log.error("Failed to extract resource ID from URI: {} with pattern: {}", requestURI, pattern, e);
+            throw e;
+        }
     }
 
     private String extractTargetURI(HttpServletRequest request) {

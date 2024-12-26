@@ -1,5 +1,6 @@
 package com.bank.webservice.controller;
 
+import com.bank.webservice.cache.AccountCache;
 import com.bank.webservice.cache.TransactionCache;
 import com.bank.webservice.dto.Transaction;
 import com.bank.webservice.publisher.TransactionEventPublisher;
@@ -30,17 +31,19 @@ import java.util.concurrent.CountDownLatch;
 public class TransactionController {
 
     private final TransactionEventPublisher publisher;
-    private final TransactionCache cache;
+    private final TransactionCache transactionCache;
+    private final AccountCache accountCache;
     private final LatchService latch;
     private final ValidationService validator;
     private final RoleService role;
     private static final int MAX_RESPONSE_TIME = 3; // seconds
 
     @Autowired
-    public TransactionController(TransactionEventPublisher publisher, TransactionCache cache, LatchService latch,
-                                 ValidationService validator, RoleService role) {
+    public TransactionController(TransactionEventPublisher publisher, AccountCache accountCache, LatchService latch,
+                                 ValidationService validator, TransactionCache transactionCache, RoleService role) {
         this.publisher = publisher;
-        this.cache = cache;
+        this.transactionCache = transactionCache;
+        this.accountCache = accountCache;
         this.latch = latch;
         this.validator = validator;
         this.role = role;
@@ -73,7 +76,7 @@ public class TransactionController {
 
     @PutMapping("/transactions/{transactionId}")
     public String showUpdateTransactionForm(@PathVariable("transactionId") Long transactionId, Model model) {
-        Transaction transaction = cache.getTransactionFromCache(transactionId);
+        Transaction transaction = transactionCache.getTransactionFromCache(transactionId);
         transaction.setTransactionStatus(TransactionStatus.PENDING);
         model.addAttribute("transaction", transaction);
         return "transaction/transaction-update";
@@ -102,7 +105,7 @@ public class TransactionController {
         Transaction transaction = new Transaction();
         transaction.setTransactionId(transactionId);
         publisher.publishTransactionDetailsEvent(transaction);
-        transaction = cache.getTransactionFromCache(transactionId);
+        transaction = transactionCache.getTransactionFromCache(transactionId);
         if (transaction != null) {
             model.addAttribute("transaction", transaction);
             return "transaction/transaction-details";
@@ -115,36 +118,42 @@ public class TransactionController {
     @GetMapping("/transactions/all-transactions")
     public String getAllTransactions(Model model, HttpServletRequest request) {
         // Check if the customer number is present in the request attribute (set by FilterServiceImpl)
-        String customerNumber = (String) request.getAttribute("customerNumber");
-
-        if (customerNumber != null) {
-            log.info("Filtering transactions for customer number: {}", customerNumber);
-            // Delegate to getAccountsByCustomerNumber to handle customer-specific filtering
-            return getTransactionsByAccountNumber(Long.parseLong(customerNumber), model, request);
-        }
-
-        // If no customer number, retrieve all transactions
-        return handleTransactionsRetrieval(model, request, null);
+        Long customerNumber = Long.parseLong((String) request.getAttribute("customerNumber"));
+        return handleTransactionsRetrieval(model, request, null, customerNumber);
     }
 
     @GetMapping("/transactions/all-transactions/{accountNumber}")
     public String getTransactionsByAccountNumber(@PathVariable("accountNumber") Long accountNumber, Model model,
                                                  HttpServletRequest request) {
-        return handleTransactionsRetrieval(model, request, accountNumber);
+        return handleTransactionsRetrieval(model, request, accountNumber, null);
     }
 
-    private String handleTransactionsRetrieval(Model model, HttpServletRequest request, Long accountNumber) {
+    private String handleTransactionsRetrieval(Model model, HttpServletRequest request, Long accountNumber,
+                                               Long customerNumber) {
         publisher.publishAllTransactionsEvent();
         CountDownLatch latch = new CountDownLatch(1);
         this.latch.setLatch(latch);
         try {
             boolean latchResult = latch.await(MAX_RESPONSE_TIME, TimeUnit.SECONDS);
             if (latchResult) {
-                List<Transaction> transactions;
-                if (accountNumber == null) {
-                    transactions = cache.getAllTransactionsFromCache();
+                List<Transaction> transactions = new ArrayList<>();
+                if (customerNumber == null) {
+                    if (accountNumber == null) {
+                        // Case 1: All transactions (admin or manager request)
+                        transactions = transactionCache.getAllTransactionsFromCache();
+                    } else {
+                        // Case 2: Transactions for a specific account
+                        transactions = transactionCache.getTransactionsForAccountFromCache(accountNumber);
+                    }
                 } else {
-                    transactions = cache.getAccountTransactionsFromCache(accountNumber);
+                    // Case 3: Transactions for all accounts belonging to the customer
+                    List<Long> accountNumbers =
+                            accountCache.getAccountNumbersFromCacheByCustomerNumber(customerNumber);
+                    if (accountNumbers == null || accountNumbers.isEmpty()) {
+                        log.warn("No accounts found for customer number: {}", customerNumber);
+                    } else {
+                        transactions = transactionCache.getTransactionsForMultipleAccountsFromCache(accountNumbers);
+                    }
                 }
                 if (transactions != null && !transactions.isEmpty()) {
                     transactions.sort(Comparator.comparing(Transaction::getTransactionId));

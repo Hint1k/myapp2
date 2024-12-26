@@ -18,5 +18,7 @@ public interface TransactionCache {
 
     Transaction getTransactionFromCache(Long transactionId);
 
-    List<Transaction> getAccountTransactionsFromCache(Long accountNumber);
+    List<Transaction> getTransactionsForAccountFromCache(Long accountNumber);
+
+    List<Transaction> getTransactionsForMultipleAccountsFromCache(List<Long> accountNumbers);
 }

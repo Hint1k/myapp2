@@ -81,4 +81,13 @@ public class AccountCacheImpl implements AccountCache {
                 .distinct()
                 .collect(Collectors.toList());
     }
+
+    @Override
+    public List<Long> getAccountNumbersFromCacheByCustomerNumber(Long customerNumber) {
+        List<Account> accounts = getAccountsFromCacheByCustomerNumber(customerNumber);
+        return accounts.stream()
+                .map(Account::getAccountNumber)
+                .distinct()
+                .collect(Collectors.toList());
+    }
 }

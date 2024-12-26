@@ -66,11 +66,20 @@ public class TransactionCacheImpl implements TransactionCache {
     }
 
     @Override
-    public List<Transaction> getAccountTransactionsFromCache(Long accountNumber) {
-        List<Transaction> allTransactions = getAllTransactionsFromCache();
-        return allTransactions.stream()
-                .filter(t -> t.getAccountSourceNumber().equals(accountNumber) ||
-                        t.getAccountDestinationNumber().equals(accountNumber))
+    public List<Transaction> getTransactionsForAccountFromCache(Long accountNumber) {
+        return filterTransactionsByAccountNumbers(List.of(accountNumber));
+    }
+
+    @Override
+    public List<Transaction> getTransactionsForMultipleAccountsFromCache(List<Long> accountNumbers) {
+        return filterTransactionsByAccountNumbers(accountNumbers);
+    }
+
+    private List<Transaction> filterTransactionsByAccountNumbers(List<Long> accountNumbers) {
+        return getAllTransactionsFromCache().stream()
+                .filter(transaction -> accountNumbers.stream().anyMatch(accountNumber ->
+                        transaction.getAccountSourceNumber().equals(accountNumber) ||
+                                transaction.getAccountDestinationNumber().equals(accountNumber)))
                 .distinct()
                 .collect(Collectors.toList());
     }
