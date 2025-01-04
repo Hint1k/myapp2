@@ -1,5 +1,11 @@
 package com.bank.gatewayservice.service;
 
+import com.bank.gatewayservice.cache.AccountCache;
+import com.bank.gatewayservice.cache.CustomerCache;
+import com.bank.gatewayservice.cache.TransactionCache;
+import com.bank.gatewayservice.dto.Account;
+import com.bank.gatewayservice.dto.Customer;
+import com.bank.gatewayservice.dto.Transaction;
 import com.bank.gatewayservice.entity.User;
 import com.bank.gatewayservice.util.RestrictedUri;
 import jakarta.servlet.FilterChain;
@@ -34,16 +40,23 @@ public class FilterServiceImpl extends OncePerRequestFilter implements FilterSer
     private final RedisTemplate<String, Object> redisTemplate;
     private final HandlerExceptionResolver exceptionResolver;
     private final UserService userService;
+    private final CustomerCache customerCache;
+    private final AccountCache accountCache;
+    private final TransactionCache transactionCache;
     private final List<String> priorityOrder = List.of("ROLE_ADMIN", "ROLE_MANAGER", "ROLE_USER");
 
     @Autowired
     public FilterServiceImpl(JwtService jwtService, RedisTemplate<String, Object> redisTemplate,
                              @Qualifier("handlerExceptionResolver") HandlerExceptionResolver exceptionResolver,
+                             CustomerCache customerCache, AccountCache accountCache, TransactionCache transactionCache,
                              @Lazy UserService userService) { // @Lazy to avoid circular dependency among 3 classes
         this.jwtService = jwtService;
         this.redisTemplate = redisTemplate;
         this.exceptionResolver = exceptionResolver;
         this.userService = userService;
+        this.customerCache = customerCache;
+        this.accountCache = accountCache;
+        this.transactionCache = transactionCache;
     }
 
     @Override
@@ -138,6 +151,7 @@ public class FilterServiceImpl extends OncePerRequestFilter implements FilterSer
             throws IOException {
         log.info("Starting validation for Request URI: {}", requestURI);
         log.info("User roles: {}", roles);
+        log.info("User details: {}", user);
         log.info("User customerNumber: {}", user.getCustomerNumber());
 
         // Find the highest priority role
@@ -169,37 +183,83 @@ public class FilterServiceImpl extends OncePerRequestFilter implements FilterSer
                             restrictedUri == RestrictedUri.API_ACCOUNTS_NEW ||
                             restrictedUri == RestrictedUri.API_TRANSACTIONS_NEW) {
                         log.warn("Access denied: Restricted URI {} for ROLE_USER.", requestURI);
+                        log.info("Validating URI: {} for Restricted URI: {}", requestURI, restrictedUri.getPath());
                         response.sendError(HttpServletResponse.SC_FORBIDDEN, "Access Denied - Restricted URI");
                         return;
                     }
 
                     // Validate ownership for customer-specific URIs
                     if (restrictedUri == RestrictedUri.API_CUSTOMERS_ID) {
-                        log.info("Validating customer ownership for URI: {}", requestURI);
-                        String customerId = extractResourceId(requestURI, pattern);
-                        if (!customerId.equals(user.getCustomerNumber().toString())) {
-                            log.warn("Access denied: Customer ID mismatch for URI: {} (expected: {}, found: {})",
+                        log.info("Validating URI: {} for Restricted URI: {}", requestURI, restrictedUri.getPath());
+                        String customerIdString = extractResourceId(requestURI, pattern);
+                        log.info("Fetching customer from cache with ID: {}", customerIdString);
+                        Long customerId = Long.parseLong(customerIdString);
+                        log.info("Fetching customer ID from cache: {}", customerId);
+                        Customer customer = customerCache.getCustomerFromCache(customerId);
+                        log.info("Customer details from cache: {}", customer);
+                        Long customerNumber = customer.getCustomerNumber();
+                        log.info("User's customerNumber: {}", user.getCustomerNumber());
+
+                        if (!customerNumber.equals(user.getCustomerNumber())) {
+                            log.warn("Access denied: Customer number mismatch for URI: {} (expected: {}, found: {})",
                                     requestURI, user.getCustomerNumber(), customerId);
-                            response.sendError(HttpServletResponse.SC_FORBIDDEN, "Access Denied - Customer mismatch");
+                            response.sendError(HttpServletResponse.SC_FORBIDDEN,
+                                    "Access Denied - Customer mismatch");
                             return;
                         }
                     } else if (restrictedUri == RestrictedUri.API_ACCOUNTS_ID) {
-                        log.info("Validating account ownership for URI: {}", requestURI);
-                        String accountId = extractResourceId(requestURI, pattern);
-                        if (!accountId.equals(user.getCustomerNumber().toString())) {
-                            log.warn("Access denied: Account ID mismatch for URI: {} (expected: {}, found: {})",
+                        log.info("Validating URI: {} for Restricted URI: {}", requestURI, restrictedUri.getPath());
+                        String accountIdString = extractResourceId(requestURI, pattern);
+                        log.info("Fetching account from cache with ID: {}", accountIdString);
+                        Long accountId = Long.parseLong(accountIdString);
+                        log.info("Account id from cache: {}", accountId);
+                        Account account = accountCache.getAccountFromCache(accountId);
+                        log.info("Account details from cache: {}", account);
+                        String customerNumber = account.getCustomerNumber().toString();
+                        log.info("User's customerNumber: {}", user.getCustomerNumber());
+
+                        if (!customerNumber.equals(user.getCustomerNumber().toString())) {
+                            log.warn("Access denied: Customer Number mismatch for URI: {} (expected: {}, found: {})",
                                     requestURI, user.getCustomerNumber(), accountId);
-                            response.sendError(HttpServletResponse.SC_FORBIDDEN, "Access Denied - Account mismatch");
+                            response.sendError(HttpServletResponse.SC_FORBIDDEN,
+                                    "Access Denied - Account mismatch");
                             return;
                         }
                     } else if (restrictedUri == RestrictedUri.API_TRANSACTIONS_ID) {
-                        log.info("Validating transaction ownership for URI: {}", requestURI);
-                        String transactionId = extractResourceId(requestURI, pattern);
-                        if (!transactionId.equals(user.getCustomerNumber().toString())) {
-                            log.warn("Access denied: Transaction ID mismatch for URI: {} (expected: {}, found: {})",
-                                    requestURI, user.getCustomerNumber(), transactionId);
-                            response.sendError(HttpServletResponse.SC_FORBIDDEN, "Access Denied - Transaction mismatch");
-                            return;
+                        log.info("Validating URI: {} for Restricted URI: {}", requestURI, restrictedUri.getPath());
+                        String transactionIdString = extractResourceId(requestURI, pattern);
+                        log.info("Fetching transaction from cache with ID: {}", transactionIdString);
+                        Long transactionId = Long.parseLong(transactionIdString);
+                        log.info("Validating ROLE_USER access for transactionId: {}", transactionId);
+                        Transaction transaction = null;
+                        try {
+                            transaction = transactionCache.getTransactionFromCache(transactionId);
+                            log.info("Transaction details from cache: {}", transaction);
+                        } catch (Exception e) {
+                            log.error("Error fetching transaction from cache for ID {}: {}", transactionId,
+                                    e.getMessage(), e);
+                        }
+                        if (transaction != null) {
+                            Long accountSourceNumber = transaction.getAccountSourceNumber();
+                            Long accountDestinationNumber = transaction.getAccountDestinationNumber();
+                            Account sourceAccount = accountCache.getAccountFromCache(accountSourceNumber);
+                            log.info("Source Account: {}", sourceAccount);
+                            Account destinationAccount = accountCache.getAccountFromCache(accountDestinationNumber);
+                            log.info("Destination Account: {}", destinationAccount);
+                            Long sourceCustomerNumber = sourceAccount.getCustomerNumber();
+                            Long destinationCustomerNumber = destinationAccount.getCustomerNumber();
+                            log.info("User's customerNumber: {}", user.getCustomerNumber());
+
+                            if (!sourceCustomerNumber.equals(user.getCustomerNumber()) ||
+                                    !destinationCustomerNumber.equals(user.getCustomerNumber())) {
+                                log.warn("Access denied: Customer mismatch for URI: {} (expected: {}, found: {})",
+                                        requestURI, user.getCustomerNumber(), transactionId);
+                                response.sendError(HttpServletResponse.SC_FORBIDDEN,
+                                        "Access Denied - Transaction mismatch");
+                                return;
+                            }
+                        } else {
+                            log.info("Transaction is null");
                         }
                     }
 

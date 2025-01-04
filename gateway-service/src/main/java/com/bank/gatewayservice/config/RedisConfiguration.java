@@ -1,6 +1,6 @@
-package com.bank.webservice.config;
+package com.bank.gatewayservice.config;
 
-import com.bank.webservice.serialization.CustomRedisSerializer;
+import com.bank.gatewayservice.serialization.CustomRedisSerializer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
@@ -19,9 +19,9 @@ public class RedisConfiguration {
 
         // Define the type mappings between service-specific and local classes
         Map<String, Class<?>> typeMapping = Map.of(
-                "com.bank.gatewayservice.dto.Account", com.bank.webservice.dto.Account.class,
-                "com.bank.gatewayservice.dto.Transaction", com.bank.webservice.dto.Transaction.class,
-                "com.bank.gatewayservice.dto.Customer", com.bank.webservice.dto.Customer.class
+                "com.bank.webservice.dto.Account", com.bank.gatewayservice.dto.Account.class,
+                "com.bank.webservice.dto.Transaction", com.bank.gatewayservice.dto.Transaction.class,
+                "com.bank.webservice.dto.Customer", com.bank.gatewayservice.dto.Customer.class
         );
 
         // Use a custom serializer for Redis to handle type mapping

@@ -3,7 +3,7 @@
 - Microservice architecture <br>
 - Mostly event-driven approach <br>
 - Synchronous communication for authorization & authentication <br>
-- High microservices decoupling (no shared libraries, separate databases) <br>
+- High microservices decoupling (no shared libraries, separate databases, but shared cache) <br>
 - Secure API Gateway <br>
 - JWT Token-Based Authentication <br>
 

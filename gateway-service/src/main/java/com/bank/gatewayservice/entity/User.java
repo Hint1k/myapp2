@@ -8,29 +8,37 @@ import lombok.*;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString(onlyExplicitlyIncluded = true) // Exclude the role to avoid cyclic references
 public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
+    @ToString.Include
     private Long userId;
 
     @Column(name = "first_name")
+    @ToString.Include
     private String firstName;
 
     @Column(name = "last_name")
+    @ToString.Include
     private String lastName;
 
     @Column(name = "customer_number", nullable = false)
+    @ToString.Include
     private Long customerNumber;
 
     @Column(name = "username")
+    @ToString.Include
     private String username;
 
     @Column(name = "password")
+    @ToString.Include
     private String password;
 
     @Column(name = "enabled")
+    @ToString.Include
     private int isEnabled; // TODO change to boolean type
 
     // bidirectional, referencing side

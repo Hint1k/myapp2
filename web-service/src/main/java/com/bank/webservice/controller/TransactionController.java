@@ -117,8 +117,16 @@ public class TransactionController {
 
     @GetMapping("/transactions/all-transactions")
     public String getAllTransactions(Model model, HttpServletRequest request) {
-        // Check if the customer number is present in the request attribute (set by FilterServiceImpl)
-        Long customerNumber = Long.parseLong((String) request.getAttribute("customerNumber"));
+        Long customerNumber = null;
+        String customerNumberString = (String) request.getAttribute("customerNumber");
+
+        if (customerNumberString != null) {
+            try {
+                customerNumber = Long.parseLong(customerNumberString);
+            } catch (NumberFormatException e) {
+                log.warn("Invalid customer number format: {}", customerNumberString);
+            }
+        }
         return handleTransactionsRetrieval(model, request, null, customerNumber);
     }
 
