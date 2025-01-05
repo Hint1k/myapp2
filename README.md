@@ -1,13 +1,10 @@
-**Project plan:** <br>
-- Banking app <br>
-- Microservice architecture <br>
-- Mostly event-driven approach <br>
-- Synchronous communication for authorization & authentication <br>
+**Application Overview::** <br>
+- Banking web application with a microservice architecture <br>
+- Primarily event-driven approach with synchronous communication for authorization & authentication <br>
 - High microservices decoupling (no shared libraries, separate databases, but shared cache) <br>
-- Secure API Gateway <br>
-- JWT Token-Based Authentication <br>
+- Secure API Gateway with JWT Token-Based Authentication <br>
 
-**The current state of the app:** <br>
+**Microservices:** <br>
 - Web-service - serves web pages <br>
 - Account-service - handles account CRUD operations and account-database <br>
 - Transaction-service - handles transaction CRUD operations and transaction-database <br>
@@ -32,7 +29,7 @@
 - Password: 123 <br>
 
 **New user registration process:** <br>
-- Log in as admin <br> 
-- Create a new customer. Or find a customer number of an existing customer <br>
-- Register a new user with the customer number <br>
-- Log in using the new username and password <br>
+- Log in as an admin <br> 
+- Create a new customer or use one of the default customers (customer numbers: 1, 2, or 3) <br>
+- Register a new user and link them to the customer using the customer number <br>
+- Log in with the new username and password <br>

@@ -14,6 +14,7 @@ import java.util.stream.Collectors;
 
 @Service
 public class JwtServiceImpl implements JwtService {
+
     private final SecretKey secretKey;
 
     @Value("${jwt.expiration}")

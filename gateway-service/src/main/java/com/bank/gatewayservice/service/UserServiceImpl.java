@@ -4,7 +4,6 @@ import com.bank.gatewayservice.entity.Role;
 import com.bank.gatewayservice.entity.User;
 import com.bank.gatewayservice.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -44,13 +43,13 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public void updateUser(User user) {
-//        TODO add later
+//        TODO for future function updates if any
     }
 
     @Override
     @Transactional
     public void deleteUser(Long userId) {
-//        TODO add later
+//        TODO for future function updates if any
     }
 
     @Override
@@ -63,7 +62,7 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public User findUserById(Long userId) {
-//      TODO add later
+//      TODO for future function updates if any
         return null;
     }
 

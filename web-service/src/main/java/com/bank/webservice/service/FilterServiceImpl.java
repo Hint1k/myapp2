@@ -3,18 +3,20 @@ package com.bank.webservice.service;
 import com.bank.webservice.dto.UserResponse;
 import com.bank.webservice.exception.UnauthorizedException;
 import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletRequestWrapper;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.lang.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 
-import java.util.Collections;
+import java.io.IOException;
 import java.util.List;
 
 @Service
@@ -32,73 +34,86 @@ public class FilterServiceImpl extends OncePerRequestFilter implements FilterSer
     }
 
     @Override
-    public void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
-                                 FilterChain filterChain) { // errors thrown here handled by Spring default handler
+    public void doFilterInternal(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response,
+                                 @NonNull FilterChain filterChain) {
         try {
             HttpSession session = request.getSession(false);
             if (session != null) {
                 String token = (String) session.getAttribute("jwtToken");
                 if (token != null) {
-                    try {
-                        // Include original URI as a custom header. It is needed for access control.
-                        HttpServletRequest wrappedRequest = new HttpServletRequestWrapper(request) {
-                            @Override
-                            public String getHeader(String name) {
-                                if ("X-Original-URI".equals(name)) {
-                                    return request.getRequestURI();
-                                }
-                                return super.getHeader(name);
-                            }
-                        };
-                        // Log to ensure the custom header is included
-                        log.info("Adding X-Original-URI header with value: {}",
-                                wrappedRequest.getHeader("X-Original-URI"));
-
-                        log.info("Request headers: {}", Collections.list(request.getHeaderNames()));
-
-                        UserResponse userResponse = tokenService.validateToken(token);
-                        if (userResponse != null) {
-                            String username = userResponse.getUsername();
-                            List<String> roles = userResponse.getRoles();
-                            request.setAttribute("username", username);
-                            request.setAttribute("roles", roles);
-                            log.info("Authorization successful: username={}, roles={}", username, roles);
-
-                            // Check for ROLE_USER and customerNumber
-                            String customerNumber = (String) request.getAttribute("X-Customer-Number");
-                            log.info("Customer number in FilterServiceImpl: {}", customerNumber);
-                            if (roles.contains("ROLE_USER") && customerNumber != null) {
-                                log.info("ROLE_USER detected with customer number: {}", customerNumber);
-
-                                // Add the customer number to the request attributes for downstream processing
-                                request.setAttribute("customerNumber", customerNumber);
-                            }
-                        } else {
-                            log.warn("Token verification response is null. Redirecting to login.");
-                            response.sendRedirect("/index");
-                            return;
-                        }
-                    } catch (UnauthorizedException e) {
-                        // Catch UnauthorizedException and redirect to access-denied page
-                        log.warn("Access denied: {}", e.getMessage());
-                        response.sendRedirect("/access-denied");
-                        return;
-                    }
+                    handleTokenValidation(request, response, filterChain, token);
                 } else {
-                    log.info("No token found in session, redirecting to login page.");
-                    response.sendRedirect("/index");
-                    return;
+                    redirectToLogin(response, "No token found in session");
                 }
             } else {
-                log.info("No session found, redirecting to login page.");
-                response.sendRedirect("/index");
-                return;
+                redirectToLogin(response, "No session found");
             }
-
-            filterChain.doFilter(request, response);
         } catch (Exception e) {
-            log.error("Error occurred in Authorization Filter: {}", e.getMessage(), e);
-            // to forward the exception to GlobalExceptionHandler class
+            handleError(request, response, e);
+        }
+    }
+
+    private void handleTokenValidation(HttpServletRequest request, HttpServletResponse response,
+                                       FilterChain filterChain, String token) throws IOException, ServletException {
+        HttpServletRequest wrappedRequest = wrapRequestWithOriginalURI(request);
+        UserResponse userResponse = tokenService.validateToken(token);
+        if (userResponse != null) {
+            processUserResponse(request, response, userResponse);
+        } else {
+            redirectToLogin(response, "Token verification response is null");
+        }
+        filterChain.doFilter(wrappedRequest, response);
+    }
+
+    private HttpServletRequest wrapRequestWithOriginalURI(HttpServletRequest request) {
+        return new HttpServletRequestWrapper(request) {
+            @Override
+            public String getHeader(String name) {
+                if ("X-Original-URI".equals(name)) {
+                    return request.getRequestURI();
+                }
+                return super.getHeader(name);
+            }
+        };
+    }
+
+    private void processUserResponse(HttpServletRequest request, HttpServletResponse response,
+                                     UserResponse userResponse) {
+        String username = userResponse.getUsername();
+        List<String> roles = userResponse.getRoles();
+        request.setAttribute("username", username);
+        request.setAttribute("roles", roles);
+        log.info("Authorization successful: username={}, roles={}", username, roles);
+
+        if (roles.contains("ROLE_USER")) {
+            addCustomerNumberToRequest(request);
+        }
+    }
+
+    private void addCustomerNumberToRequest(HttpServletRequest request) {
+        String customerNumber = (String) request.getAttribute("X-Customer-Number");
+        if (customerNumber != null) {
+            log.info("ROLE_USER detected with customer number: {}", customerNumber);
+            request.setAttribute("customerNumber", customerNumber);
+        }
+    }
+
+    private void redirectToLogin(HttpServletResponse response, String message) throws IOException {
+        log.info("{}; redirecting to login page.", message);
+        response.sendRedirect("/index");
+    }
+
+    private void handleError(HttpServletRequest request, HttpServletResponse response, Exception e) {
+        if (e instanceof UnauthorizedException) {
+            try {
+                log.warn("Unauthorized access: {}", e.getMessage());
+                response.sendRedirect("/access-denied"); // Explicitly redirect to access-denied
+            } catch (IOException ioException) {
+                log.error("Failed to redirect to access-denied page: {}", ioException.getMessage(), ioException);
+                exceptionResolver.resolveException(request, response, null, e);
+            }
+        } else {
+            log.error("Unexpected error occurred in filter: {}", e.getMessage(), e);
             exceptionResolver.resolveException(request, response, null, e);
         }
     }

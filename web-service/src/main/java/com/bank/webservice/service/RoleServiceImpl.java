@@ -16,7 +16,7 @@ public class RoleServiceImpl implements RoleService {
         if (rolesObj instanceof List<?>) {
             @SuppressWarnings("unchecked")
             List<String> roles = (List<String>) rolesObj;
-            String role = roles.isEmpty() ? null : roles.getFirst(); // TODO implement more than one role per user case
+            String role = roles.isEmpty() ? null : roles.getFirst();
             log.info("Role = {}", role);
             model.addAttribute("role", role);
         } else {
