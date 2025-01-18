@@ -15,6 +15,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.JdbcUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import javax.sql.DataSource;
 
@@ -46,9 +49,10 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) {
         try {
             http.csrf(AbstractHttpConfigurer::disable)
+                    .cors((cors) -> cors.configurationSource(corsConfigurationSource()))
                     .authorizeHttpRequests((authorize) -> authorize
-                            .requestMatchers("/login", "/verify").permitAll()
-                            .anyRequest().authenticated()
+                            .requestMatchers("/login", "/verify", "/v3/api-docs/**", "/swagger-ui/**",
+                                    "/swagger-ui.html").permitAll().anyRequest().authenticated()
                     )
                     .addFilterBefore(filterServiceImpl, UsernamePasswordAuthenticationFilter.class);
             return http.build();
@@ -56,6 +60,20 @@ public class SecurityConfig {
             log.error("Error configuring security filter chain", e);
             throw new RuntimeException(e);
         }
+    }
+
+    @Bean // to allow the Swagger aggregation in the web-service
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration config = new CorsConfiguration();
+        config.addAllowedOrigin("http://localhost:8080"); // Allow requests from web-service
+        config.addAllowedMethod("*");
+        config.addAllowedHeader("*");
+        config.setAllowCredentials(true);
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", config);
+
+        return source;
     }
 
     @Bean

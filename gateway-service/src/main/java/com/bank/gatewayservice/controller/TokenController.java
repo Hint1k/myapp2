@@ -1,6 +1,10 @@
 package com.bank.gatewayservice.controller;
 
 import com.bank.gatewayservice.service.JwtService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -14,6 +18,7 @@ import java.util.Map;
 
 @RestController
 @Slf4j
+@Tag(name = "User Authorization", description = "Endpoints for JWT token verification and user authorization")
 public class TokenController {
 
     private final JwtService jwtService;
@@ -24,6 +29,13 @@ public class TokenController {
     }
 
     @GetMapping("/verify")
+    @Operation(summary = "Verify JWT token",
+            description = "Validates the provided JWT token and returns the associated user roles.",
+            parameters = {
+                    @Parameter(name = "Authorization", description = "Bearer token for authentication",
+                            in = ParameterIn.HEADER, required = true, example = "Bearer your_jwt_token_here")
+            }
+    )
     public ResponseEntity<Map<String, Object>> verifyToken(@RequestHeader("Authorization") String authHeader) {
         log.info("Verification request received: {}", authHeader);
         try {
