@@ -3,7 +3,6 @@ package com.bank.transactionservice.service;
 import com.bank.transactionservice.entity.Transaction;
 import com.bank.transactionservice.publisher.TransactionEventPublisher;
 import com.bank.transactionservice.repository.TransactionRepository;
-import com.bank.transactionservice.util.AccountStatus;
 import com.bank.transactionservice.util.TransactionStatus;
 import com.bank.transactionservice.util.TransactionType;
 import jakarta.persistence.EntityNotFoundException;

@@ -35,6 +35,13 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
     implementation group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jsr310', version: '2.18.2'
     implementation group: 'org.springdoc', name: 'springdoc-openapi-starter-webmvc-ui', version: '2.6.0'
+    testImplementation('org.springframework.boot:spring-boot-starter-test') {
+        exclude group: 'org.springframework.cloud', module: 'spring-cloud-starter-zookeeper-discovery'
+        exclude group: 'org.apache.zookeeper'
+        exclude group: 'org.apache.curator'
+    }
+    testImplementation group: 'com.h2database', name: 'h2', version: '2.3.232'
+    testImplementation 'org.springframework.kafka:spring-kafka-test:3.3.2'
 }
 
 tasks.named('test') {

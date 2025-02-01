@@ -29,7 +29,7 @@
 - Password: 123 <br>
 
 **New user registration process:** <br>
-- Log in as an admin <br> 
+- Log in as admin <br> 
 - Create a new customer or use one of the default customers (customer numbers: 1, 2, or 3) <br>
 - Register a new user and link them to the customer using the customer number <br>
 - Log in with the new username and password <br>

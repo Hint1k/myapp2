@@ -22,22 +22,23 @@ repositories {
 }
 
 dependencies {
-    // some dependencies are temp disabled
-//	implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-web'
-//	implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6'
     compileOnly 'org.projectlombok:lombok'
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
     runtimeOnly 'org.postgresql:postgresql'
     annotationProcessor 'org.projectlombok:lombok'
-//  testImplementation 'org.springframework.boot:spring-boot-starter-test'
-//	testImplementation 'org.springframework.security:spring-security-test'
-//  testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
     implementation 'org.springframework.kafka:spring-kafka'
     implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-zookeeper-discovery',
             version: '4.1.1'
+    testImplementation('org.springframework.boot:spring-boot-starter-test') {
+        exclude group: 'org.springframework.cloud', module: 'spring-cloud-starter-zookeeper-discovery'
+        exclude group: 'org.apache.zookeeper'
+        exclude group: 'org.apache.curator'
+    }
+    testImplementation group: 'com.h2database', name: 'h2', version: '2.3.232'
+    testImplementation 'org.springframework.kafka:spring-kafka-test:3.3.2'
 }
 
 tasks.named('test') {
