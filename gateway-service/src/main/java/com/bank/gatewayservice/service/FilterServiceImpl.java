@@ -40,14 +40,21 @@ public class FilterServiceImpl extends OncePerRequestFilter {
     @Override
     public void doFilterInternal(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response,
                                  @NonNull FilterChain filterChain) {
+        String token = null;
         try {
             String authHeader = request.getHeader("Authorization");
-            String token = extractToken(authHeader);
+            token = extractToken(authHeader);
             String username = token != null ? jwtService.extractUsername(token) : null;
             if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
                 handleAuthentication(request, response, token, username);
             }
-            filterChain.doFilter(request, response);
+            // Check if token is null or expired before proceeding with the filter chain
+            if (token != null && !jwtService.isTokenExpired(token)) {
+                filterChain.doFilter(request, response);
+            } else {
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                response.getWriter().write("Token has expired or is invalid");
+            }
         } catch (Exception e) {
             handleError(response, e);
         }
@@ -102,5 +109,18 @@ public class FilterServiceImpl extends OncePerRequestFilter {
     private void handleError(HttpServletResponse response, Exception e) {
         log.error("Error occurred in Authorization Filter: {}", e.getMessage(), e);
         response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+    }
+
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) {
+        String path = request.getRequestURI();
+        // Check for null or empty path to avoid NullPointerException
+        if (path == null || path.isEmpty()) {
+            return false;
+        }
+        // Skip filtering for certain pages, and resources, so there will be no several requests instead of one
+        return path.equals("/index") || path.equals("/access-denied") || path.equals("/error") || path.equals("/login")
+                || path.equals("/register") || path.equals("/v3/api-docs") || path.endsWith(".css")
+                || path.endsWith(".js") || path.endsWith(".ico") || path.endsWith(".html");
     }
 }

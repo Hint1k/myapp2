@@ -130,8 +130,10 @@ public class AccountController {
 
     private String handleAccountsRetrieval(Model model, HttpServletRequest request, Long customerNumber) {
         publisher.publishAllAccountsEvent();
-        CountDownLatch latch = new CountDownLatch(1);
-        this.latch.setLatch(latch);
+        if (latch.getLatch() == null) {
+            latch.setLatch(new CountDownLatch(1));
+        }
+        CountDownLatch latch = this.latch.getLatch();
         try {
             boolean latchResult = latch.await(MAX_RESPONSE_TIME, TimeUnit.SECONDS);
             if (latchResult) {

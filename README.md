@@ -2,7 +2,7 @@
 - Banking web application with a microservice architecture <br>
 - Primarily event-driven approach with synchronous communication for authorization & authentication <br>
 - High microservices decoupling (no shared libraries, separate databases, but shared cache) <br>
-- Secure API Gateway with JWT Token-Based Authentication <br>
+- JWT Token-Based Authentication <br>
 
 **Microservices:** <br>
 - Web-service - serves web pages <br>

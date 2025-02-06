@@ -1,6 +1,7 @@
 package com.bank.gatewayservice.service;
 
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
@@ -25,17 +26,20 @@ public class JwtServiceImpl implements JwtService {
         this.secretKey = Keys.hmacShaKeyFor(secretKey.getBytes());
     }
 
+    @Override
     public String generateToken(String username, List<String> roles) {
         return Jwts.builder().subject(username).claim("roles", roles).issuedAt(new Date())
                 .expiration(new Date(System.currentTimeMillis() + jwtExpirationInMs))
                 .signWith(secretKey, Jwts.SIG.HS512).compact(); // HS512 is an algorithm for signing tokens
     }
 
+    @Override
     public boolean validateToken(String token, String username) {
         final String extractedUsername = extractUsername(token);
         return (extractedUsername.equals(username) && !isTokenExpired(token));
     }
 
+    @Override
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
     }
@@ -49,10 +53,16 @@ public class JwtServiceImpl implements JwtService {
         return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload();
     }
 
+    @Override
     public boolean isTokenExpired(String token) {
-        return extractClaim(token, Claims::getExpiration).before(new Date());
+        try {
+            return extractClaim(token, Claims::getExpiration).before(new Date());
+        } catch (ExpiredJwtException e) {
+            return true; // Token is expired
+        }
     }
 
+    @Override
     public List<String> extractRoles(String token) {
         Claims claims = extractAllClaims(token);
         List<?> roles = claims.get("roles", List.class);
@@ -61,6 +71,7 @@ public class JwtServiceImpl implements JwtService {
                 .collect(Collectors.toList());
     }
 
+    @Override
     public String extractTokenFromHeader(String authHeader) {
         String token = authHeader.substring(7);
         if (token.startsWith("{\"token\":\"") && token.endsWith("\"}")) {
@@ -69,6 +80,7 @@ public class JwtServiceImpl implements JwtService {
         return token;
     }
 
+    @Override
     public long getRemainingValidity(String token) {
         Date expirationDate = extractClaim(token, Claims::getExpiration);
         return expirationDate.getTime() - System.currentTimeMillis();

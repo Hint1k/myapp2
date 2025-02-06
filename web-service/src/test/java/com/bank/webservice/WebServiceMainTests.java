@@ -1,7 +1,10 @@
 package com.bank.webservice;
 
-import com.bank.webservice.service.SwaggerServiceImpl;
+import com.bank.webservice.controller.AccountController;
+import com.bank.webservice.service.SwaggerService;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -19,11 +22,18 @@ public class WebServiceMainTests {
     private KafkaTemplate<String, Object> kafkaTemplate; // Mock Kafka to satisfy dependencies
 
     @MockBean
-    private SwaggerServiceImpl swaggerService; // Mock SwaggerService to avoid gateway-service.url requirement
+    private SwaggerService swaggerService; // Mock SwaggerService to avoid gateway-service.url requirement
+
+    private final AccountController accountController;
+
+    @Autowired
+    public WebServiceMainTests(AccountController accountController) {
+        this.accountController = accountController;
+    }
 
     //checking if the tests are working at all
     @Test
     public void contextLoads() {
-
+        Assertions.assertNotNull(accountController);
     }
 }
