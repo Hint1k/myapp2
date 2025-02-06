@@ -18,7 +18,9 @@
 </noscript>
 <h1>All Transactions</h1>
 <a th:if="${role == 'ROLE_ADMIN'}" th:href="@{/api/transactions/new-transaction}">
-    <button>Create new transaction</button>
+    <div class="button-container">
+        <button>Create new transaction</button>
+    </div>
     <br><br>
 </a>
 <table>
@@ -56,7 +58,9 @@
                       th:action="@{/api/transactions/{transactionId}(transactionId=${transaction.transactionId})}"
                       th:method="delete"
                       onclick="if(!(confirm('Are you sure to delete this transaction?'))) return false">
-                    <button type="submit" class="delete-button">Delete</button>
+                    <div class="button-container">
+                        <button type="submit">Delete</button>
+                    </div>
                 </form>
             </div>
         </td>
@@ -68,10 +72,14 @@
 - Frozen / Suspended transactions can't be updated or deleted <br>
 <br>
 <hr>
-<button type="button" onclick="history.go(-1)" class="go-button"> Go to previous page</button>
+<div class="button-container">
+    <button type="button" onclick="history.go(-1)" class="go-button"> Go to previous page</button>
+</div>
 <br><br>
-<a th:href="@{/home}">
-    <button type="button" class="return-button">Return to main page</button>
-</a>
+<div class="button-container">
+    <a th:href="@{/home}">
+        <button type="button" class="update-button">Return to main page</button>
+    </a>
+</div>
 </body>
 </html>

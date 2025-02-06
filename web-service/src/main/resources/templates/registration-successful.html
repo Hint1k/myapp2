@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en"
       xmlns:th="http://www.thymeleaf.org"
-      xmlns="http://www.w3.org/1999/html" >
+      xmlns="http://www.w3.org/1999/html">
 <head>
     <meta charset="UTF-8">
     <title>Successful registration confirmation page</title>
@@ -15,8 +15,10 @@ Please return back to the login page and
 use your newly created credentials to access the system.
 <br>
 <hr>
-<a th:href="@{/index}">
-    <button type="button" class="update-button">Return to login page</button>
-</a>
+<div class="button-container">
+    <a th:href="@{/index}">
+        <button type="button" class="update-button">Return to login page</button>
+    </a>
+</div>
 </body>
 </html>

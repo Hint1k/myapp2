@@ -17,7 +17,9 @@
 </noscript>
 <h1>All Customers</h1>
 <a th:if="${role == 'ROLE_ADMIN'}" th:href="@{/api/customers/new-customer}">
-    <button>Create new customer</button>
+    <div class="button-container">
+        <button>Create new customer</button>
+    </div>
     <br><br>
 </a>
 <table>
@@ -68,11 +70,14 @@
 <br>
 - Deleting a customer sets the linked account status to inactive. <br>
 - Other customer CRUD operations change the linked account data respectively. <br>
-<br>
-<button type="button" onclick="history.go(-1)" class="go-button"> Go to previous page</button>
+<div class="button-container">
+    <button type="button" onclick="history.go(-1)" class="go-button"> Go to previous page</button>
+</div>
 <br><br>
-<a th:href="@{/home}">
-    <button type="button" class="update-button">Return to main page</button>
-</a>
+<div class="button-container">
+    <a th:href="@{/home}">
+        <button type="button" class="update-button">Return to main page</button>
+    </a>
+</div>
 </body>
 </html>

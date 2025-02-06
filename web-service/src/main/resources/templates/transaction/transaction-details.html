@@ -49,10 +49,14 @@
 - Zero account number indicates a deleted account. Their numbers are available for new accounts <br>
 <br>
 <hr>
-<button type="button" onclick="history.go(-1)" class="go-button"> Go to previous page</button>
+<div class="button-container">
+    <button type="button" onclick="history.go(-1)" class="go-button"> Go to previous page</button>
+</div>
 <br><br>
-<a th:href="@{/home}">
-    <button type="button" class="update-button">Return to main page</button>
-</a>
+<div class="button-container">
+    <a th:href="@{/home}">
+        <button type="button" class="update-button">Return to main page</button>
+    </a>
+</div>
 </body>
 </html>

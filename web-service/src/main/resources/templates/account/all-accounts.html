@@ -17,7 +17,9 @@
 </noscript>
 <h1>All Accounts</h1>
 <a th:if="${role == 'ROLE_ADMIN'}" th:href="@{/api/accounts/new-account}">
-    <button>Create new account</button>
+    <div class="button-container">
+        <button>Create new account</button>
+    </div>
     <br><br>
 </a>
 <table>
@@ -59,7 +61,9 @@
                       th:action="@{/api/accounts/{accountId}(accountId=${account.accountId})}"
                       th:method="delete"
                       onclick="if(!(confirm('Are you sure to delete this account?'))) return false">
-                    <button type="submit">Delete</button>
+                    <div class="button-container">
+                        <button type="submit">Delete</button>
+                    </div>
                 </form>
             </div>
         </td>
@@ -72,10 +76,14 @@
 - Frozen transactions can't be updated or deleted. <br>
 - Also account CRUD operations change the linked customer data respectively. <br>
 <br>
-<button type="button" onclick="history.go(-1)" class="go-button"> Go to previous page</button>
+<div class="button-container">
+    <button type="button" onclick="history.go(-1)" class="go-button"> Go to previous page</button>
+</div>
 <br><br>
-<a th:href="@{/home}">
-    <button type="button" class="update-button">Return to main page</button>
-</a>
+<div class="button-container">
+    <a th:href="@{/home}">
+        <button type="button" class="update-button">Return to main page</button>
+    </a>
+</div>
 </body>
 </html>

@@ -115,17 +115,23 @@
         </tbody>
     </table>
     <br>
-    <input type="submit" value="Save Account" class="save"/>
+    <div class="button-container">
+        <button type="submit" class="save">Save Account</button>
+    </div>
 </form>
 <br>
 - Account number, open date and customer id cannot be changed. <br>
 - Balance can be changed automatically by creating / updating / deleting transactions. <br>
 <br>
 <hr>
-<button type="button" onclick="history.go(-1)" class="go-button"> Go to previous page</button>
+<div class="button-container">
+    <button type="button" onclick="history.go(-1)" class="go-button"> Go to previous page</button>
+</div>
 <br><br>
-<a th:href="@{/home}">
-    <button type="button" class="update-button">Return to main page</button>
-</a>
+<div class="button-container">
+    <a th:href="@{/home}">
+        <button type="button" class="update-button">Return to main page</button>
+    </a>
+</div>
 </body>
 </html>

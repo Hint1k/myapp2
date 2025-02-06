@@ -15,7 +15,6 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.web.context.WebApplicationContext;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -56,7 +55,7 @@ public class AccountControllerTest {
     private LatchService latchService;
 
     @BeforeEach
-    void setUp(WebApplicationContext wac) {
+    void setUp() {
         latchService.getLatch().countDown();
     }
 
@@ -161,7 +160,7 @@ public class AccountControllerTest {
 
     @Test
     public void testGetAccount() {
-        doNothing().when(publisher).publishAccountDeletedEvent(1L);
+        doNothing().when(publisher).publishAccountDetailsEvent(1L);
         when(cache.getAccountFromCache(1L)).thenReturn(new Account());
 
         try {
@@ -181,6 +180,7 @@ public class AccountControllerTest {
     @Test
     public void testGetAllAccounts() throws Exception {
         List<Account> accounts = createTestAccounts();
+        doNothing().when(publisher).publishAllAccountsEvent();
         when(cache.getAllAccountsFromCache()).thenReturn(accounts);
 
         mockMvc.perform(get("/api/accounts/all-accounts"))
@@ -189,11 +189,13 @@ public class AccountControllerTest {
                 .andDo(print());
 
         verify(cache, times(1)).getAllAccountsFromCache();
+        verify(publisher, times(1)).publishAllAccountsEvent();
     }
 
     @Test
     public void testGetAccountsByCustomerNumber() {
         List<Account> accounts = createTestAccounts();
+        doNothing().when(publisher).publishAllAccountsEvent();
         when(cache.getAccountsFromCacheByCustomerNumber(12345L)).thenReturn(accounts);
 
         try {
@@ -206,6 +208,7 @@ public class AccountControllerTest {
         }
 
         verify(cache, times(1)).getAccountsFromCacheByCustomerNumber(12345L);
+        verify(publisher, times(1)).publishAllAccountsEvent();
     }
 
     private List<Account> createTestAccounts(){

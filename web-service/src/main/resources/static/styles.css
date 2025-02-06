@@ -1,3 +1,15 @@
+/* General Page Styles */
+body {
+    background-color: #2E2E2E; /* Dark gray background */
+    color: #ffffff; /* White text for general readability */
+    font-family: Arial, sans-serif; /* Use a common font for better legibility */
+    font-size: 16px; /* Adjust base font size */
+    line-height: 1.6; /* Increase line height for better readability */
+    margin: 0;
+    padding: 10px; /* Add padding to avoid content sticking to edges */
+}
+
+/* Button Container */
 .button-container {
     display: flex; /* Flexbox for horizontal arrangement */
     justify-content: space-between; /* Distribute buttons evenly */
@@ -5,48 +17,90 @@
 
 .button-container button {
     margin: 0 5px; /* Add some spacing between buttons */
+    border: 2px solid #ffffff; /* White border to make buttons stand out */
+    background-color: #444444; /* Dark background for buttons to distinguish them */
+    color: #ffffff; /* White text for contrast */
+    padding: 10px 20px; /* Add padding for better button size */
+    font-size: 14px; /* Set a readable font size */
+    border-radius: 5px; /* Rounded corners for a softer look */
+    cursor: pointer; /* Make it look clickable */
+    transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 
+.button-container button:hover {
+    background-color: #555555; /* Slightly lighter background on hover */
+    border-color: #cccccc; /* Light border on hover */
+}
+
+/* Table Styles */
 table {
-    border: 1px solid #ddd; /* Solid border, 1px wide, light gray color */
+    border: 1px solid #333333; /* Darker border to stand out against dark background */
     border-collapse: collapse; /* Ensures borders between cells collapse */
+    background-color: #333333; /* Darker background for the table */
+    color: #ffffff; /* White text for the table content */
 }
 
 th, td {
-    border: 1px solid #ddd; /* Add borders to table headers and cells */
-    padding: 5px; /* Add some padding for better readability */
+    border: 1px solid #444444; /* Slightly lighter border for table cells */
+    padding: 8px; /* Increase padding for better readability */
+    text-align: left; /* Align text to the left */
 }
 
+th {
+    background-color: #444444; /* Dark gray background for table headers */
+    color: #ffffff; /* White text for table headers */
+}
+
+/* Error and Warning Messages */
 .error {
-    color: red;
-}
-
-.suspended-transaction {
-    background-color: lightgray;
-}
-
-.frozen-transaction {
-    background-color: gray;
-}
-
-.frozen-account {
-    background-color: lightgray;
-}
-
-.zero-accounts {
-    background-color: lightgray;
-}
-
-.readonly-field {
-    background-color: #e9ecef;
-    opacity: 0.6;
-    cursor: not-allowed;
+    color: #ff6f6f; /* Light red for error messages */
+    font-weight: bold;
 }
 
 .warning {
-    background-color: #ffffe0;
-    border: 1px solid #f00;
+    background-color: #f8d47c; /* Lighter yellow background for warnings */
+    color: #000; /* Black text for better contrast */
+    border: 1px solid #f00; /* Red border for warnings */
     padding: 10px;
     margin-bottom: 15px;
     font-weight: bold;
+}
+
+/* Suspended and Frozen Transaction Styles */
+.suspended-transaction {
+    background-color: #d3d3d3; /* Lighter gray background for suspended transactions */
+    color: #000; /* Black text for better contrast */
+}
+
+.frozen-transaction, .frozen-account {
+    background-color: #a9a9a9; /* Lighter gray for frozen accounts/transactions */
+    color: #000; /* Black text */
+}
+
+.zero-accounts {
+    background-color: #e0e0e0; /* Light gray background for zero accounts */
+    color: #000; /* Black text */
+}
+
+/* Readonly Fields */
+.readonly-field {
+    background-color: #555555; /* Darker background for readonly fields */
+    opacity: 0.8; /* Slightly more opaque for better contrast */
+    color: #ccc; /* Light gray text to indicate the field is not editable */
+    cursor: not-allowed;
+}
+
+/* Links */
+a {
+    color: #1E90FF; /* Bright blue for links */
+    text-decoration: none; /* Remove underline */
+}
+
+a:hover {
+    text-decoration: underline; /* Underline on hover */
+}
+
+/* Transitions for Interactive Elements */
+.button-container button, .warning, .error, a {
+    transition: all 0.3s ease;
 }

@@ -8,10 +8,14 @@
 </head>
 <body>
 <h2>Access denied page</h2>
-<h3 style="color:#ff0000" > You are not authorized to access this resource</h3>
+<h3 style="color:#ff0000"> You are not authorized to access this resource</h3>
 <hr>
-<a th:href="@{/home}">Back to home page</a>
+<div class="button-container">
+    <a th:href="@{/home}">Back to home page</a>
+</div>
 <br><br>
-<a th:href="@{/index}">Back to login page</a>
+<div class="button-container">
+    <a th:href="@{/index}">Back to login page</a>
+</div>
 </body>
 </html>

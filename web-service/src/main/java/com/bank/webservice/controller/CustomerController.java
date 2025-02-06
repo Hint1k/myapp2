@@ -132,8 +132,10 @@ public class CustomerController {
 
     private String handleCustomersRetrieval(Model model, HttpServletRequest request, Long customerNumber) {
         publisher.publishAllCustomersEvent();
-        CountDownLatch latch = new CountDownLatch(1);
-        this.latch.setLatch(latch);
+        if (latch.getLatch() == null) {
+            latch.setLatch(new CountDownLatch(1));
+        }
+        CountDownLatch latch = this.latch.getLatch();
         try {
             boolean latchResult = latch.await(MAX_RESPONSE_TIME, TimeUnit.SECONDS);
             if (latchResult) {
@@ -141,7 +143,7 @@ public class CustomerController {
                 if (customerNumber == null) {
                     customers = cache.getAllCustomersFromCache();
                 } else {
-                    Customer customer = cache.getCustomerFromCache(customerNumber);
+                    Customer customer = cache.getCustomerFromCacheByCustomerNumber(customerNumber);
                     customers = new ArrayList<>();
                     customers.add(customer);
                 }
@@ -172,12 +174,20 @@ public class CustomerController {
         customers.sort(Comparator.comparing(Customer::getCustomerId));
 
         // Sort account numbers within each customer in ascending order
-        customers.forEach(customer -> customer.setAccountNumbers(
-                Arrays.stream(customer.getAccountNumbers().split(","))
-                        .map(Long::parseLong)
-                        .sorted(Long::compareTo)
-                        .map(Object::toString)
-                        .collect(Collectors.joining(","))
-        ));
+        customers.forEach(customer -> {
+            String accountNumbers = customer.getAccountNumbers();
+            if (accountNumbers != null) {
+                customer.setAccountNumbers(
+                        Arrays.stream(accountNumbers.split(","))
+                                .map(Long::parseLong)
+                                .sorted(Long::compareTo)
+                                .map(Object::toString)
+                                .collect(Collectors.joining(","))
+                );
+            } else {
+                // Handle the case where accountNumbers is null
+                customer.setAccountNumbers("");
+            }
+        });
     }
 }
