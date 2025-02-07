@@ -61,17 +61,16 @@ public class AccessServiceImpl implements AccessService {
         for (RestrictedUri restrictedUri : RestrictedUri.values()) {
             String pattern = convertUriToPattern(restrictedUri.getPath());
             if (requestURI.matches(pattern)) {
-                log.info("Matched URI with restricted URI: {}", restrictedUri.getPath());
-
                 if (restrictedUri.isUnconditionallyRestricted()) {
                     response.sendError(HttpServletResponse.SC_FORBIDDEN, "Access Denied - Restricted URI");
                     return;
                 }
-
                 switch (restrictedUri) {
                     case API_CUSTOMERS_ID -> validateCustomerOwnership(requestURI, pattern, response, user);
-                    case API_ACCOUNTS_ID -> validateAccountOwnership(requestURI, pattern, response, user);
-                    case API_TRANSACTIONS_ID -> validateTransactionOwnership(requestURI, pattern, response, user);
+                    case API_ACCOUNTS_ID, API_ACCOUNTS_ALL ->
+                            validateAccountOwnership(requestURI, pattern, response, user);
+                    case API_TRANSACTIONS_ID, API_TRANSACTIONS_ALL ->
+                            validateTransactionOwnership(requestURI, pattern, response, user);
                 }
             }
         }
@@ -80,6 +79,14 @@ public class AccessServiceImpl implements AccessService {
     private void validateManagerAccess(String requestURI, HttpServletResponse response) throws IOException {
         for (RestrictedUri restrictedUri : RestrictedUri.values()) {
             if (restrictedUri.isUnconditionallyRestricted()) {
+                // Check if the URI is a transaction or account-related URI
+                if (restrictedUri == RestrictedUri.API_TRANSACTIONS_ALL ||
+                        restrictedUri == RestrictedUri.API_ACCOUNTS_ALL) {
+                    // Allow manager access to these URIs
+                    continue;  // Skip restriction
+                }
+
+                // If not, continue with the normal restriction process
                 String pattern = convertUriToPattern(restrictedUri.getPath());
                 if (requestURI.matches(pattern)) {
                     response.sendError(HttpServletResponse.SC_FORBIDDEN, "Access Denied - Restricted URI");

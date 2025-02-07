@@ -12,5 +12,5 @@ public interface TransactionEventPublisher {
 
     void publishAllTransactionsEvent();
 
-    void publishTransactionDetailsEvent(Transaction transaction);
+    void publishTransactionDetailsEvent(Long transactionId);
 }

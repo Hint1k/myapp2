@@ -71,9 +71,9 @@ public class TransactionEventPublisherImpl implements TransactionEventPublisher 
     }
 
     @Override
-    public void publishTransactionDetailsEvent(Transaction transaction) {
+    public void publishTransactionDetailsEvent(Long transactionId) {
         TransactionDetailsEvent event = new TransactionDetailsEvent(
-                transaction.getTransactionId(),
+                transactionId,
                 null,
                 null,
                 null,

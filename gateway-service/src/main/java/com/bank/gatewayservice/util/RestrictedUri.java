@@ -11,8 +11,8 @@ public enum RestrictedUri {
     API_TRANSACTIONS_NEW("/api/transactions/new-transaction", true),
     API_TRANSACTIONS_ID("/api/transactions/{transactionId}", false),
     API_CUSTOMERS_ALL("/api/customers/all-customers/{customerId}", true),
-    API_ACCOUNTS_ALL("/api/accounts/all-accounts/{accountId}", true),
-    API_TRANSACTIONS_ALL("/api/transactions/all-transactions/{transactionId}", true);
+    API_ACCOUNTS_ALL("/api/accounts/all-accounts/{accountId}", false),
+    API_TRANSACTIONS_ALL("/api/transactions/all-transactions/{transactionId}", false);
 
     private final String path;
     private final boolean unconditionallyRestricted;

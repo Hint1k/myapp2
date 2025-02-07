@@ -102,10 +102,8 @@ public class TransactionController {
 
     @GetMapping("/transactions/{transactionId}")
     public String getTransaction(@PathVariable("transactionId") Long transactionId, Model model) {
-        Transaction transaction = new Transaction();
-        transaction.setTransactionId(transactionId);
-        publisher.publishTransactionDetailsEvent(transaction);
-        transaction = transactionCache.getTransactionFromCache(transactionId);
+        publisher.publishTransactionDetailsEvent(transactionId);
+        Transaction transaction = transactionCache.getTransactionFromCache(transactionId);
         if (transaction != null) {
             model.addAttribute("transaction", transaction);
             return "transaction/transaction-details";
@@ -139,8 +137,10 @@ public class TransactionController {
     private String handleTransactionsRetrieval(Model model, HttpServletRequest request, Long accountNumber,
                                                Long customerNumber) {
         publisher.publishAllTransactionsEvent();
-        CountDownLatch latch = new CountDownLatch(1);
-        this.latch.setLatch(latch);
+        if (latch.getLatch() == null) {
+            latch.setLatch(new CountDownLatch(1));
+        }
+        CountDownLatch latch = this.latch.getLatch();
         try {
             boolean latchResult = latch.await(MAX_RESPONSE_TIME, TimeUnit.SECONDS);
             if (latchResult) {
