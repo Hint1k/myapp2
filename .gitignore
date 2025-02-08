@@ -13,4 +13,4 @@ data/
 *.ipr
 out/
 
-docker-compose.yml
+docker-compose_local.yml
