@@ -35,9 +35,9 @@
 - Log in with the new username and password <br>
 
 **Installation info:** <br>
-- Download the application and unzip it <br>
-- Go to the project folder <br>
-- Use the console command: docker-compose up --build <br>
-- Wait until the process is completed. This may take several minutes, depending on your system and network speed <br>
-- Once the process is complete, the following link will appear in the console: http://localhost:8080 <br>
-- Click the link or copy it into your browser to access the application <br>
+- Download and unzip the application <br>
+- Navigate to the project folder where docker-compose.yml is located <br>
+- Run the console command: docker-compose up --build <br>
+- Wait for the process to complete (this may take a few minutes depending on your system and network speed) <br>
+- Once completed, the following link will appear in the console: http://localhost:8080 <br>
+- Open the link in your browser to access the application <br>

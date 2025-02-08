@@ -52,7 +52,8 @@ public class SecurityConfig {
                     .cors((cors) -> cors.configurationSource(corsConfigurationSource()))
                     .authorizeHttpRequests((authorize) -> authorize
                             .requestMatchers("/login", "/verify", "/v3/api-docs/**", "/swagger-ui/**",
-                                    "/swagger-ui.html").permitAll().anyRequest().authenticated()
+                                    "/swagger-ui.html", "/actuator/health").permitAll()
+                            .anyRequest().authenticated()
                     )
                     .addFilterBefore(filterServiceImpl, UsernamePasswordAuthenticationFilter.class);
             return http.build();

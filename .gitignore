@@ -12,3 +12,5 @@ data/
 *.iml
 *.ipr
 out/
+
+docker-compose.yml

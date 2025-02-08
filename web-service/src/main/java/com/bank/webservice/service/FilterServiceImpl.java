@@ -127,7 +127,7 @@ public class FilterServiceImpl extends OncePerRequestFilter implements FilterSer
         }
         // Skip filtering for certain pages, and resources, so there will be no several requests instead of one
         return path.equals("/index") || path.equals("/access-denied") || path.equals("/error") || path.equals("/login")
-                || path.equals("/register") || path.equals("/v3/api-docs") || path.endsWith(".css")
-                || path.endsWith(".js") || path.endsWith(".ico") || path.endsWith(".html");
+                || path.equals("/register") || path.equals("/v3/api-docs") || path.equals("/actuator/health")
+                || path.endsWith(".css") || path.endsWith(".js") || path.endsWith(".ico") || path.endsWith(".html");
     }
 }

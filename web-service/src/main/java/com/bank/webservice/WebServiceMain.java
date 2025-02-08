@@ -5,6 +5,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.PropertySource;
 
+import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -24,25 +25,39 @@ public class WebServiceMain {
     private static void waitForService() {
         try (HttpClient client = HttpClient.newHttpClient()) {
             HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create("http://localhost:8080/health"))
+                    .uri(URI.create("http://localhost:8080/actuator/health"))
                     .timeout(Duration.ofSeconds(5))
                     .GET()
                     .build();
 
-            int retries = 12;
+            int retries = 10;
             while (retries > 0) {
                 try {
                     HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-                    if (response.statusCode() == 200) return;
-                } catch (Exception e) {
-                    log.info("Waiting for http://localhost:8080/health...");
+                    if (response.statusCode() == 200) {
+                        Thread.sleep(5000); // Wait for logs to settle down
+                        return;
+                    }
+                } catch (IOException e) {
+                    log.info("Waiting for http://localhost:8080/actuator/health...");
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt(); // Restore interrupt status
+                    log.error("Thread was interrupted. Exiting...");
+                    return;
                 }
+
                 retries--;
                 try {
-                    Thread.sleep(3000);
-                } catch (InterruptedException ignored) {
+                    Thread.sleep(3000); // Pause before retrying
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    log.error("Application interrupted during wait. Exiting...");
+                    return;
                 }
             }
         }
+
+        log.error("Service did not respond after multiple retries. Exiting...");
+        System.exit(1);
     }
 }
