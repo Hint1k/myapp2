@@ -1,7 +1,7 @@
 services:
   postgres-account:
     image: postgres:16
-    container_name: postgres-account
+    container_name: hint1k_postgres-account
     environment:
       POSTGRES_USER: user
       POSTGRES_PASSWORD: 123
@@ -19,7 +19,7 @@ services:
 
   postgres-customer:
     image: postgres:16
-    container_name: postgres-customer
+    container_name: hint1k_postgres-customer
     environment:
       POSTGRES_USER: user
       POSTGRES_PASSWORD: 123
@@ -37,7 +37,7 @@ services:
 
   postgres-gateway:
     image: postgres:16
-    container_name: postgres-gateway
+    container_name: hint1k_postgres-gateway
     environment:
       POSTGRES_USER: user
       POSTGRES_PASSWORD: 123
@@ -55,7 +55,7 @@ services:
 
   postgres-transaction:
     image: postgres:16
-    container_name: postgres-transaction
+    container_name: hint1k_postgres-transaction
     environment:
       POSTGRES_USER: user
       POSTGRES_PASSWORD: 123
@@ -75,7 +75,9 @@ services:
     build:
       context: ./account-service
       dockerfile: Dockerfile
-    container_name: account-service
+    volumes:
+      - gradle-cache:/home/gradle/.gradle
+    container_name: hint1k_account-service
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-account:5432/myapp2
       SPRING_DATASOURCE_USERNAME: user
@@ -97,7 +99,9 @@ services:
     build:
       context: ./customer-service
       dockerfile: Dockerfile
-    container_name: customer-service
+    volumes:
+      - gradle-cache:/home/gradle/.gradle
+    container_name: hint1k_customer-service
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-customer:5432/myapp2
       SPRING_DATASOURCE_USERNAME: user
@@ -119,7 +123,9 @@ services:
     build:
       context: ./gateway-service
       dockerfile: Dockerfile
-    container_name: gateway-service
+    volumes:
+      - gradle-cache:/home/gradle/.gradle
+    container_name: hint1k_gateway-service
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-gateway:5432/myapp2
       SPRING_DATASOURCE_USERNAME: user
@@ -141,7 +147,9 @@ services:
     build:
       context: ./transaction-service
       dockerfile: Dockerfile
-    container_name: transaction-service
+    volumes:
+      - gradle-cache:/home/gradle/.gradle
+    container_name: hint1k_transaction-service
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-transaction:5432/myapp2
       SPRING_DATASOURCE_USERNAME: user
@@ -163,7 +171,9 @@ services:
     build:
       context: ./web-service
       dockerfile: Dockerfile
-    container_name: web-service
+    volumes:
+      - gradle-cache:/home/gradle/.gradle
+    container_name: hint1k_web-service
     depends_on:
       - kafka
     ports:
@@ -177,7 +187,7 @@ services:
 
   kafka:
     image: confluentinc/cp-kafka:7.6.0
-    container_name: kafka
+    container_name: hint1k_kafka
     environment:
       KAFKA_BROKER_ID: 1
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
@@ -196,7 +206,7 @@ services:
 
   redis:
     image: redis:7.2-alpine
-    container_name: redis
+    container_name: hint1k_redis
     ports:
       - "6379:6379"
     healthcheck:
@@ -208,7 +218,7 @@ services:
 
   zookeeper:
     image: confluentinc/cp-zookeeper:7.6.0
-    container_name: zookeeper
+    container_name: hint1k_zookeeper
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
       ZOOKEEPER_TICK_TIME: 2000
@@ -226,3 +236,4 @@ services:
 
 volumes:
   postgres_data:
+  gradle-cache:
