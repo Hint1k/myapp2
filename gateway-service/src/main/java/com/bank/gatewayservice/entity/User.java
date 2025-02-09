@@ -17,14 +17,6 @@ public class User {
     @ToString.Include
     private Long userId;
 
-    @Column(name = "first_name")
-    @ToString.Include
-    private String firstName;
-
-    @Column(name = "last_name")
-    @ToString.Include
-    private String lastName;
-
     @Column(name = "customer_number", nullable = false)
     @ToString.Include
     private Long customerNumber;
@@ -46,10 +38,7 @@ public class User {
     private Role role;
 
     // no userId
-    public User(String firstName, String lastName, Long customerNumber, String username, String password,
-                int isEnabled, Role role) {
-        this.firstName = firstName;
-        this.lastName = lastName;
+    public User(Long customerNumber, String username, String password, int isEnabled, Role role) {
         this.customerNumber = customerNumber;
         this.username = username;
         this.password = password;
@@ -58,10 +47,7 @@ public class User {
     }
 
     // no userId, no role
-    public User(String firstName, String lastName, Long customerNumber, String username, String password,
-                int isEnabled) {
-        this.firstName = firstName;
-        this.lastName = lastName;
+    public User(Long customerNumber, String username, String password, int isEnabled) {
         this.customerNumber = customerNumber;
         this.username = username;
         this.password = password;
@@ -69,9 +55,7 @@ public class User {
     }
 
     // no userId, no role, no enabled
-    public User(String firstName, String lastName, Long customerNumber, String username, String password) {
-        this.firstName = firstName;
-        this.lastName = lastName;
+    public User(Long customerNumber, String username, String password) {
         this.customerNumber = customerNumber;
         this.username = username;
         this.password = password;

@@ -17,9 +17,7 @@ drop table if exists users;
 create table users
 (
     id              bigserial primary key,
-    first_name      varchar(45) not null,
-    last_name       varchar(45) not null,
-    customer_number bigint      not null,
+    customer_number bigint      not null unique,
     username        varchar(45) not null,
     password        varchar(68) not null,
     enabled         integer     not null
@@ -35,10 +33,10 @@ create table authorities
     foreign key (user_id) references users (id)
 );
 
-insert into users (id, first_name, last_name, customer_number, username, password, enabled)
-values (1, 'Mary', 'Sue', 0, 'manager',
+insert into users (id, customer_number, username, password, enabled)
+values (1, 0, 'manager',
         '$2a$10$U.TJCuMA4c6lka5Xq7i43OK9iDoA1/niZU3Gi6Xez1JzB7wNwvQzu', 1),
-       (2, 'Alex', 'Smith', 0, 'admin',
+       (2, -1, 'admin',
         '$2a$10$U.TJCuMA4c6lka5Xq7i43OK9iDoA1/niZU3Gi6Xez1JzB7wNwvQzu', 1);
 
 insert into authorities (id, username, authority, user_id)

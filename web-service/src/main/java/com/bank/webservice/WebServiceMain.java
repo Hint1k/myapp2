@@ -35,7 +35,7 @@ public class WebServiceMain {
                 try {
                     HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
                     if (response.statusCode() == 200) {
-                        Thread.sleep(5000); // Wait for logs to settle down
+                        Thread.sleep(10000); // Wait for logs to settle down
                         return;
                     }
                 } catch (IOException e) {

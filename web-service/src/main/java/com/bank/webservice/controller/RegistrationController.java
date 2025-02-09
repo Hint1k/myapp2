@@ -1,6 +1,7 @@
 package com.bank.webservice.controller;
 
 import com.bank.webservice.cache.CustomerCache;
+import com.bank.webservice.cache.UserCache;
 import com.bank.webservice.dto.Customer;
 import com.bank.webservice.dto.User;
 import com.bank.webservice.publisher.CustomerEventPublisher;
@@ -26,15 +27,17 @@ public class RegistrationController {
     private final CustomerEventPublisher customerPublisher;
     private final UserEventPublisher userPublisher;
     private final CustomerCache customerCache;
+    private final UserCache userCache;
     private final LatchService latch;
     private static final int MAX_RESPONSE_TIME = 3; // seconds
 
     @Autowired
     public RegistrationController(CustomerEventPublisher customerPublisher, UserEventPublisher userPublisher,
-                                  CustomerCache customerCache, LatchService latch) {
+                                  CustomerCache customerCache, UserCache userCache, LatchService latch) {
         this.customerPublisher = customerPublisher;
         this.userPublisher = userPublisher;
         this.customerCache = customerCache;
+        this.userCache = userCache;
         this.latch = latch;
     }
 
@@ -47,25 +50,26 @@ public class RegistrationController {
     @GetMapping("/register")
     public String showRegistrationPage(Model model) {
         customerPublisher.publishAllCustomersEvent();
-        CountDownLatch latch = new CountDownLatch(1);
-        this.latch.setLatch(latch);
+        userPublisher.publishAllUsersEvent();
+        if (latch.getLatch() == null) {
+            latch.setLatch(new CountDownLatch(1));
+        }
+        CountDownLatch latch = this.latch.getLatch();
         try {
             boolean latchResult = latch.await(MAX_RESPONSE_TIME, TimeUnit.SECONDS);
             if (latchResult) {
                 List<Customer> customers = customerCache.getAllCustomersFromCache();
-                if (customers != null && !customers.isEmpty()) {
-                    sortCustomers(customers);
-                    model.addAttribute("customers", customers);
-                } else {
-                    String errorMessage = "You have to register as a customer first";
-                    model.addAttribute("errorMessage", errorMessage);
-                    log.error("The customer database is empty: {}", errorMessage);
+                List<User> users = userCache.getAllUsersFromCache();
+                List<Long> freeCustomerNumbers = getFreeCustomerNumbers(customers, users);
+                if (freeCustomerNumbers.isEmpty()) {
+                    model.addAttribute("errorMessage", "There is no unregistered customers." +
+                            " Log in as admin and create a new customer to proceed.");
                     return "error";
                 }
+                model.addAttribute("customers", freeCustomerNumbers);
             } else {
-                String errorMessage = "The service is busy, please try again later.";
-                model.addAttribute("errorMessage", errorMessage);
-                log.error("Timeout waiting for customers: {}", errorMessage);
+                model.addAttribute("errorMessage",
+                        "The service is busy, please try again later.");
                 return "error";
             }
         } catch (InterruptedException e) {
@@ -77,52 +81,27 @@ public class RegistrationController {
         return "registration-form";
     }
 
-    private void sortCustomers(List<Customer> customers) {
-        // Sort customers by ID
-        customers.sort(Comparator.comparing(Customer::getCustomerId));
-
-        // Sort account numbers within each customer in ascending order
-        customers.forEach(customer -> customer.setAccountNumbers(
-                Arrays.stream(customer.getAccountNumbers().split(","))
-                        .map(Long::parseLong)
-                        .sorted(Long::compareTo)
-                        .map(Object::toString)
-                        .collect(Collectors.joining(","))
-        ));
+    private List<Long> getFreeCustomerNumbers(List<Customer> customers, List<User> users) {
+        List<Long> userCustomerNumbers = users.stream()
+                .map(User::getCustomerNumber)
+                .toList();
+        // Filtering customer numbers that are not in the userCustomerNumbers list
+        return customers.stream()
+                .map(Customer::getCustomerNumber)
+                .filter(customerNumber -> !userCustomerNumbers.contains(customerNumber))
+                .collect(Collectors.toList());
     }
 
     @PostMapping("/register")
-    public String registerUser(@RequestParam Map<String, String> registrationData, Model model) {
+    public String registerUser(@RequestParam Map<String, String> registrationData) {
         String username = registrationData.get("username");
         String password = registrationData.get("password");
-        String customerNumber = registrationData.get("customerNumber");
-
-        List<Customer> customerList = customerCache.getAllCustomersFromCache();
-        // Check if the customer number exists in the customer list
-        // TODO check String to Long conversion of customer number here
-        Optional<Customer> matchingCustomer = customerList.stream()
-                .filter(customer -> customer.getCustomerNumber().toString().equals(customerNumber))
-                .findFirst();
-
-        if (matchingCustomer.isEmpty()) {
-            String errorMessage = "Invalid customer number. Please register as a customer first.";
-            model.addAttribute("errorMessage", errorMessage);
-            log.error("Customer number {} not found in the customer list.", customerNumber);
-            return "error";
-        }
-
-        Customer customer = matchingCustomer.get();
-        log.info("Customer found: {}", customer);
-
+        Long customerNumber = Long.parseLong(registrationData.get("customerNumber"));
         User user = new User();
         user.setUsername(username);
         user.setPassword(password);
-        user.setCustomerNumber(customer.getCustomerNumber());
-        user.setFirstName(customer.getName().split(" ")[0]);
-        user.setLastName(customer.getName().split(" ")[1]);
+        user.setCustomerNumber(customerNumber);
         userPublisher.publishUserRegisteredEvent(user);
-
-        log.info("User registered successfully: {}", username);
         return "registration-successful";
     }
 }

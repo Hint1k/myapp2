@@ -6,5 +6,5 @@ public interface UserEventPublisher {
 
     void publishUserRegisteredEvent(User user);
 
-//    void publishAllUsersEvent();
+    void publishAllUsersEvent();
 }

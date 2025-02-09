@@ -8,6 +8,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -45,13 +46,17 @@ public class LoginController {
                 model.addAttribute("token", token);
                 return "redirect:/home";
             } else {
-                log.error("Token not received from gateway-service.");
-                model.addAttribute("errorMessage", "Invalid credentials or access denied.");
+                log.error("Token not received from gateway-service");
+                model.addAttribute("errorMessage", "Invalid credentials or access denied");
                 return "index";
             }
+        } catch (HttpClientErrorException.Unauthorized e) {
+            log.error("Invalid credentials");
+            model.addAttribute("errorMessage", "Invalid credentials");
+            return "index";
         } catch (Exception e) {
             log.error("Error during login process", e);
-            model.addAttribute("errorMessage", "Error occurred while logging in.");
+            model.addAttribute("errorMessage", "Error occurred while logging in");
             return "index";
         }
     }

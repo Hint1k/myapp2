@@ -13,8 +13,6 @@ import java.io.Serializable;
 public class User implements Serializable {
 
     private Long userId;
-    private String firstName;
-    private String lastName;
     private Long customerNumber;
 
     @NotNull(message = "Username should not be empty")
@@ -24,9 +22,7 @@ public class User implements Serializable {
     private String password;
 
     // no userId
-    public User(String firstName, String lastName, Long customerNumber, String username, String password) {
-        this.firstName = firstName;
-        this.lastName = lastName;
+    public User(Long customerNumber, String username, String password) {
         this.customerNumber = customerNumber;
         this.username = username;
         this.password = password;

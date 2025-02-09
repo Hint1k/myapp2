@@ -10,9 +10,14 @@ import lombok.NoArgsConstructor;
 public class UserRegisteredEvent {
 
     private Long userId;
-    private String firstName;
-    private String lastName;
     private Long customerNumber;
     private String username;
     private String password;
+
+    // no userId
+    public UserRegisteredEvent(Long customerNumber, String username, String password) {
+        this.customerNumber = customerNumber;
+        this.username = username;
+        this.password = password;
+    }
 }

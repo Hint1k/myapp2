@@ -24,13 +24,23 @@ public class UserEventListener {
     public void handleUserCreatedEvent(UserRegisteredEvent event, Acknowledgment acknowledgment) {
         log.info("Received user-registration-requested event for username: {}", event.getUsername());
         User user = new User(
-                event.getFirstName(),
-                event.getLastName(),
                 event.getCustomerNumber(),
                 event.getUsername(),
                 event.getPassword()
         );
         service.saveUser(user);
         acknowledgment.acknowledge();
+    }
+
+    @KafkaListener(topics = "all-users-requested", groupId = "gateway-service")
+    public void handleAllUsersEvent(Acknowledgment acknowledgment) {
+        log.info("Received all-users-requested event");
+        try {
+            service.findAllUsers();
+            acknowledgment.acknowledge();
+        } catch (Exception e) {
+            log.error("Error finding all users: {}", e.getMessage());
+            // TODO implement error handling later
+        }
     }
 }
