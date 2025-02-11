@@ -138,10 +138,14 @@ public class ValidationServiceImpl implements ValidationService {
         }
 
         // Normalizing user input of account numbers
-        accountNumbersString = accountNumbersString.replaceAll("\\s+", ","); // removing spaces
-        accountNumbersString = accountNumbersString.replaceAll("^,|,$", ""); // removing wrong commas
+        // Step 1: Remove all spaces
+        accountNumbersString = accountNumbersString.replaceAll("\\s+", "");
+        // Step 2: Replace multiple commas with a single comma
+        accountNumbersString = accountNumbersString.replaceAll(",+", ",");
+        // Step 3: Remove leading and trailing commas
+        accountNumbersString = accountNumbersString.replaceAll("^,|,$", "");
+        // Now accountNumbersString should be in the desired format
         oldCustomer.setAccountNumbers(accountNumbersString);
-
         // Checking if string contains only digits divided by comma
         List<Long> accountNumbersList = new ArrayList<>();
 
@@ -170,6 +174,7 @@ public class ValidationServiceImpl implements ValidationService {
                 errorMessageBuilder.append(nonExistingAccountNumber).append(", ");
             }
             String errorMessage = errorMessageBuilder.toString();
+            errorMessage = errorMessage.substring(0, errorMessage.length() - 2);  // Remove last comma and space
             bindingResult.rejectValue("accountNumbers", "error.customer", errorMessage);
         }
 

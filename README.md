@@ -31,9 +31,9 @@
 **New user registration process:** <br>
 - (Optional step) Log in as an admin and create a new customer to generate a unique customer number <br> 
 - On the login page, select the option to register a new user <br> 
-- Complete the registration and link the account to an existing customer using a valid customer number <br>
-  - You can use one of the default customer numbers: 1, 2 or 3 <br>
-  - Alternatively, use the customer number you created as an admin <br>
+- Complete the registration and link the new user to an existing customer using a valid customer number <br>
+  - You can link one of the default customer numbers: 1, 2 or 3 <br>
+  - Alternatively, link the customer number you created as an admin <br>
 - After completing the registration process, log in with your newly created username and password <br>
 
 **Installation info:** <br>
