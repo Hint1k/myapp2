@@ -34,7 +34,6 @@
 - Complete the registration and link the account to an existing customer using a valid customer number <br>
   - You can use one of the default customer numbers: 1, 2 or 3 <br>
   - Alternatively, use the customer number you created as an admin <br>
-- Use a default customer numbers - 1,2, 3 or customer number registered by you as admin <br>
 - After completing the registration process, log in with your newly created username and password <br>
 
 **Installation info:** <br>

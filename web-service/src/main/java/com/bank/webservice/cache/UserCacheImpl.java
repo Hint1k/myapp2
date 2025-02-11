@@ -14,7 +14,6 @@ import java.util.Set;
 @Slf4j
 public class UserCacheImpl implements UserCache {
 
-
     // objects of different classes with the same id in cache cause errors
     private static final String PREFIX = "user:";
     private final CacheService service;
