@@ -66,7 +66,7 @@ public class RegistrationController {
                             " Log in as admin and create a new customer to proceed.");
                     return "error";
                 }
-                model.addAttribute("customers", freeCustomerNumbers);
+                model.addAttribute("customerNumbers", freeCustomerNumbers);
             } else {
                 model.addAttribute("errorMessage",
                         "The service is busy, please try again later.");

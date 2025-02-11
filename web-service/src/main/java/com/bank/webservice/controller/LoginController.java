@@ -47,7 +47,8 @@ public class LoginController {
                 return "redirect:/home";
             } else {
                 log.error("Token not received from gateway-service");
-                model.addAttribute("errorMessage", "Invalid credentials or access denied");
+                model.addAttribute("errorMessage",
+                        "You don't have a jwt token. Try to login again.");
                 return "index";
             }
         } catch (HttpClientErrorException.Unauthorized e) {

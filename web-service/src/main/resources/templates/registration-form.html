@@ -18,7 +18,7 @@
 
     <label for="customerNumber">Customer Number:</label>
     <select id="customerNumber" name="customerNumber" required>
-        <option th:each="customerNumber : ${customers}"
+        <option th:each="customerNumber : ${customerNumbers}"
                 th:value="${customerNumber}"
                 th:text="${customerNumber}"></option>
     </select>
