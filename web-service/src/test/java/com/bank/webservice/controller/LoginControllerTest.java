@@ -2,6 +2,7 @@ package com.bank.webservice.controller;
 
 import com.bank.webservice.service.FilterService;
 import jakarta.servlet.http.HttpSession;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +23,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WebMvcTest(controllers = LoginController.class)
 @AutoConfigureMockMvc
+@Slf4j
 public class LoginControllerTest {
 
     @MockBean
@@ -39,7 +41,7 @@ public class LoginControllerTest {
     private static final String LOGIN_URL = "http://gateway-service:8080/login";
 
     @Test
-    public void testLogin_SuccessfulLogin() throws Exception {
+    public void testLogin_SuccessfulLogin() {
         ResponseEntity<Map<String, String>> mockResponse = ResponseEntity.ok(Map.of("token", "mockToken"));
 
         // Mock the response of RestTemplate
@@ -50,11 +52,16 @@ public class LoginControllerTest {
                 Mockito.<ParameterizedTypeReference<Map<String, String>>>any()
         )).thenReturn(mockResponse);
 
-        mockMvc.perform(post("/login")
-                        .param("username", "testUser")
-                        .param("password", "testPass"))
-                .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("/home"));
+        try {
+            mockMvc.perform(post("/login")
+                            .param("username", "testUser")
+                            .param("password", "testPass"))
+                    .andExpect(status().is3xxRedirection())
+                    .andExpect(redirectedUrl("/home"));
+        } catch (Exception e) {
+            log.error("testLogin_SuccessfulLogin fails: {}", e.getMessage());
+            throw new RuntimeException(e);
+        }
 
         // Verify exchange call
         Mockito.verify(restTemplate, Mockito.times(1)).exchange(
@@ -66,7 +73,7 @@ public class LoginControllerTest {
     }
 
     @Test
-    public void testLogin_InvalidLogin() throws Exception {
+    public void testLogin_InvalidLogin() {
         // Mock unauthorized exception with custom headers and body
         HttpHeaders headers = new HttpHeaders();
         byte[] body = new byte[0];
@@ -88,12 +95,17 @@ public class LoginControllerTest {
                 Mockito.<ParameterizedTypeReference<Map<String, Object>>>any()
         )).thenThrow(unauthorizedException);
 
-        mockMvc.perform(post("/login")
-                        .param("username", "wrongUser")
-                        .param("password", "wrongPass"))
-                .andExpect(status().isOk())
-                .andExpect(model().attributeExists("errorMessage"))
-                .andExpect(model().attribute("errorMessage", "Invalid credentials"));
+        try {
+            mockMvc.perform(post("/login")
+                            .param("username", "wrongUser")
+                            .param("password", "wrongPass"))
+                    .andExpect(status().isOk())
+                    .andExpect(model().attributeExists("errorMessage"))
+                    .andExpect(model().attribute("errorMessage", "Invalid credentials"));
+        } catch (Exception e) {
+            log.error("testLogin_InvalidLogin fails: {}", e.getMessage());
+            throw new RuntimeException(e);
+        }
 
         // Verify exchange call
         Mockito.verify(restTemplate, Mockito.times(1)).exchange(
@@ -105,7 +117,7 @@ public class LoginControllerTest {
     }
 
     @Test
-    public void testLogin_NoTokenReceived() throws Exception {
+    public void testLogin_NoTokenReceived() {
         // Mock response that doesn't contain a token
         ResponseEntity<Map<String, Object>> mockResponse = ResponseEntity.ok(Map.of());
 
@@ -117,14 +129,20 @@ public class LoginControllerTest {
                 Mockito.<ParameterizedTypeReference<Map<String, Object>>>any()
         )).thenReturn(mockResponse);
 
-        // Perform the POST request to /login with any username and password
-        mockMvc.perform(post("/login")
-                        .param("username", "testUser")
-                        .param("password", "testPass"))
-                .andExpect(status().isOk())
-                .andExpect(model().attributeExists("errorMessage"))
-                .andExpect(model().attribute("errorMessage",
-                        "You don't have a jwt token. Try to login again."));
+        try {
+            // Perform the POST request to /login with any username and password
+            mockMvc.perform(post("/login")
+                            .param("username", "testUser")
+                            .param("password", "testPass"))
+                    .andExpect(status().isOk())
+                    .andExpect(model().attributeExists("errorMessage"))
+                    .andExpect(model().attribute("errorMessage",
+                            "You don't have a jwt token. Try to login again."));
+
+        } catch (Exception e) {
+            log.error("testLogin_NoTokenRecieved fails: {}", e.getMessage());
+            throw new RuntimeException(e);
+        }
 
         // Verify exchange call
         Mockito.verify(restTemplate, Mockito.times(1)).exchange(

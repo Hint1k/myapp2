@@ -44,17 +44,26 @@ public class FilterServiceImpl extends OncePerRequestFilter {
         try {
             String authHeader = request.getHeader("Authorization");
             token = extractToken(authHeader);
-            String username = token != null ? jwtService.extractUsername(token) : null;
-            if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-                handleAuthentication(request, response, token, username);
-            }
-            // Check if token is null or expired before proceeding with the filter chain
-            if (token != null && !jwtService.isTokenExpired(token)) {
-                filterChain.doFilter(request, response);
-            } else {
+            // check if token is present
+            if (token == null) {
                 response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                response.getWriter().write("Token has expired or is invalid");
+                response.getWriter().write("No token provided");
+                return;
             }
+            // Check if the token is valid
+            String username = jwtService.extractUsername(token);
+            if (!isTokenValid(token, username)) {
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                response.getWriter().write("Invalid token");
+                return;
+            }
+            // Check if the user is authenticated
+            if (SecurityContextHolder.getContext().getAuthentication() == null) {
+                authenticateUser(request, response, token, username);
+            }
+            // Token is present, valid and user is authenticated = proceed with filter chain
+            filterChain.doFilter(request, response);
+
         } catch (Exception e) {
             handleError(response, e);
         }
@@ -67,19 +76,22 @@ public class FilterServiceImpl extends OncePerRequestFilter {
         return null;
     }
 
-    private void handleAuthentication(HttpServletRequest request, HttpServletResponse response, String token,
-                                      String username) throws IOException {
+    private boolean isTokenValid(String token, String username) {
+        if (username == null) {
+            log.warn("Username is null, token: {}", token);
+            return false;
+        }
         String cachedToken = (String) redisTemplate.opsForValue().get("token:" + username);
-        if (cachedToken != null && cachedToken.equals(token)) {
+        if (cachedToken == null || cachedToken.equals(token)) {
             if (jwtService.isTokenExpired(token)) {
                 log.warn("Token expired for user {}: {}", username, token);
-                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                return;
+                return false;
             }
-            authenticateUser(request, response, token, username);
+            return true;
         } else {
-            log.warn("Token validation failed for user {} or token mismatch", username);
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            log.warn("Token validation failed for user {}: cached token {} does not match provided token {}",
+                    username, cachedToken, token);
+            return false;
         }
     }
 
