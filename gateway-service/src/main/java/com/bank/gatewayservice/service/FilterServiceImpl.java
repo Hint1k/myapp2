@@ -112,6 +112,7 @@ public class FilterServiceImpl extends OncePerRequestFilter {
         }
     }
 
+    // a customer number needed to find what user is it, since every user have their unique customer number
     private void addCustomerNumberToHeader(HttpServletResponse response, User user) {
         if (user != null && user.getCustomerNumber() != null) {
             response.addHeader("X-Customer-Number", user.getCustomerNumber().toString());
