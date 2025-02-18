@@ -40,6 +40,6 @@
 - Download and unzip the application <br>
 - Navigate to the project folder where docker-compose.yml is located <br>
 - Run the console command: docker-compose up --build <br>
-- Wait for the process to complete (this may take a few minutes depending on your system and network speed) <br>
+- Wait for the process to complete (this may take some time depending on your system and network speed) <br>
 - Once completed, the following link will appear in the console: http://localhost:8080 <br>
 - Open the link in your browser to access the application <br>

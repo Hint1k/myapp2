@@ -3,7 +3,7 @@ package com.bank.webservice.controller;
 import com.bank.webservice.cache.AccountCache;
 import com.bank.webservice.cache.TransactionCache;
 import com.bank.webservice.dto.Transaction;
-import com.bank.webservice.publisher.TransactionEventPublisher;
+import com.bank.webservice.publisher.GenericPublisher;
 import com.bank.webservice.service.LatchService;
 import com.bank.webservice.service.RoleService;
 import com.bank.webservice.service.ValidationService;
@@ -30,7 +30,7 @@ import java.util.concurrent.CountDownLatch;
 @RequestMapping("/api")
 public class TransactionController {
 
-    private final TransactionEventPublisher publisher;
+    private final GenericPublisher publisher;
     private final TransactionCache transactionCache;
     private final AccountCache accountCache;
     private final LatchService latch;
@@ -39,8 +39,8 @@ public class TransactionController {
     private static final int MAX_RESPONSE_TIME = 3; // seconds
 
     @Autowired
-    public TransactionController(TransactionEventPublisher publisher, AccountCache accountCache, LatchService latch,
-                                 ValidationService validator, TransactionCache transactionCache, RoleService role) {
+    public TransactionController(GenericPublisher publisher, AccountCache accountCache, RoleService role,
+                                 LatchService latch, ValidationService validator, TransactionCache transactionCache) {
         this.publisher = publisher;
         this.transactionCache = transactionCache;
         this.accountCache = accountCache;
@@ -70,7 +70,7 @@ public class TransactionController {
             log.error("Transaction submission failed due to validation errors: {}", bindingResult.getAllErrors());
             return "transaction/new-transaction";
         }
-        publisher.publishTransactionCreatedEvent(transaction);
+        publisher.publishCreatedEvent(transaction);
         return "redirect:/home";
     }
 
@@ -90,19 +90,19 @@ public class TransactionController {
             log.error("Transaction update failed due to validation errors: {}", bindingResult.getAllErrors());
             return "transaction/transaction-update";
         }
-        publisher.publishTransactionUpdatedEvent(transaction);
+        publisher.publishUpdatedEvent(transaction);
         return "redirect:/home";
     }
 
     @DeleteMapping("/transactions/{transactionId}")
     public String deleteTransaction(@PathVariable("transactionId") Long transactionId) {
-        publisher.publishTransactionDeletedEvent(transactionId);
+        publisher.publishDeletedEvent(transactionId, Transaction.class);
         return "redirect:/home";
     }
 
     @GetMapping("/transactions/{transactionId}")
     public String getTransaction(@PathVariable("transactionId") Long transactionId, Model model) {
-        publisher.publishTransactionDetailsEvent(transactionId);
+        publisher.publishDetailsEvent(transactionId, Transaction.class);
         Transaction transaction = transactionCache.getTransactionFromCache(transactionId);
         if (transaction != null) {
             model.addAttribute("transaction", transaction);
@@ -136,7 +136,7 @@ public class TransactionController {
 
     private String handleTransactionsRetrieval(Model model, HttpServletRequest request, Long accountNumber,
                                                Long customerNumber) {
-        publisher.publishAllTransactionsEvent();
+        publisher.publishAllEvent(Transaction.class);
         if (latch.getLatch() == null) {
             latch.setLatch(new CountDownLatch(1));
         }

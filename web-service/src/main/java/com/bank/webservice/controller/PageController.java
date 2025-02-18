@@ -1,25 +1,24 @@
 package com.bank.webservice.controller;
 
-import com.bank.webservice.publisher.AccountEventPublisher;
-import com.bank.webservice.publisher.CustomerEventPublisher;
-import com.bank.webservice.publisher.TransactionEventPublisher;
+import com.bank.webservice.dto.Account;
+import com.bank.webservice.dto.Customer;
+import com.bank.webservice.dto.Transaction;
+import com.bank.webservice.publisher.GenericPublisher;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 
 @Controller
+@Slf4j
 public class PageController {
 
-    AccountEventPublisher accountPublisher;
-    TransactionEventPublisher transactionPublisher;
-    CustomerEventPublisher customerPublisher;
+    private final GenericPublisher publisher;
 
     @Autowired
-    public PageController(AccountEventPublisher accountPublisher, TransactionEventPublisher transactionPublisher,
-                          CustomerEventPublisher customerPublisher) {
-        this.accountPublisher = accountPublisher;
-        this.transactionPublisher = transactionPublisher;
-        this.customerPublisher = customerPublisher;
+    public PageController(GenericPublisher publisher) {
+        this.publisher = publisher;
+
     }
 
     @GetMapping("/admin/index")
@@ -47,12 +46,10 @@ public class PageController {
 
     @GetMapping("/index")
     public String showLoginPage() {
-
         // Preload the cache data to avoid empty lists in some cases
-        accountPublisher.publishAllAccountsEvent();
-        transactionPublisher.publishAllTransactionsEvent();
-        customerPublisher.publishAllCustomersEvent();
-
+        publisher.publishAllEvent(Account.class);
+        publisher.publishAllEvent(Transaction.class);
+        publisher.publishAllEvent(Customer.class);
         return "index";
     }
 

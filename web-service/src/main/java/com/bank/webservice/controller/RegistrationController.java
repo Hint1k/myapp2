@@ -4,7 +4,7 @@ import com.bank.webservice.cache.CustomerCache;
 import com.bank.webservice.cache.UserCache;
 import com.bank.webservice.dto.Customer;
 import com.bank.webservice.dto.User;
-import com.bank.webservice.publisher.CustomerEventPublisher;
+import com.bank.webservice.publisher.GenericPublisher;
 import com.bank.webservice.publisher.UserEventPublisher;
 import com.bank.webservice.service.LatchService;
 import lombok.extern.slf4j.Slf4j;
@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
 @Slf4j
 public class RegistrationController {
 
-    private final CustomerEventPublisher customerPublisher;
+    private final GenericPublisher customerPublisher;
     private final UserEventPublisher userPublisher;
     private final CustomerCache customerCache;
     private final UserCache userCache;
@@ -32,7 +32,7 @@ public class RegistrationController {
     private static final int MAX_RESPONSE_TIME = 3; // seconds
 
     @Autowired
-    public RegistrationController(CustomerEventPublisher customerPublisher, UserEventPublisher userPublisher,
+    public RegistrationController(GenericPublisher customerPublisher, UserEventPublisher userPublisher,
                                   CustomerCache customerCache, UserCache userCache, LatchService latch) {
         this.customerPublisher = customerPublisher;
         this.userPublisher = userPublisher;
@@ -49,7 +49,7 @@ public class RegistrationController {
 
     @GetMapping("/register")
     public String showRegistrationPage(Model model) {
-        customerPublisher.publishAllCustomersEvent();
+        customerPublisher.publishAllEvent(Customer.class);
         userPublisher.publishAllUsersEvent();
         if (latch.getLatch() == null) {
             latch.setLatch(new CountDownLatch(1));

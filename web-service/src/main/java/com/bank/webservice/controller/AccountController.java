@@ -2,7 +2,7 @@ package com.bank.webservice.controller;
 
 import com.bank.webservice.cache.AccountCache;
 import com.bank.webservice.dto.Account;
-import com.bank.webservice.publisher.AccountEventPublisher;
+import com.bank.webservice.publisher.GenericPublisher;
 import com.bank.webservice.service.LatchService;
 import com.bank.webservice.service.RoleService;
 import com.bank.webservice.service.ValidationService;
@@ -29,15 +29,15 @@ import java.util.concurrent.TimeUnit;
 public class AccountController {
 
     private final LatchService latch;
-    private final AccountEventPublisher publisher;
+    private final GenericPublisher publisher;
     private final AccountCache cache;
     private final ValidationService validator;
     private final RoleService role;
     private static final int MAX_RESPONSE_TIME = 3; // seconds
 
     @Autowired
-    public AccountController(LatchService latch, AccountEventPublisher publisher,
-                             AccountCache cache, ValidationService validator, RoleService role) {
+    public AccountController(LatchService latch, GenericPublisher publisher, AccountCache cache,
+                             ValidationService validator, RoleService role) {
         this.latch = latch;
         this.publisher = publisher;
         this.cache = cache;
@@ -66,7 +66,7 @@ public class AccountController {
             log.error("Account saving failed due to validation errors: {}", bindingResult.getAllErrors());
             return "account/new-account";
         }
-        publisher.publishAccountCreatedEvent(newAccount);
+        publisher.publishCreatedEvent(newAccount);
         return "redirect:/home";
     }
 
@@ -84,19 +84,19 @@ public class AccountController {
             log.error("Account update failed due to validation errors: {}", bindingResult.getAllErrors());
             return "account/account-update";
         }
-        publisher.publishAccountUpdatedEvent(newAccount);
+        publisher.publishUpdatedEvent(newAccount);
         return "redirect:/home";
     }
 
     @DeleteMapping("/accounts/{accountId}")
     public String deleteAccount(@PathVariable("accountId") Long accountId) {
-        publisher.publishAccountDeletedEvent(accountId);
+        publisher.publishDeletedEvent(accountId, Account.class);
         return "redirect:/home";
     }
 
     @GetMapping("/accounts/{accountId}")
     public String getAccount(@PathVariable("accountId") Long accountId, Model model) {
-        publisher.publishAccountDetailsEvent(accountId);
+        publisher.publishDetailsEvent(accountId, Account.class);
         Account account = cache.getAccountFromCache(accountId);
         if (account != null) {
             model.addAttribute("account", account);
@@ -129,7 +129,7 @@ public class AccountController {
     }
 
     private String handleAccountsRetrieval(Model model, HttpServletRequest request, Long customerNumber) {
-        publisher.publishAllAccountsEvent();
+        publisher.publishAllEvent(Account.class);
         if (latch.getLatch() == null) {
             latch.setLatch(new CountDownLatch(1));
         }
@@ -154,7 +154,7 @@ public class AccountController {
             } else {
                 String errorMessage = "The service is busy, please try again later.";
                 model.addAttribute("errorMessage", errorMessage);
-                log.error("Timeout waiting for transactions: {}", errorMessage);
+                log.error("Timeout waiting for accounts: {}", errorMessage);
                 return "error";
             }
         } catch (InterruptedException e) {

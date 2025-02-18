@@ -1,18 +1,21 @@
 package com.bank.webservice.event.transaction;
 
+import com.bank.webservice.event.BaseEvent;
 import com.bank.webservice.util.TransactionStatus;
 import com.bank.webservice.util.TransactionType;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
+@EqualsAndHashCode(callSuper = true)
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class TransactionCreatedEvent {
+public class TransactionCreatedEvent extends BaseEvent {
     // TODO combine later with classes TransactionDetailsEvent and TransactionUpdatedEvent
     private Long transactionId;
     private BigDecimal amount;

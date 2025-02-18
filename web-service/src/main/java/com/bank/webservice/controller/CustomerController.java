@@ -2,7 +2,7 @@ package com.bank.webservice.controller;
 
 import com.bank.webservice.cache.CustomerCache;
 import com.bank.webservice.dto.Customer;
-import com.bank.webservice.publisher.CustomerEventPublisher;
+import com.bank.webservice.publisher.GenericPublisher;
 import com.bank.webservice.service.LatchService;
 import com.bank.webservice.service.RoleService;
 import com.bank.webservice.service.ValidationService;
@@ -31,14 +31,14 @@ import java.util.stream.Collectors;
 public class CustomerController {
 
     private final LatchService latch;
-    private final CustomerEventPublisher publisher;
+    private final GenericPublisher publisher;
     private final CustomerCache cache;
     private final ValidationService validator;
     private final RoleService role;
     private static final int MAX_RESPONSE_TIME = 3; // seconds
 
     @Autowired
-    public CustomerController(LatchService latch, CustomerEventPublisher publisher,
+    public CustomerController(LatchService latch, GenericPublisher publisher,
                               CustomerCache cache, ValidationService validator, RoleService role) {
         this.latch = latch;
         this.publisher = publisher;
@@ -68,7 +68,7 @@ public class CustomerController {
             log.error("customer saving failed due to validation errors: {}", bindingResult.getAllErrors());
             return "customer/new-customer";
         }
-        publisher.publishCustomerCreatedEvent(newCustomer);
+        publisher.publishCreatedEvent(newCustomer);
         return "redirect:/home";
     }
 
@@ -86,19 +86,19 @@ public class CustomerController {
             log.error("customer update failed due to validation errors: {}", bindingResult.getAllErrors());
             return "customer/customer-update";
         }
-        publisher.publishCustomerUpdatedEvent(oldCustomer);
+        publisher.publishUpdatedEvent(oldCustomer);
         return "redirect:/home";
     }
 
     @DeleteMapping("/customers/{customerId}")
     public String deleteCustomer(@PathVariable("customerId") Long customerId) {
-        publisher.publishCustomerDeletedEvent(customerId);
+        publisher.publishDeletedEvent(customerId, Customer.class);
         return "redirect:/home";
     }
 
     @GetMapping("/customers/{customerId}")
     public String getCustomer(@PathVariable("customerId") Long customerId, Model model) {
-        publisher.publishCustomerDetailsEvent(customerId);
+        publisher.publishDetailsEvent(customerId, Customer.class);
         Customer customer = cache.getCustomerFromCache(customerId);
         if (customer != null) {
             model.addAttribute("customer", customer);
@@ -131,7 +131,7 @@ public class CustomerController {
     }
 
     private String handleCustomersRetrieval(Model model, HttpServletRequest request, Long customerNumber) {
-        publisher.publishAllCustomersEvent();
+        publisher.publishAllEvent(Customer.class);
         if (latch.getLatch() == null) {
             latch.setLatch(new CountDownLatch(1));
         }
