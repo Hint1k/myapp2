@@ -4,8 +4,7 @@ import com.bank.webservice.cache.CustomerCache;
 import com.bank.webservice.cache.UserCache;
 import com.bank.webservice.dto.Customer;
 import com.bank.webservice.dto.User;
-import com.bank.webservice.publisher.CustomerEventPublisher;
-import com.bank.webservice.publisher.UserEventPublisher;
+import com.bank.webservice.publisher.GenericPublisher;
 import com.bank.webservice.service.FilterService;
 import com.bank.webservice.service.LatchService;
 import com.bank.webservice.testConfig.TestLatchConfig;
@@ -36,10 +35,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class RegistrationControllerTest {
 
     @MockBean
-    private CustomerEventPublisher customerPublisher;
-
-    @MockBean
-    private UserEventPublisher userPublisher;
+    private GenericPublisher publisher;
 
     @MockBean
     private CustomerCache customerCache;
@@ -63,8 +59,8 @@ public class RegistrationControllerTest {
 
     @Test
     public void testShowRegistrationPage() {
-        doNothing().when(customerPublisher).publishAllCustomersEvent();
-        doNothing().when(userPublisher).publishAllUsersEvent();
+        doNothing().when(publisher).publishAllEvent(Customer.class);
+        doNothing().when(publisher).publishAllEvent(User.class);
 
         // Mock customers
         List<Customer> mockCustomers = new ArrayList<>();
@@ -94,13 +90,13 @@ public class RegistrationControllerTest {
 
         verify(customerCache, times(1)).getAllCustomersFromCache();
         verify(userCache, times(1)).getAllUsersFromCache();
-        verify(customerPublisher, times(1)).publishAllCustomersEvent();
-        verify(customerPublisher, times(1)).publishAllCustomersEvent();
+        verify(publisher, times(1)).publishAllEvent(Customer.class);
+        verify(publisher, times(1)).publishAllEvent(User.class);
     }
 
     @Test
     public void testRegisterUser() {
-        doNothing().when(userPublisher).publishUserRegisteredEvent(any(User.class));
+        doNothing().when(publisher).publishCreatedEvent(any(User.class));
 
         try {
             mockMvc.perform(post("/register")
@@ -116,6 +112,6 @@ public class RegistrationControllerTest {
             throw new RuntimeException(e);
         }
 
-        verify(userPublisher, times(1)).publishUserRegisteredEvent(any(User.class));
+        verify(publisher, times(1)).publishCreatedEvent(any(User.class));
     }
 }

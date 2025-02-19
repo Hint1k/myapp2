@@ -3,7 +3,7 @@ package com.bank.webservice.listener;
 import com.bank.webservice.cache.UserCache;
 import com.bank.webservice.dto.User;
 import com.bank.webservice.event.user.AllUsersEvent;
-import com.bank.webservice.event.user.UserRegisteredEvent;
+import com.bank.webservice.event.user.UserCreatedEvent;
 import com.bank.webservice.service.LatchService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,15 +27,15 @@ public class UserEventListener {
         this.cache = cache;
     }
 
-    @KafkaListener(topics = "user-registered", groupId = "web-service")
-    public void handleUserRegisteredEvent(UserRegisteredEvent event, Acknowledgment acknowledgment) {
+    @KafkaListener(topics = "user-created", groupId = "web-service")
+    public void handleUserCreatedEvent(UserCreatedEvent event, Acknowledgment acknowledgment) {
         User user = new User(
                 event.getUserId(),
                 event.getCustomerNumber(),
                 event.getUsername(),
                 event.getPassword()
         );
-        log.info("Received user-registered event with user id: {}", event.getUserId());
+        log.info("Received user-created event with user id: {}", event.getUserId());
         cache.addUserToCache(user.getUserId(), user);
         acknowledgment.acknowledge();
     }

@@ -3,7 +3,7 @@ package com.bank.webservice.controller;
 import com.bank.webservice.cache.AccountCache;
 import com.bank.webservice.cache.TransactionCache;
 import com.bank.webservice.dto.Transaction;
-import com.bank.webservice.publisher.TransactionEventPublisher;
+import com.bank.webservice.publisher.GenericPublisher;
 import com.bank.webservice.service.FilterService;
 import com.bank.webservice.service.LatchService;
 import com.bank.webservice.service.RoleService;
@@ -42,7 +42,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class TransactionControllerTest {
 
     @MockBean
-    private TransactionEventPublisher publisher;
+    private GenericPublisher publisher;
 
     @MockBean
     private TransactionCache cache;
@@ -102,7 +102,7 @@ public class TransactionControllerTest {
 
     @Test
     public void testCreateTransaction() {
-        doNothing().when(publisher).publishTransactionCreatedEvent(any(Transaction.class));
+        doNothing().when(publisher).publishCreatedEvent(any(Transaction.class));
 
         try {
             mockMvc.perform(post("/api/transactions")
@@ -122,12 +122,12 @@ public class TransactionControllerTest {
             throw new RuntimeException(e);
         }
 
-        verify(publisher, times(1)).publishTransactionCreatedEvent(any(Transaction.class));
+        verify(publisher, times(1)).publishCreatedEvent(any(Transaction.class));
     }
 
     @Test
     public void testUpdateTransaction() {
-        doNothing().when(publisher).publishTransactionUpdatedEvent(any(Transaction.class));
+        doNothing().when(publisher).publishUpdatedEvent(any(Transaction.class));
 
         try {
             mockMvc.perform(post("/api/transactions/transaction")
@@ -147,12 +147,12 @@ public class TransactionControllerTest {
             throw new RuntimeException(e);
         }
 
-        verify(publisher, times(1)).publishTransactionUpdatedEvent(any(Transaction.class));
+        verify(publisher, times(1)).publishUpdatedEvent(any(Transaction.class));
     }
 
     @Test
     public void testDeleteTransaction() {
-        doNothing().when(publisher).publishTransactionDeletedEvent(1L);
+        doNothing().when(publisher).publishDeletedEvent(1L, Transaction.class);
 
         try {
             mockMvc.perform(delete("/api/transactions/1")
@@ -166,12 +166,12 @@ public class TransactionControllerTest {
             throw new RuntimeException(e);
         }
 
-        verify(publisher, times(1)).publishTransactionDeletedEvent(1L);
+        verify(publisher, times(1)).publishDeletedEvent(1L, Transaction.class);
     }
 
     @Test
     public void testGetTransaction() {
-        doNothing().when(publisher).publishTransactionDetailsEvent(1L);
+        doNothing().when(publisher).publishDetailsEvent(1L, Transaction.class);
         when(cache.getTransactionFromCache(1L)).thenReturn(new Transaction());
 
         try {
@@ -185,13 +185,13 @@ public class TransactionControllerTest {
         }
 
         verify(cache, times(1)).getTransactionFromCache(1L);
-        verify(publisher, times(1)).publishTransactionDetailsEvent(1L);
+        verify(publisher, times(1)).publishDetailsEvent(1L, Transaction.class);
     }
 
     @Test
     public void testGetAllTransactions() throws Exception {
         List<Transaction> transactions = createTestTransactions();
-        doNothing().when(publisher).publishAllTransactionsEvent();
+        doNothing().when(publisher).publishAllEvent(Transaction.class);
         when(cache.getAllTransactionsFromCache()).thenReturn(transactions);
 
         mockMvc.perform(get("/api/transactions/all-transactions"))
@@ -200,14 +200,14 @@ public class TransactionControllerTest {
                 .andDo(print());
 
         verify(cache, times(1)).getAllTransactionsFromCache();
-        verify(publisher, times(1)).publishAllTransactionsEvent();
+        verify(publisher, times(1)).publishAllEvent(Transaction.class);
     }
 
     @Test
     public void testGetAllTransactions_ForMultipleAccountsByCustomerNumber() {
         List<Transaction> transactions = createTestTransactions();
         List<Long> accountNumbers = getAccountNumbers();
-        doNothing().when(publisher).publishAllTransactionsEvent();
+        doNothing().when(publisher).publishAllEvent(Transaction.class);
         when(accountCache.getAccountNumbersFromCacheByCustomerNumber(5L)).thenReturn(accountNumbers);
         when(cache.getTransactionsForMultipleAccountsFromCache(accountNumbers)).thenReturn(transactions);
 
@@ -223,13 +223,13 @@ public class TransactionControllerTest {
 
         verify(cache, times(1)).getTransactionsForMultipleAccountsFromCache(accountNumbers);
         verify(accountCache, times(1)).getAccountNumbersFromCacheByCustomerNumber(5L);
-        verify(publisher, times(1)).publishAllTransactionsEvent();
+        verify(publisher, times(1)).publishAllEvent(Transaction.class);
     }
 
     @Test
     public void testGetTransactionsByAccountNumber() {
         List<Transaction> transactions = createTestTransactions();
-        doNothing().when(publisher).publishAllTransactionsEvent();
+        doNothing().when(publisher).publishAllEvent(Transaction.class);
         when(cache.getTransactionsForAccountFromCache(12345L)).thenReturn(transactions);
 
         try {
@@ -242,7 +242,7 @@ public class TransactionControllerTest {
         }
 
         verify(cache, times(1)).getTransactionsForAccountFromCache(12345L);
-        verify(publisher, times(1)).publishAllTransactionsEvent();
+        verify(publisher, times(1)).publishAllEvent(Transaction.class);
     }
 
     private List<Transaction> createTestTransactions() {

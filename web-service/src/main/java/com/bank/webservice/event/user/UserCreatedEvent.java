@@ -1,13 +1,16 @@
 package com.bank.webservice.event.user;
 
+import com.bank.webservice.event.BaseEvent;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
+@EqualsAndHashCode(callSuper = true)
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserRegisteredEvent {
+public class UserCreatedEvent extends BaseEvent {
 
     private Long userId;
     private Long customerNumber;
@@ -15,7 +18,7 @@ public class UserRegisteredEvent {
     private String password;
 
     // no userId
-    public UserRegisteredEvent(Long customerNumber, String username, String password) {
+    public UserCreatedEvent(Long customerNumber, String username, String password) {
         this.customerNumber = customerNumber;
         this.username = username;
         this.password = password;

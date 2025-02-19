@@ -6,7 +6,7 @@ import java.util.List;
 
 public interface UserEventPublisher {
 
-    void publishUserRegisteredEvent(User user);
+    void publishUserCreatedEvent(User user);
 
     void publishAllUsersEvent(List<User> users);
 }

@@ -3,7 +3,6 @@ package com.bank.gatewayservice.service;
 import com.bank.gatewayservice.entity.Role;
 import com.bank.gatewayservice.entity.User;
 import com.bank.gatewayservice.publisher.UserEventPublisher;
-import com.bank.gatewayservice.repository.RoleRepository;
 import com.bank.gatewayservice.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -43,7 +42,7 @@ public class UserServiceImpl implements UserService {
         user.setRole(role);
 
         userRepository.save(user);
-        publisher.publishUserRegisteredEvent(user);
+        publisher.publishUserCreatedEvent(user);
     }
 
     @Override

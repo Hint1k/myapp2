@@ -1,7 +1,7 @@
 package com.bank.gatewayservice.listener;
 
 import com.bank.gatewayservice.entity.User;
-import com.bank.gatewayservice.event.UserRegisteredEvent;
+import com.bank.gatewayservice.event.UserCreatedEvent;
 import com.bank.gatewayservice.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,9 +20,9 @@ public class UserEventListener {
         this.service = service;
     }
 
-    @KafkaListener(topics = "user-registration-requested", groupId = "gateway-service")
-    public void handleUserCreatedEvent(UserRegisteredEvent event, Acknowledgment acknowledgment) {
-        log.info("Received user-registration-requested event for username: {}", event.getUsername());
+    @KafkaListener(topics = "user-creation-requested", groupId = "gateway-service")
+    public void handleUserCreatedEvent(UserCreatedEvent event, Acknowledgment acknowledgment) {
+        log.info("Received user-creation-requested event for username: {}", event.getUsername());
         User user = new User(
                 event.getCustomerNumber(),
                 event.getUsername(),

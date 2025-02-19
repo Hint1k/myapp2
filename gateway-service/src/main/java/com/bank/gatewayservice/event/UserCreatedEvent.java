@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserRegisteredEvent {
+public class UserCreatedEvent {
 
     private Long userId;
     private Long customerNumber;

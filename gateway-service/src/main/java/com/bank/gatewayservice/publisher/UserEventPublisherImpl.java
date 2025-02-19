@@ -2,7 +2,7 @@ package com.bank.gatewayservice.publisher;
 
 import com.bank.gatewayservice.entity.User;
 import com.bank.gatewayservice.event.AllUsersEvent;
-import com.bank.gatewayservice.event.UserRegisteredEvent;
+import com.bank.gatewayservice.event.UserCreatedEvent;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -22,15 +22,15 @@ public class UserEventPublisherImpl implements UserEventPublisher {
     }
 
     @Override
-    public void publishUserRegisteredEvent(User user) {
-        UserRegisteredEvent event = new UserRegisteredEvent(
+    public void publishUserCreatedEvent(User user) {
+        UserCreatedEvent event = new UserCreatedEvent(
                 user.getUserId(),
                 user.getCustomerNumber(),
                 user.getUsername(),
                 user.getPassword()
         );
-        kafkaTemplate.send("user-registered", event);
-        log.info("Published user-registered event for user id: {}", event.getUserId());
+        kafkaTemplate.send("user-created", event);
+        log.info("Published user-created event for user id: {}", event.getUserId());
         //TODO add check later with completableFuture
     }
 

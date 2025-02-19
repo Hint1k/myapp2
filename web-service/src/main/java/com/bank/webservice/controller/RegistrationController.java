@@ -5,7 +5,6 @@ import com.bank.webservice.cache.UserCache;
 import com.bank.webservice.dto.Customer;
 import com.bank.webservice.dto.User;
 import com.bank.webservice.publisher.GenericPublisher;
-import com.bank.webservice.publisher.UserEventPublisher;
 import com.bank.webservice.service.LatchService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,18 +23,16 @@ import java.util.stream.Collectors;
 @Slf4j
 public class RegistrationController {
 
-    private final GenericPublisher customerPublisher;
-    private final UserEventPublisher userPublisher;
+    private final GenericPublisher publisher;
     private final CustomerCache customerCache;
     private final UserCache userCache;
     private final LatchService latch;
     private static final int MAX_RESPONSE_TIME = 3; // seconds
 
     @Autowired
-    public RegistrationController(GenericPublisher customerPublisher, UserEventPublisher userPublisher,
-                                  CustomerCache customerCache, UserCache userCache, LatchService latch) {
-        this.customerPublisher = customerPublisher;
-        this.userPublisher = userPublisher;
+    public RegistrationController(GenericPublisher publisher, CustomerCache customerCache, UserCache userCache,
+                                  LatchService latch) {
+        this.publisher = publisher;
         this.customerCache = customerCache;
         this.userCache = userCache;
         this.latch = latch;
@@ -49,8 +46,8 @@ public class RegistrationController {
 
     @GetMapping("/register")
     public String showRegistrationPage(Model model) {
-        customerPublisher.publishAllEvent(Customer.class);
-        userPublisher.publishAllUsersEvent();
+        publisher.publishAllEvent(Customer.class);
+        publisher.publishAllEvent(User.class);
         if (latch.getLatch() == null) {
             latch.setLatch(new CountDownLatch(1));
         }
@@ -101,7 +98,7 @@ public class RegistrationController {
         user.setUsername(username);
         user.setPassword(password);
         user.setCustomerNumber(customerNumber);
-        userPublisher.publishUserRegisteredEvent(user);
+        publisher.publishCreatedEvent(user);
         return "registration-successful";
     }
 }

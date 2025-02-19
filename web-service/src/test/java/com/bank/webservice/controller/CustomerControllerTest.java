@@ -2,7 +2,7 @@ package com.bank.webservice.controller;
 
 import com.bank.webservice.cache.CustomerCache;
 import com.bank.webservice.dto.Customer;
-import com.bank.webservice.publisher.CustomerEventPublisher;
+import com.bank.webservice.publisher.GenericPublisher;
 import com.bank.webservice.service.FilterService;
 import com.bank.webservice.service.LatchService;
 import com.bank.webservice.service.RoleService;
@@ -40,7 +40,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class CustomerControllerTest {
 
     @MockBean
-    private CustomerEventPublisher publisher;
+    private GenericPublisher publisher;
 
     @MockBean
     private CustomerCache cache;
@@ -97,7 +97,7 @@ public class CustomerControllerTest {
 
     @Test
     public void testCreateCustomer() {
-        doNothing().when(publisher).publishCustomerCreatedEvent(any(Customer.class));
+        doNothing().when(publisher).publishCreatedEvent(any(Customer.class));
 
         try {
             mockMvc.perform(post("/api/customers")
@@ -117,12 +117,12 @@ public class CustomerControllerTest {
             throw new RuntimeException(e);
         }
 
-        verify(publisher, times(1)).publishCustomerCreatedEvent(any(Customer.class));
+        verify(publisher, times(1)).publishCreatedEvent(any(Customer.class));
     }
 
     @Test
     public void testUpdateCustomer() {
-        doNothing().when(publisher).publishCustomerUpdatedEvent(any(Customer.class));
+        doNothing().when(publisher).publishUpdatedEvent(any(Customer.class));
 
         try {
             mockMvc.perform(post("/api/customers/customer")
@@ -142,12 +142,12 @@ public class CustomerControllerTest {
             throw new RuntimeException(e);
         }
 
-        verify(publisher, times(1)).publishCustomerUpdatedEvent(any(Customer.class));
+        verify(publisher, times(1)).publishUpdatedEvent(any(Customer.class));
     }
 
     @Test
     public void testDeleteCustomer() {
-        doNothing().when(publisher).publishCustomerDeletedEvent(1L);
+        doNothing().when(publisher).publishDeletedEvent(1L, Customer.class);
 
         try {
             mockMvc.perform(delete("/api/customers/1")
@@ -161,12 +161,12 @@ public class CustomerControllerTest {
             throw new RuntimeException(e);
         }
 
-        verify(publisher, times(1)).publishCustomerDeletedEvent(1L);
+        verify(publisher, times(1)).publishDeletedEvent(1L, Customer.class);
     }
 
     @Test
     public void testGetCustomer() {
-        doNothing().when(publisher).publishCustomerDetailsEvent(1L);
+        doNothing().when(publisher).publishDetailsEvent(1L, Customer.class);
         when(cache.getCustomerFromCache(1L)).thenReturn(new Customer());
 
         try {
@@ -180,13 +180,13 @@ public class CustomerControllerTest {
         }
 
         verify(cache, times(1)).getCustomerFromCache(1L);
-        verify(publisher, times(1)).publishCustomerDetailsEvent(1L);
+        verify(publisher, times(1)).publishDetailsEvent(1L, Customer.class);
     }
 
     @Test
     public void testGetAllCustomers() throws Exception {
         List<Customer> Customers = createTestCustomers();
-        doNothing().when(publisher).publishAllCustomersEvent();
+        doNothing().when(publisher).publishAllEvent(Customer.class);
         when(cache.getAllCustomersFromCache()).thenReturn(Customers);
 
         mockMvc.perform(get("/api/customers/all-customers"))
@@ -195,12 +195,12 @@ public class CustomerControllerTest {
                 .andDo(print());
 
         verify(cache, times(1)).getAllCustomersFromCache();
-        verify(publisher, times(1)).publishAllCustomersEvent();
+        verify(publisher, times(1)).publishAllEvent(Customer.class);
     }
 
     @Test
     public void testGetCustomersByCustomerNumber() {
-        doNothing().when(publisher).publishAllCustomersEvent();
+        doNothing().when(publisher).publishAllEvent(Customer.class);
         when(cache.getCustomerFromCacheByCustomerNumber(2L)).thenReturn(new Customer());
 
         try {
@@ -213,7 +213,7 @@ public class CustomerControllerTest {
         }
 
         verify(cache, times(1)).getCustomerFromCacheByCustomerNumber(2L);
-        verify(publisher, times(1)).publishAllCustomersEvent();
+        verify(publisher, times(1)).publishAllEvent(Customer.class);
     }
 
     private List<Customer> createTestCustomers() {

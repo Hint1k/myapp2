@@ -1,9 +1,9 @@
 package com.bank.webservice.controller;
 
+import com.bank.webservice.publisher.GenericPublisher;
 import com.bank.webservice.testConfig.TestLatchConfig;
 import com.bank.webservice.cache.AccountCache;
 import com.bank.webservice.dto.Account;
-import com.bank.webservice.publisher.AccountEventPublisher;
 import com.bank.webservice.service.*;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
@@ -34,7 +34,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class AccountControllerTest {
 
     @MockBean
-    private AccountEventPublisher publisher;
+    private GenericPublisher publisher;
 
     @MockBean
     private AccountCache cache;
@@ -91,7 +91,7 @@ public class AccountControllerTest {
 
     @Test
     public void testCreateAccount() {
-        doNothing().when(publisher).publishAccountCreatedEvent(any(Account.class));
+        doNothing().when(publisher).publishCreatedEvent(any(Account.class));
 
         try {
             mockMvc.perform(post("/api/accounts")
@@ -111,12 +111,12 @@ public class AccountControllerTest {
             throw new RuntimeException(e);
         }
 
-        verify(publisher, times(1)).publishAccountCreatedEvent(any(Account.class));
+        verify(publisher, times(1)).publishCreatedEvent(any(Account.class));
     }
 
     @Test
     public void testUpdateAccount() {
-        doNothing().when(publisher).publishAccountUpdatedEvent(any(Account.class));
+        doNothing().when(publisher).publishUpdatedEvent(any(Account.class));
 
         try {
             mockMvc.perform(post("/api/accounts/account")
@@ -136,12 +136,12 @@ public class AccountControllerTest {
             throw new RuntimeException(e);
         }
 
-        verify(publisher, times(1)).publishAccountUpdatedEvent(any(Account.class));
+        verify(publisher, times(1)).publishUpdatedEvent(any(Account.class));
     }
 
     @Test
     public void testDeleteAccount() {
-        doNothing().when(publisher).publishAccountDeletedEvent(1L);
+        doNothing().when(publisher).publishDeletedEvent(1L, Account.class);
 
         try {
             mockMvc.perform(delete("/api/accounts/1")
@@ -155,12 +155,12 @@ public class AccountControllerTest {
             throw new RuntimeException(e);
         }
 
-        verify(publisher, times(1)).publishAccountDeletedEvent(1L);
+        verify(publisher, times(1)).publishDeletedEvent(1L, Account.class);
     }
 
     @Test
     public void testGetAccount() {
-        doNothing().when(publisher).publishAccountDetailsEvent(1L);
+        doNothing().when(publisher).publishDetailsEvent(1L, Account.class);
         when(cache.getAccountFromCache(1L)).thenReturn(new Account());
 
         try {
@@ -174,13 +174,13 @@ public class AccountControllerTest {
         }
 
         verify(cache, times(1)).getAccountFromCache(1L);
-        verify(publisher, times(1)).publishAccountDetailsEvent(1L);
+        verify(publisher, times(1)).publishDetailsEvent(1L, Account.class);
     }
 
     @Test
     public void testGetAllAccounts() throws Exception {
         List<Account> accounts = createTestAccounts();
-        doNothing().when(publisher).publishAllAccountsEvent();
+        doNothing().when(publisher).publishAllEvent(Account.class);
         when(cache.getAllAccountsFromCache()).thenReturn(accounts);
 
         mockMvc.perform(get("/api/accounts/all-accounts"))
@@ -189,13 +189,13 @@ public class AccountControllerTest {
                 .andDo(print());
 
         verify(cache, times(1)).getAllAccountsFromCache();
-        verify(publisher, times(1)).publishAllAccountsEvent();
+        verify(publisher, times(1)).publishAllEvent(Account.class);
     }
 
     @Test
     public void testGetAccountsByCustomerNumber() {
         List<Account> accounts = createTestAccounts();
-        doNothing().when(publisher).publishAllAccountsEvent();
+        doNothing().when(publisher).publishAllEvent(Account.class);
         when(cache.getAccountsFromCacheByCustomerNumber(12345L)).thenReturn(accounts);
 
         try {
@@ -208,7 +208,7 @@ public class AccountControllerTest {
         }
 
         verify(cache, times(1)).getAccountsFromCacheByCustomerNumber(12345L);
-        verify(publisher, times(1)).publishAllAccountsEvent();
+        verify(publisher, times(1)).publishAllEvent(Account.class);
     }
 
     private List<Account> createTestAccounts(){
