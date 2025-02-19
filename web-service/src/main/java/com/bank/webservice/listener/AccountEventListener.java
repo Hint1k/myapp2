@@ -28,16 +28,7 @@ public class AccountEventListener {
 
     @KafkaListener(topics = "account-created", groupId = "web-service")
     public void handleAccountCreatedEvent(AccountCreatedEvent event, Acknowledgment acknowledgment) {
-        Account account = new Account(
-                event.getAccountId(),
-                event.getAccountNumber(),
-                event.getBalance(),
-                event.getCurrency(),
-                event.getAccountType(),
-                event.getAccountStatus(),
-                event.getOpenDate(),
-                event.getCustomerNumber()
-        );
+        Account account = createAccount(event);
         log.info("Received account-created event for account id: {}", event.getAccountId());
         cache.addAccountToCache(account.getAccountId(), account);
         acknowledgment.acknowledge();
@@ -45,16 +36,7 @@ public class AccountEventListener {
 
     @KafkaListener(topics = "account-updated", groupId = "web-service")
     public void handleAccountUpdatedEvent(AccountUpdatedEvent event, Acknowledgment acknowledgment) {
-        Account account = new Account(
-                event.getAccountId(),
-                event.getAccountNumber(),
-                event.getBalance(),
-                event.getCurrency(),
-                event.getAccountType(),
-                event.getAccountStatus(),
-                event.getOpenDate(),
-                event.getCustomerNumber()
-        );
+        Account account = createAccount(event);
         Long accountId = event.getAccountId();
         log.info("Received account-updated event for account id: {}", accountId);
         cache.updateAccountInCache(accountId, account);
@@ -83,7 +65,14 @@ public class AccountEventListener {
 
     @KafkaListener(topics = "account-details-received", groupId = "web-service")
     public void handleAccountDetailsEvent(AccountDetailsEvent event, Acknowledgment acknowledgment) {
-        Account account = new Account(
+        Account account = createAccount(event);
+        log.info("Received account-details-received event for account id: {}", event.getAccountId());
+        cache.addAccountToCache(account.getAccountId(), account);
+        acknowledgment.acknowledge();
+    }
+
+    private Account createAccount(AccountEvent event){
+        return new Account(
                 event.getAccountId(),
                 event.getAccountNumber(),
                 event.getBalance(),
@@ -93,8 +82,5 @@ public class AccountEventListener {
                 event.getOpenDate(),
                 event.getCustomerNumber()
         );
-        log.info("Received account-details-received event for account id: {}", event.getAccountId());
-        cache.addAccountToCache(account.getAccountId(), account);
-        acknowledgment.acknowledge();
     }
 }

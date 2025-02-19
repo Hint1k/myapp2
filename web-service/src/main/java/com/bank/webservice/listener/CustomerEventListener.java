@@ -2,11 +2,7 @@ package com.bank.webservice.listener;
 
 import com.bank.webservice.cache.CustomerCache;
 import com.bank.webservice.dto.Customer;
-import com.bank.webservice.event.customer.AllCustomersEvent;
-import com.bank.webservice.event.customer.CustomerCreatedEvent;
-import com.bank.webservice.event.customer.CustomerDeletedEvent;
-import com.bank.webservice.event.customer.CustomerUpdatedEvent;
-import com.bank.webservice.event.customer.CustomerDetailsEvent;
+import com.bank.webservice.event.customer.*;
 import com.bank.webservice.service.LatchService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,15 +28,7 @@ public class CustomerEventListener {
 
     @KafkaListener(topics = "customer-created", groupId = "web-service")
     public void handleCustomerCreatedEvent(CustomerCreatedEvent event, Acknowledgment acknowledgment) {
-        Customer customer = new Customer(
-                event.getCustomerId(),
-                event.getCustomerNumber(),
-                event.getName(),
-                event.getEmail(),
-                event.getPhone(),
-                event.getAddress(),
-                event.getAccountNumbers()
-        );
+        Customer customer = createCustomer(event);
         log.info("Received customer-created event for customer id: {}", event.getCustomerId());
         cache.addCustomerToCache(customer.getCustomerId(), customer);
         acknowledgment.acknowledge();
@@ -48,16 +36,7 @@ public class CustomerEventListener {
 
     @KafkaListener(topics = "customer-updated", groupId = "web-service")
     public void handleCustomerUpdatedEvent(CustomerUpdatedEvent event, Acknowledgment acknowledgment) {
-        Customer customer = new Customer(
-                // TODO remove fields that cannot be updated later
-                event.getCustomerId(),
-                event.getCustomerNumber(),
-                event.getName(),
-                event.getEmail(),
-                event.getPhone(),
-                event.getAddress(),
-                event.getAccountNumbers()
-        );
+        Customer customer = createCustomer(event);
         Long customerId = event.getCustomerId();
         log.info("Received customer-updated event for customer id: {}", customerId);
         cache.updateCustomerInCache(customerId, customer);
@@ -86,7 +65,14 @@ public class CustomerEventListener {
 
     @KafkaListener(topics = "customer-details-received", groupId = "web-service")
     public void handleCustomerDetailsEvent(CustomerDetailsEvent event, Acknowledgment acknowledgment) {
-        Customer customer = new Customer(
+        Customer customer = createCustomer(event);
+        log.info("Received customer-details-received event for customer id: {}", event.getCustomerId());
+        cache.addCustomerToCache(customer.getCustomerId(), customer);
+        acknowledgment.acknowledge();
+    }
+
+    private Customer createCustomer(CustomerEvent event) {
+        return new Customer(
                 event.getCustomerId(),
                 event.getCustomerNumber(),
                 event.getName(),
@@ -95,8 +81,5 @@ public class CustomerEventListener {
                 event.getAddress(),
                 event.getAccountNumbers()
         );
-        log.info("Received customer-details-received event for customer id: {}", event.getCustomerId());
-        cache.addCustomerToCache(customer.getCustomerId(), customer);
-        acknowledgment.acknowledge();
     }
 }

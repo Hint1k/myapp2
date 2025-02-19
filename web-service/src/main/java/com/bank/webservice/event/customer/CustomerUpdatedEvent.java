@@ -10,9 +10,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class CustomerUpdatedEvent extends BaseEvent {
-
-    // TODO remove the fields that cannot be updated later
+public class CustomerUpdatedEvent extends BaseEvent implements CustomerEvent {
 
     private Long customerId;
     private Long customerNumber;

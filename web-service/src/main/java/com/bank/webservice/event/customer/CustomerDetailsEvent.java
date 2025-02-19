@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class CustomerDetailsEvent extends BaseEvent {
+public class CustomerDetailsEvent extends BaseEvent implements CustomerEvent {
 
     private Long customerId;
     private Long customerNumber;

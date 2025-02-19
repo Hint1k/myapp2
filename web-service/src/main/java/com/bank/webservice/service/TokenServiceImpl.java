@@ -47,18 +47,16 @@ public class TokenServiceImpl implements TokenService {
 
             // Log the headers before making the request
             log.info("Headers sent to verify endpoint:");
-            headers.forEach((key, value) -> log.info("Header: {} -> {}", key, value));
+            String authHeader = headers.getFirst("Authorization");
+            if (authHeader != null) {
+                log.info("Header: Authorization -> {}", authHeader);
+            }
 
             HttpEntity<String> entity = new HttpEntity<>(headers);
 
             ResponseEntity<UserResponse> responseEntity = restTemplate
                     .exchange(VERIFY_URL, HttpMethod.GET, entity, new ParameterizedTypeReference<>() {
                     });
-
-            // Log the response headers
-            HttpHeaders responseHeaders = responseEntity.getHeaders();
-            log.info("Response headers received from gateway-service:");
-            responseHeaders.forEach((key, value) -> log.info("Header: {} -> {}", key, value));
 
             // Log the response body
             if (responseEntity.getBody() == null) {
@@ -68,6 +66,7 @@ public class TokenServiceImpl implements TokenService {
             }
 
             // Extract and log the customer number
+            HttpHeaders responseHeaders = responseEntity.getHeaders();
             String customerNumber = responseHeaders.getFirst("X-Customer-Number");
             log.info("Customer number in TokenServiceImpl: {}", customerNumber);
 

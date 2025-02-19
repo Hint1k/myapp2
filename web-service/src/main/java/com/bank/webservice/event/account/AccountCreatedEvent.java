@@ -16,8 +16,8 @@ import java.time.LocalDate;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class AccountCreatedEvent extends BaseEvent {
-    // TODO combine later with AccountDetailsEvent class
+public class AccountCreatedEvent extends BaseEvent implements AccountEvent {
+
     private Long accountId;
     private Long accountNumber;
     private BigDecimal balance;

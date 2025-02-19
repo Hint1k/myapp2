@@ -16,9 +16,8 @@ import java.time.LocalDate;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class AccountUpdatedEvent extends BaseEvent  {
+public class AccountUpdatedEvent extends BaseEvent  implements AccountEvent {
 
-    // TODO remove later the fields that cannot be updated
     private Long accountId;  // this field can't be removed
     private Long accountNumber;
     private BigDecimal balance;

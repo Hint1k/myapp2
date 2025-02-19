@@ -28,15 +28,7 @@ public class TransactionEventListener {
 
     @KafkaListener(topics = "transaction-created", groupId = "web-service")
     public void handleTransactionCreatedEvent(TransactionCreatedEvent event, Acknowledgment acknowledgment) {
-        Transaction transaction = new Transaction(
-                event.getTransactionId(),
-                event.getAmount(),
-                event.getTransactionTime(),
-                event.getTransactionType(),
-                event.getTransactionStatus(),
-                event.getAccountSourceNumber(),
-                event.getAccountDestinationNumber()
-        );
+        Transaction transaction = createTransaction(event);
         log.info("Received transaction-created event for transaction id: {}", event.getTransactionId());
         cache.addTransactionToCache(transaction.getTransactionId(), transaction);
         acknowledgment.acknowledge();
@@ -44,15 +36,7 @@ public class TransactionEventListener {
 
     @KafkaListener(topics = "transaction-updated", groupId = "web-service")
     public void handleTransactionUpdatedEvent(TransactionUpdatedEvent event, Acknowledgment acknowledgment) {
-        Transaction transaction = new Transaction(
-                event.getTransactionId(),
-                event.getAmount(),
-                event.getTransactionTime(),
-                event.getTransactionType(),
-                event.getTransactionStatus(),
-                event.getAccountSourceNumber(),
-                event.getAccountDestinationNumber()
-        );
+        Transaction transaction = createTransaction(event);
         Long transactionId = event.getTransactionId();
         log.info("Received transaction-updated event for transaction id: {}", transactionId);
         cache.updateTransactionFromCache(transactionId, transaction);
@@ -81,17 +65,21 @@ public class TransactionEventListener {
 
     @KafkaListener(topics = "transaction-details-received", groupId = "web-service")
     public void handleTransactionDetailsEvent(TransactionDetailsEvent event, Acknowledgment acknowledgment) {
-        Transaction transaction = new Transaction(
+        Transaction transaction = createTransaction(event);
+        log.info("Received transaction-details-received event for transaction id: {}", event.getTransactionId());
+        cache.addTransactionToCache(transaction.getTransactionId(), transaction);
+        acknowledgment.acknowledge();
+    }
+
+    private Transaction createTransaction(TransactionEvent event) {
+        return new Transaction(
                 event.getTransactionId(),
                 event.getAmount(),
                 event.getTransactionTime(),
                 event.getTransactionType(),
                 event.getTransactionStatus(),
-                event.getAccountSourceNumber(),
-                event.getAccountDestinationNumber()
+                event.getAccountDestinationNumber(),
+                event.getAccountSourceNumber()
         );
-        log.info("Received transaction-details-received event for transaction id: {}", event.getTransactionId());
-        cache.addTransactionToCache(transaction.getTransactionId(), transaction);
-        acknowledgment.acknowledge();
     }
 }

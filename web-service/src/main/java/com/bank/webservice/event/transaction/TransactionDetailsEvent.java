@@ -15,8 +15,8 @@ import java.time.LocalDateTime;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class TransactionDetailsEvent extends BaseEvent {
-    // TODO combine later with classes TransactionCreatedEvent and TransactionUpdatedEvent
+public class TransactionDetailsEvent extends BaseEvent implements TransactionEvent {
+
     private Long transactionId;
     private BigDecimal amount;
     private LocalDateTime transactionTime;

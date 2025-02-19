@@ -11,5 +11,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class TransactionDeletedEvent extends BaseEvent {
+
     private Long transactionId;
 }

@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CustomerDeletedEvent extends BaseEvent {
+
     private Long customerId;
     private Long customerNumber;
 }
