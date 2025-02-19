@@ -2,7 +2,7 @@ package com.bank.webservice.controller;
 
 import com.bank.webservice.cache.CustomerCache;
 import com.bank.webservice.dto.Customer;
-import com.bank.webservice.publisher.GenericPublisher;
+import com.bank.webservice.publisher.GenericEventPublisher;
 import com.bank.webservice.service.LatchService;
 import com.bank.webservice.service.RoleService;
 import com.bank.webservice.service.ValidationService;
@@ -31,14 +31,14 @@ import java.util.stream.Collectors;
 public class CustomerController {
 
     private final LatchService latch;
-    private final GenericPublisher publisher;
+    private final GenericEventPublisher publisher;
     private final CustomerCache cache;
     private final ValidationService validator;
     private final RoleService role;
     private static final int MAX_RESPONSE_TIME = 3; // seconds
 
     @Autowired
-    public CustomerController(LatchService latch, GenericPublisher publisher,
+    public CustomerController(LatchService latch, GenericEventPublisher publisher,
                               CustomerCache cache, ValidationService validator, RoleService role) {
         this.latch = latch;
         this.publisher = publisher;

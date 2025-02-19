@@ -1,6 +1,6 @@
 package com.bank.webservice.publisher;
 
-public interface GenericPublisher {
+public interface GenericEventPublisher {
 
     <T> void publishCreatedEvent(T event);
 

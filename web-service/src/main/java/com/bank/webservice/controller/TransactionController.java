@@ -3,7 +3,7 @@ package com.bank.webservice.controller;
 import com.bank.webservice.cache.AccountCache;
 import com.bank.webservice.cache.TransactionCache;
 import com.bank.webservice.dto.Transaction;
-import com.bank.webservice.publisher.GenericPublisher;
+import com.bank.webservice.publisher.GenericEventPublisher;
 import com.bank.webservice.service.LatchService;
 import com.bank.webservice.service.RoleService;
 import com.bank.webservice.service.ValidationService;
@@ -30,7 +30,7 @@ import java.util.concurrent.CountDownLatch;
 @RequestMapping("/api")
 public class TransactionController {
 
-    private final GenericPublisher publisher;
+    private final GenericEventPublisher publisher;
     private final TransactionCache transactionCache;
     private final AccountCache accountCache;
     private final LatchService latch;
@@ -39,7 +39,7 @@ public class TransactionController {
     private static final int MAX_RESPONSE_TIME = 3; // seconds
 
     @Autowired
-    public TransactionController(GenericPublisher publisher, AccountCache accountCache, RoleService role,
+    public TransactionController(GenericEventPublisher publisher, AccountCache accountCache, RoleService role,
                                  LatchService latch, ValidationService validator, TransactionCache transactionCache) {
         this.publisher = publisher;
         this.transactionCache = transactionCache;

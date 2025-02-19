@@ -9,13 +9,13 @@ import org.springframework.stereotype.Component;
 
 @Component
 @Slf4j
-public class GenericPublisherImpl implements GenericPublisher {
+public class GenericEventPublisherImpl implements GenericEventPublisher {
 
     private final KafkaTemplate<String, Object> kafkaTemplate;
     private final EventFactory eventFactory;
 
     @Autowired
-    public GenericPublisherImpl(KafkaTemplate<String, Object> kafkaTemplate, EventFactory eventFactory) {
+    public GenericEventPublisherImpl(KafkaTemplate<String, Object> kafkaTemplate, EventFactory eventFactory) {
         this.kafkaTemplate = kafkaTemplate;
         this.eventFactory = eventFactory;
     }

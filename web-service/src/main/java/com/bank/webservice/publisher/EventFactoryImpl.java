@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 import java.util.ArrayList;
 import java.util.Objects;
 
-@Component
+@Component // Class designated for creating event objects
 public class EventFactoryImpl implements EventFactory {
 
     @Override
@@ -113,6 +113,8 @@ public class EventFactoryImpl implements EventFactory {
         return switch (operation) {
             case CREATE -> new UserCreatedEvent(user.getUserId(), user.getCustomerNumber(),
                     user.getUsername(), user.getPassword());
+            case UPDATE -> // User update events are not supported yet but might be implemented in the future
+                    throw unsupportedOperationException(operation);
             default -> throw unsupportedOperationException(operation);
         };
     }

@@ -2,7 +2,7 @@ package com.bank.webservice.controller;
 
 import com.bank.webservice.cache.CustomerCache;
 import com.bank.webservice.dto.Customer;
-import com.bank.webservice.publisher.GenericPublisher;
+import com.bank.webservice.publisher.GenericEventPublisher;
 import com.bank.webservice.service.FilterService;
 import com.bank.webservice.service.LatchService;
 import com.bank.webservice.service.RoleService;
@@ -40,7 +40,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class CustomerControllerTest {
 
     @MockBean
-    private GenericPublisher publisher;
+    private GenericEventPublisher publisher;
 
     @MockBean
     private CustomerCache cache;

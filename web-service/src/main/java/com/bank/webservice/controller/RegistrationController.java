@@ -4,7 +4,7 @@ import com.bank.webservice.cache.CustomerCache;
 import com.bank.webservice.cache.UserCache;
 import com.bank.webservice.dto.Customer;
 import com.bank.webservice.dto.User;
-import com.bank.webservice.publisher.GenericPublisher;
+import com.bank.webservice.publisher.GenericEventPublisher;
 import com.bank.webservice.service.LatchService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,14 +23,14 @@ import java.util.stream.Collectors;
 @Slf4j
 public class RegistrationController {
 
-    private final GenericPublisher publisher;
+    private final GenericEventPublisher publisher;
     private final CustomerCache customerCache;
     private final UserCache userCache;
     private final LatchService latch;
     private static final int MAX_RESPONSE_TIME = 3; // seconds
 
     @Autowired
-    public RegistrationController(GenericPublisher publisher, CustomerCache customerCache, UserCache userCache,
+    public RegistrationController(GenericEventPublisher publisher, CustomerCache customerCache, UserCache userCache,
                                   LatchService latch) {
         this.publisher = publisher;
         this.customerCache = customerCache;

@@ -3,7 +3,7 @@ package com.bank.webservice.controller;
 import com.bank.webservice.dto.Account;
 import com.bank.webservice.dto.Customer;
 import com.bank.webservice.dto.Transaction;
-import com.bank.webservice.publisher.GenericPublisher;
+import com.bank.webservice.publisher.GenericEventPublisher;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -13,10 +13,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 @Slf4j
 public class PageController {
 
-    private final GenericPublisher publisher;
+    private final GenericEventPublisher publisher;
 
     @Autowired
-    public PageController(GenericPublisher publisher) {
+    public PageController(GenericEventPublisher publisher) {
         this.publisher = publisher;
 
     }

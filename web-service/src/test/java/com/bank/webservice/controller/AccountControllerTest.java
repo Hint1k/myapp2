@@ -1,6 +1,6 @@
 package com.bank.webservice.controller;
 
-import com.bank.webservice.publisher.GenericPublisher;
+import com.bank.webservice.publisher.GenericEventPublisher;
 import com.bank.webservice.testConfig.TestLatchConfig;
 import com.bank.webservice.cache.AccountCache;
 import com.bank.webservice.dto.Account;
@@ -34,7 +34,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class AccountControllerTest {
 
     @MockBean
-    private GenericPublisher publisher;
+    private GenericEventPublisher publisher;
 
     @MockBean
     private AccountCache cache;
