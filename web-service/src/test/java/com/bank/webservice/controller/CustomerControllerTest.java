@@ -22,6 +22,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.mockito.Mockito.times;
@@ -184,18 +185,23 @@ public class CustomerControllerTest {
     }
 
     @Test
-    public void testGetAllCustomers() throws Exception {
-        List<Customer> Customers = createTestCustomers();
-        doNothing().when(publisher).publishAllEvent(Customer.class);
-        when(cache.getAllCustomersFromCache()).thenReturn(Customers);
+    public void testGetAllCustomers() {
+        try {
+            List<Customer> Customers = createTestCustomers();
+            doNothing().when(publisher).publishAllEvent(Customer.class);
+            when(cache.getAllCustomersFromCache()).thenReturn(Customers);
 
-        mockMvc.perform(get("/api/customers/all-customers"))
-                .andExpect(status().isOk())
-                .andExpect(view().name("customer/all-customers"))
-                .andDo(print());
+            mockMvc.perform(get("/api/customers/all-customers"))
+                    .andExpect(status().isOk())
+                    .andExpect(view().name("customer/all-customers"))
+                    .andDo(print());
 
-        verify(cache, times(1)).getAllCustomersFromCache();
-        verify(publisher, times(1)).publishAllEvent(Customer.class);
+            verify(cache, times(1)).getAllCustomersFromCache();
+            verify(publisher, times(1)).publishAllEvent(Customer.class);
+        } catch (Exception e) {
+            log.error("testGetAllCustomers() fails: {}", e.getMessage());
+            fail("Test failed due to exception: {}" + e.getMessage());
+        }
     }
 
     @Test

@@ -22,17 +22,17 @@ public class GlobalExceptionHandler {
     // Handling ServletException
     @ExceptionHandler(ServletException.class)
     public String handleServletException(ServletException ex, Model model) {
-        log.error("ServletException occurred: {}", ex.getMessage(), ex); // Log full stack trace
+        log.error("ServletException occurred: {}", ex.getMessage(), ex);
         model.addAttribute("errorMessage", "Server error. Please try again later.");
-        return "error"; // Redirect to generic error page
+        return "error";
     }
 
     // Handling IOException
     @ExceptionHandler(IOException.class)
     public String handleIOException(IOException ex, Model model) {
-        log.error("IOException occurred: {}", ex.getMessage(), ex); // Log full stack trace
+        log.error("IOException occurred: {}", ex.getMessage(), ex);
         model.addAttribute("errorMessage", "Server error. Please try again later.");
-        return "error"; // Redirect to generic error page
+        return "error";
     }
 
     // Handling generic exceptions

@@ -18,6 +18,7 @@
 **Additional info:** <br>
 - Customer and Transaction CRUD operations update linked accounts <br>
 - Account CRUD operations update linked customer and transactions <br>
+- Inactive accounts and transactions are highlighted in grey <br>
 
 **User rights:** <br>
 - Admin can perform all operations on all users <br>

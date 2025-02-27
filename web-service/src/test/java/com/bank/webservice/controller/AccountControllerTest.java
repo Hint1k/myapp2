@@ -20,6 +20,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.Mockito.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -74,19 +75,20 @@ public class AccountControllerTest {
 
     @Test
     public void testShowUpdateAccountForm() {
-        when(cache.getAccountFromCache(1L)).thenReturn(new Account());
-
         try {
+            when(cache.getAccountFromCache(1L)).thenReturn(new Account());
+
             mockMvc.perform(put("/api/accounts/1"))
                     .andExpect(status().isOk())
                     .andExpect(view().name("account/account-update"))
                     .andDo(print());
+
+
+            verify(cache, times(1)).getAccountFromCache(1L);
         } catch (Exception e) {
             log.error("testShowUpdateAccountForm() fails: {}", e.getMessage());
-            throw new RuntimeException(e);
+            fail("Test failed due to exception: {}" + e.getMessage());
         }
-
-        verify(cache, times(1)).getAccountFromCache(1L);
     }
 
     @Test
@@ -108,7 +110,7 @@ public class AccountControllerTest {
                     .andDo(print());
         } catch (Exception e) {
             log.error("testCreateAccount() fails: {}", e.getMessage());
-            throw new RuntimeException(e);
+            fail("Test failed due to exception: {}" + e.getMessage());
         }
 
         verify(publisher, times(1)).publishCreatedEvent(any(Account.class));
@@ -116,9 +118,9 @@ public class AccountControllerTest {
 
     @Test
     public void testUpdateAccount() {
-        doNothing().when(publisher).publishUpdatedEvent(any(Account.class));
-
         try {
+            doNothing().when(publisher).publishUpdatedEvent(any(Account.class));
+
             mockMvc.perform(post("/api/accounts/account")
                             .param("accountNumber", "123456789")
                             .param("balance", "1")
@@ -131,87 +133,92 @@ public class AccountControllerTest {
                     .andExpect(status().is3xxRedirection())
                     .andExpect(redirectedUrl("/home"))
                     .andDo(print());
+
+            verify(publisher, times(1)).publishUpdatedEvent(any(Account.class));
         } catch (Exception e) {
             log.error("testUpdateAccount() fails: {}", e.getMessage());
-            throw new RuntimeException(e);
+            fail("Test failed due to exception: {}" + e.getMessage());
         }
-
-        verify(publisher, times(1)).publishUpdatedEvent(any(Account.class));
     }
 
     @Test
     public void testDeleteAccount() {
-        doNothing().when(publisher).publishDeletedEvent(1L, Account.class);
-
         try {
+            doNothing().when(publisher).publishDeletedEvent(1L, Account.class);
+
             mockMvc.perform(delete("/api/accounts/1")
                             .with(csrf())
                     )
                     .andExpect(status().is3xxRedirection())
                     .andExpect(redirectedUrl("/home"))
                     .andDo(print());
+
+            verify(publisher, times(1)).publishDeletedEvent(1L, Account.class);
         } catch (Exception e) {
             log.error("testDeleteAccount() fails: {}", e.getMessage());
-            throw new RuntimeException(e);
+            fail("Test failed due to exception: {}" + e.getMessage());
         }
-
-        verify(publisher, times(1)).publishDeletedEvent(1L, Account.class);
     }
 
     @Test
     public void testGetAccount() {
-        doNothing().when(publisher).publishDetailsEvent(1L, Account.class);
-        when(cache.getAccountFromCache(1L)).thenReturn(new Account());
-
         try {
+            doNothing().when(publisher).publishDetailsEvent(1L, Account.class);
+            when(cache.getAccountFromCache(1L)).thenReturn(new Account());
+
             mockMvc.perform(get("/api/accounts/1"))
                     .andExpect(status().isOk())
                     .andExpect(view().name("account/account-details"))
                     .andDo(print());
+
+            verify(cache, times(1)).getAccountFromCache(1L);
+            verify(publisher, times(1)).publishDetailsEvent(1L, Account.class);
         } catch (Exception e) {
             log.error("testGetAccount() fails: {}", e.getMessage());
-            throw new RuntimeException(e);
+            fail("Test failed due to exception: {}" + e.getMessage());
         }
-
-        verify(cache, times(1)).getAccountFromCache(1L);
-        verify(publisher, times(1)).publishDetailsEvent(1L, Account.class);
     }
 
     @Test
-    public void testGetAllAccounts() throws Exception {
-        List<Account> accounts = createTestAccounts();
-        doNothing().when(publisher).publishAllEvent(Account.class);
-        when(cache.getAllAccountsFromCache()).thenReturn(accounts);
+    public void testGetAllAccounts() {
+        try {
+            List<Account> accounts = createTestAccounts();
+            doNothing().when(publisher).publishAllEvent(Account.class);
+            when(cache.getAllAccountsFromCache()).thenReturn(accounts);
 
-        mockMvc.perform(get("/api/accounts/all-accounts"))
-                .andExpect(status().isOk())
-                .andExpect(view().name("account/all-accounts"))
-                .andDo(print());
+            mockMvc.perform(get("/api/accounts/all-accounts"))
+                    .andExpect(status().isOk())
+                    .andExpect(view().name("account/all-accounts"))
+                    .andDo(print());
 
-        verify(cache, times(1)).getAllAccountsFromCache();
-        verify(publisher, times(1)).publishAllEvent(Account.class);
+            verify(cache, times(1)).getAllAccountsFromCache();
+            verify(publisher, times(1)).publishAllEvent(Account.class);
+        } catch (Exception e) {
+            log.error("testGetAllAccounts() fails: {}", e.getMessage());
+            fail("Test failed due to exception: {}" + e.getMessage());
+        }
     }
 
     @Test
     public void testGetAccountsByCustomerNumber() {
-        List<Account> accounts = createTestAccounts();
-        doNothing().when(publisher).publishAllEvent(Account.class);
-        when(cache.getAccountsFromCacheByCustomerNumber(12345L)).thenReturn(accounts);
-
         try {
+            List<Account> accounts = createTestAccounts();
+            doNothing().when(publisher).publishAllEvent(Account.class);
+            when(cache.getAccountsFromCacheByCustomerNumber(12345L)).thenReturn(accounts);
+
             mockMvc.perform(get("/api/accounts/all-accounts/12345"))
                     .andExpect(status().isOk())
                     .andDo(print());
+
+            verify(cache, times(1)).getAccountsFromCacheByCustomerNumber(12345L);
+            verify(publisher, times(1)).publishAllEvent(Account.class);
         } catch (Exception e) {
             log.error("testGetAccountsByCustomerNumber() fails: {}", e.getMessage());
-            throw new RuntimeException(e);
+            fail("Test failed due to exception: {}" + e.getMessage());
         }
-
-        verify(cache, times(1)).getAccountsFromCacheByCustomerNumber(12345L);
-        verify(publisher, times(1)).publishAllEvent(Account.class);
     }
 
-    private List<Account> createTestAccounts(){
+    private List<Account> createTestAccounts() {
         Account account1 = new Account();
         account1.setAccountId(1L);
         Account account2 = new Account();

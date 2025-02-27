@@ -24,6 +24,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.mockito.Mockito.times;
@@ -189,18 +190,23 @@ public class TransactionControllerTest {
     }
 
     @Test
-    public void testGetAllTransactions() throws Exception {
-        List<Transaction> transactions = createTestTransactions();
-        doNothing().when(publisher).publishAllEvent(Transaction.class);
-        when(cache.getAllTransactionsFromCache()).thenReturn(transactions);
+    public void testGetAllTransactions() {
+        try {
+            List<Transaction> transactions = createTestTransactions();
+            doNothing().when(publisher).publishAllEvent(Transaction.class);
+            when(cache.getAllTransactionsFromCache()).thenReturn(transactions);
 
-        mockMvc.perform(get("/api/transactions/all-transactions"))
-                .andExpect(status().isOk())
-                .andExpect(view().name("transaction/all-transactions"))
-                .andDo(print());
+            mockMvc.perform(get("/api/transactions/all-transactions"))
+                    .andExpect(status().isOk())
+                    .andExpect(view().name("transaction/all-transactions"))
+                    .andDo(print());
 
-        verify(cache, times(1)).getAllTransactionsFromCache();
-        verify(publisher, times(1)).publishAllEvent(Transaction.class);
+            verify(cache, times(1)).getAllTransactionsFromCache();
+            verify(publisher, times(1)).publishAllEvent(Transaction.class);
+        } catch (Exception e) {
+            log.error("testGetAllTransactions() fails: {}", e.getMessage());
+            fail("Test failed due to exception: {}" + e.getMessage());
+        }
     }
 
     @Test
