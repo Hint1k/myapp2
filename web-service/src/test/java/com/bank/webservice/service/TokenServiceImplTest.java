@@ -29,7 +29,7 @@ public class TokenServiceImplTest {
     private TokenServiceImpl tokenService;
 
     @Test
-    void testValidateToken_Success() {
+    public void testValidateToken_Success() {
         // Given: A valid token and expected response from the verification endpoint
         String token = "validToken";
         String url = "http://gateway-service:8080/verify";
@@ -56,7 +56,7 @@ public class TokenServiceImplTest {
     }
 
     @Test
-    void testValidateToken_Unauthorized() {
+    public void testValidateToken_Unauthorized() {
         // Given: An invalid token that causes the verification endpoint to return 403 Forbidden
         String token = "invalidToken";
         String url = "http://gateway-service:8080/verify";

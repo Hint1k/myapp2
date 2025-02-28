@@ -20,7 +20,7 @@ import java.time.LocalDate;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class GenericEventPublisherImplTest {
+public class GenericEventPublisherImplTest {
 
     @Mock
     private KafkaTemplate<String, Object> kafkaTemplate;
@@ -32,7 +32,7 @@ class GenericEventPublisherImplTest {
     private GenericEventPublisherImpl publisher;
 
     @Test
-    void testPublishCreatedEvent() {
+    public void testPublishCreatedEvent() {
         // Given
         Account account = createNewAccount();
         BaseEvent event = createBaseEvent(account);
@@ -47,7 +47,7 @@ class GenericEventPublisherImplTest {
     }
 
     @Test
-    void testPublishUpdatedEvent() {
+    public void testPublishUpdatedEvent() {
         // Given
         Account account = createNewAccount();
         Account updatedAccount = createUpdateAccount();
@@ -63,7 +63,7 @@ class GenericEventPublisherImplTest {
     }
 
     @Test
-    void testPublishDeletedEvent() {
+    public void testPublishDeletedEvent() {
         // Given
         Long accountId = 123456L;
         BaseEvent event = new AccountDeletedEvent();
@@ -78,7 +78,7 @@ class GenericEventPublisherImplTest {
     }
 
     @Test
-    void testPublishDetailsEvent() {
+    public void testPublishDetailsEvent() {
         // Given
         Long accountId = 123456L;
         BaseEvent event = new AccountDetailsEvent();
@@ -93,7 +93,7 @@ class GenericEventPublisherImplTest {
     }
 
     @Test
-    void testPublishAllEvent() {
+    public void testPublishAllEvent() {
         // Given
         BaseEvent event = new AllAccountsEvent();
         when(eventFactory.createEvent(null, Operation.ALL, Account.class)).thenReturn(event);

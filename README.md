@@ -18,7 +18,8 @@
 **Additional info:** <br>
 - Customer and Transaction CRUD operations update linked accounts <br>
 - Account CRUD operations update linked customer and transactions <br>
-- Inactive accounts and transactions are highlighted in grey <br>
+- Deactivating or deleting an account/customer freezes linked transactions/accounts <br>  
+- Inactive and frozen accounts/transactions are highlighted in grey <br>
 
 **User rights:** <br>
 - Admin can perform all operations on all users <br>

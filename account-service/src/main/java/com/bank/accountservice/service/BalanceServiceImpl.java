@@ -75,6 +75,9 @@ public class BalanceServiceImpl implements BalanceService {
     @Override
     public BigDecimal calculateBalance(BigDecimal currentBalance, BigDecimal amount,
                                        TransactionType transactionType) {
+        if (transactionType == null) {
+            return BigDecimal.valueOf(-2); // Handled null case
+        }
         return switch (transactionType) {
             case DEPOSIT -> currentBalance.add(amount);
             case WITHDRAWAL -> {

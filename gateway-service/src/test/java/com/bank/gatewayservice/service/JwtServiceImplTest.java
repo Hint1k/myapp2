@@ -29,7 +29,7 @@ public class JwtServiceImplTest {
     }
 
     @Test
-    void testGenerateTokenAndExtractClaims() {
+    public void testGenerateTokenAndExtractClaims() {
         // Given: A JwtServiceImpl instance with a 1-hour expiration
         JwtServiceImpl jwtService = createJwtServiceWithExpiration(5000L);
         String username = "user1";
@@ -57,7 +57,7 @@ public class JwtServiceImplTest {
     }
 
     @Test
-    void testIsTokenExpired() {
+    public void testIsTokenExpired() {
         // Given: A JwtServiceImpl with a negative expiration value to force expired tokens
         JwtServiceImpl jwtService = createJwtServiceWithExpiration(-5000L);
         String token = jwtService.generateToken("user1", List.of("ROLE_USER"));
@@ -71,7 +71,7 @@ public class JwtServiceImplTest {
     }
 
     @Test
-    void testExtractTokenFromHeader() {
+    public void testExtractTokenFromHeader() {
         // Given: A JwtServiceImpl instance (expiration not used in this test)
         JwtServiceImpl jwtService = createJwtServiceWithExpiration(5000L);
         String token = "sampleToken";
@@ -89,7 +89,7 @@ public class JwtServiceImplTest {
     }
 
     @Test
-    void testValidateToken_WrongUsername() {
+    public void testValidateToken_WrongUsername() {
         // Given: A valid token generated for "user1"
         JwtServiceImpl jwtService = createJwtServiceWithExpiration(5000L);
         String token = jwtService.generateToken("user1", List.of("ROLE_USER"));
@@ -100,7 +100,7 @@ public class JwtServiceImplTest {
     }
 
     @Test
-    void testExtractRoles_NoRolesClaim() {
+    public void testExtractRoles_NoRolesClaim() {
         // Given: A token generated without roles
         JwtServiceImpl jwtService = createJwtServiceWithExpiration(5000L);
         String token = jwtService.generateToken("user1", List.of());

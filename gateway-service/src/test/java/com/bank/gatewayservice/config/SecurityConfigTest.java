@@ -26,7 +26,7 @@ import static org.mockito.Mockito.*;
 
 @Slf4j
 @ExtendWith(MockitoExtension.class)
-class SecurityConfigTest {
+public class SecurityConfigTest {
 
     @InjectMocks
     private SecurityConfig securityConfig;
@@ -41,13 +41,13 @@ class SecurityConfigTest {
     private AuthenticationManager authenticationManager;
 
     @Test
-    void testUserDetailsManagerBean() {
+    public void testUserDetailsManagerBean() {
         JdbcUserDetailsManager userDetailsManager = securityConfig.user();
         assertNotNull(userDetailsManager, "JdbcUserDetailsManager should not be null");
     }
 
     @Test
-    void testPasswordEncoderBean() {
+    public void testPasswordEncoderBean() {
         PasswordEncoder passwordEncoder = securityConfig.passwordEncoder();
         assertNotNull(passwordEncoder, "PasswordEncoder should not be null");
         assertInstanceOf(BCryptPasswordEncoder.class, passwordEncoder,
@@ -55,7 +55,7 @@ class SecurityConfigTest {
     }
 
     @Test
-    void testSecurityFilterChainBean() {
+    public void testSecurityFilterChainBean() {
         // Deep stubbing to simulate method chaining
         HttpSecurity httpSecurity = mock(HttpSecurity.class, RETURNS_DEEP_STUBS);
 
@@ -67,7 +67,7 @@ class SecurityConfigTest {
     }
 
     @Test
-    void testCorsConfigurationSourceBean() {
+    public void testCorsConfigurationSourceBean() {
         CorsConfigurationSource corsConfigurationSource = securityConfig.corsConfigurationSource();
         assertNotNull(corsConfigurationSource, "CorsConfigurationSource should not be null");
 
@@ -78,7 +78,7 @@ class SecurityConfigTest {
     }
 
     @Test
-    void testAuthenticationManagerBean() {
+    public void testAuthenticationManagerBean() {
         try {
             // Given: Mock AuthenticationManagerBuilder and related methods
             AuthenticationManagerBuilder authenticationManagerBuilder = mock(AuthenticationManagerBuilder.class);

@@ -18,7 +18,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class TokenControllerTest {
+public class TokenControllerTest {
 
     @Mock
     private JwtService jwtService;
@@ -43,7 +43,7 @@ class TokenControllerTest {
     }
 
     @Test
-    void testVerifyToken_ValidToken() {
+    public void testVerifyToken_ValidToken() {
         // Given: A valid token and mock JwtService behavior
         String username = "user123";
         List<String> roles = List.of("ROLE_USER", "ROLE_ADMIN");
@@ -65,7 +65,7 @@ class TokenControllerTest {
     }
 
     @Test
-    void testVerifyToken_InvalidToken() {
+    public void testVerifyToken_InvalidToken() {
         // Given: An invalid token
         when(jwtService.extractTokenFromHeader(invalidAuthHeader)).thenReturn(invalidToken);
         when(jwtService.extractUsername(invalidToken)).thenReturn("user123");
@@ -81,7 +81,7 @@ class TokenControllerTest {
     }
 
     @Test
-    void testVerifyToken_MissingAuthorizationHeader() {
+    public void testVerifyToken_MissingAuthorizationHeader() {
         // Given: Missing Authorization header
         String missingAuthHeader = null;
 
@@ -95,7 +95,7 @@ class TokenControllerTest {
     }
 
     @Test
-    void testVerifyToken_ExpiredToken() {
+    public void testVerifyToken_ExpiredToken() {
         // Given: An expired token scenario
         when(jwtService.extractTokenFromHeader(validAuthHeader)).thenReturn(validToken);
         when(jwtService.extractUsername(validToken)).thenReturn("user123");
@@ -111,7 +111,7 @@ class TokenControllerTest {
     }
 
     @Test
-    void testVerifyToken_ExceptionHandling() {
+    public void testVerifyToken_ExceptionHandling() {
         // Given: An exception during token verification
         when(jwtService.extractTokenFromHeader(validAuthHeader)).thenThrow(new RuntimeException("Unexpected error"));
 

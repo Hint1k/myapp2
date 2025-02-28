@@ -28,7 +28,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class UserControllerTest {
+public class UserControllerTest {
 
     @Mock
     private JwtService jwtService;
@@ -65,7 +65,7 @@ class UserControllerTest {
     }
 
     @Test
-    void testAuthenticateUser_ValidCredentials() {
+    public void testAuthenticateUser_ValidCredentials() {
         // Mock Authentication to return the authorities
         authentication = mock(Authentication.class);
         doReturn(authorities).when(authentication).getAuthorities();
@@ -91,7 +91,7 @@ class UserControllerTest {
     }
 
     @Test
-    void testAuthenticateUser_CachedTokenValid() {
+    public void testAuthenticateUser_CachedTokenValid() {
         // Given: Valid credentials and token exists in Redis
         when(redisTemplate.opsForValue().get("token:" + username)).thenReturn(cachedToken);
 
@@ -109,7 +109,7 @@ class UserControllerTest {
     }
 
     @Test
-    void testAuthenticateUser_InvalidCredentials() {
+    public void testAuthenticateUser_InvalidCredentials() {
         // Given: Invalid credentials
         when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class)))
                 .thenThrow(new BadCredentialsException("Bad credentials")); // Use BadCredentialsException
@@ -125,7 +125,7 @@ class UserControllerTest {
     }
 
     @Test
-    void testAuthenticateUser_ServerError() {
+    public void testAuthenticateUser_ServerError() {
         // Given: Simulate a server-side failure (e.g., unexpected issue in JWT service)
         authentication = mock(Authentication.class);
 
@@ -147,7 +147,7 @@ class UserControllerTest {
     }
 
     @Test
-    void testAuthenticateUser_CachedTokenExpired() {
+    public void testAuthenticateUser_CachedTokenExpired() {
         // Given: Valid credentials and mocked successful authentication
         // Mock Authentication to return the authorities
         authentication = mock(Authentication.class);

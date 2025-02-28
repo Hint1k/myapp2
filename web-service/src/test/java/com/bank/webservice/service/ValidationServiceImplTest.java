@@ -35,7 +35,7 @@ public class ValidationServiceImplTest {
     private ValidationServiceImpl validationService;
 
     @Test
-    void testRejectInvalidSourceAccountNumber() {
+    public void testRejectInvalidSourceAccountNumber() {
         // Given: A transaction with a null source account number
         Transaction transaction = createTransactionWithSourceAndDestination(null, 2L);
 
@@ -48,7 +48,7 @@ public class ValidationServiceImplTest {
     }
 
     @Test
-    void testRejectInvalidSourceAccountNumberFormat() {
+    public void testRejectInvalidSourceAccountNumberFormat() {
         // Given: A transaction with an invalid source account number format
         Transaction transaction = createTransactionWithSourceAndDestination(-1L, null);
 
@@ -61,7 +61,7 @@ public class ValidationServiceImplTest {
     }
 
     @Test
-    void testRejectNonExistentSourceAccount() {
+    public void testRejectNonExistentSourceAccount() {
         // Given: A valid source account number, but the account does not exist in cache
         Transaction transaction = createTransactionWithSourceAndDestination(1L, null);
         when(accountCache.getAccountFromCacheByAccountNumber(1L)).thenReturn(null);
@@ -75,7 +75,7 @@ public class ValidationServiceImplTest {
     }
 
     @Test
-    void testRejectInactiveSourceAccount() {
+    public void testRejectInactiveSourceAccount() {
         // Given: A source account that exists but is not active
         Account inactiveAccount = createAccountWithStatus(AccountStatus.INACTIVE);
         Transaction transaction = createTransactionWithSourceAndDestination(1L, null);
@@ -91,7 +91,7 @@ public class ValidationServiceImplTest {
     }
 
     @Test
-    void testRejectTransferWhenSourceAndDestinationAreSame() {
+    public void testRejectTransferWhenSourceAndDestinationAreSame() {
         // Given: A transfer transaction where source and destination account numbers are the same
         Transaction transaction = createTransactionWithSourceAndDestination(2L, 2L);
 
@@ -109,7 +109,7 @@ public class ValidationServiceImplTest {
     }
 
     @Test
-    void testRejectNonExistentDestinationAccountForTransfer() {
+    public void testRejectNonExistentDestinationAccountForTransfer() {
         // Given: A transfer transaction with a non-existent destination account
         Transaction transaction = createTransactionWithSourceAndDestination(1L, 2L);
         when(accountCache.getAccountFromCacheByAccountNumber(1L))
@@ -125,7 +125,7 @@ public class ValidationServiceImplTest {
     }
 
     @Test
-    void testRejectExistingCustomer() {
+    public void testRejectExistingCustomer() {
         // Given: A customer that already exists in cache
         Customer newCustomer = createCustomerWithMultipleAccounts();
         when(customerCache.getAllCustomersFromCache()).thenReturn(List.of(newCustomer));
@@ -139,9 +139,8 @@ public class ValidationServiceImplTest {
     }
 
     @Test
-    void testRejectNonExistentCustomerForAccount() {
+    public void testRejectNonExistentCustomerForAccount() {
         // Given: A new account with a customer number that does not exist in cache
-//        Account newAccount = createAccountWithCustomer();
         Account newAccount = createAccountWithNumberAndCustomer(1L, 2L);
 
         when(customerCache.getAllCustomersFromCache()).thenReturn(List.of());
@@ -155,7 +154,7 @@ public class ValidationServiceImplTest {
     }
 
     @Test
-    void testRejectDuplicateAccountNumber() {
+    public void testRejectDuplicateAccountNumber() {
         // Given: A new account with an account number that already exists
         Account newAccount = createAccountWithNumberAndCustomer(2L, 1L);
         Account existingAccount = createAccountWithNumberAndCustomer(2L, 1L);
@@ -171,7 +170,7 @@ public class ValidationServiceImplTest {
     }
 
     @Test
-    void testValidCustomerNumber() {
+    public void testValidCustomerNumber() {
         // Given: A new customer with a valid customer number
         Customer newCustomer = createCustomerWithMultipleAccounts();
 
@@ -186,7 +185,7 @@ public class ValidationServiceImplTest {
     }
 
     @Test
-    void testRejectAccountsBelongingToAnotherCustomer() {
+    public void testRejectAccountsBelongingToAnotherCustomer() {
         // Given: A customer trying to add accounts that belong to another customer
         Customer oldCustomer = createCustomerWithMultipleAccounts();
         oldCustomer.setAccountNumbers("1,2");
@@ -206,7 +205,7 @@ public class ValidationServiceImplTest {
     }
 
     @Test
-    void testRejectNonExistingAccountsForMultipleAccounts() {
+    public void testRejectNonExistingAccountsForMultipleAccounts() {
         // Given: A customer trying to add accounts that do not exist
         Customer oldCustomer = createCustomerWithMultipleAccounts();
         oldCustomer.setAccountNumbers("2,1");
@@ -222,7 +221,7 @@ public class ValidationServiceImplTest {
     }
 
     @Test
-    void testValidAccountNumbersForMultipleAccounts() {
+    public void testValidAccountNumbersForMultipleAccounts() {
         // Given: A customer adding valid account numbers
         Customer oldCustomer = createCustomerWithMultipleAccounts();
         oldCustomer.setAccountNumbers("1,2");
@@ -240,7 +239,7 @@ public class ValidationServiceImplTest {
     }
 
     @Test
-    void testAccountNumberNormalizationWithSpacesAndCommas() {
+    public void testAccountNumberNormalizationWithSpacesAndCommas() {
         // Given: A customer with account numbers containing extra spaces and commas
         Customer oldCustomer = createCustomerWithMultipleAccounts();
         oldCustomer.setAccountNumbers(",1, ,, 2, ");

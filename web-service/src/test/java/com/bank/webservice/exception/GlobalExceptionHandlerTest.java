@@ -14,7 +14,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class GlobalExceptionHandlerTest {
+public class GlobalExceptionHandlerTest {
 
     @InjectMocks
     private GlobalExceptionHandler globalExceptionHandler;
@@ -23,7 +23,7 @@ class GlobalExceptionHandlerTest {
     private Model model;
 
     @Test
-    void testHandleUnauthorizedException() {
+    public void testHandleUnauthorizedException() {
         // Arrange
         UnauthorizedException ex = new UnauthorizedException("Access Denied");
 
@@ -37,7 +37,7 @@ class GlobalExceptionHandlerTest {
     }
 
     @Test
-    void testHandleServletException() {
+    public void testHandleServletException() {
         // Arrange
         ServletException ex = new ServletException("Servlet error");
 
@@ -51,7 +51,7 @@ class GlobalExceptionHandlerTest {
     }
 
     @Test
-    void testHandleIOException() {
+    public void testHandleIOException() {
         // Arrange
         IOException ex = new IOException("IO error");
 
@@ -65,7 +65,7 @@ class GlobalExceptionHandlerTest {
     }
 
     @Test
-    void testHandleGenericException() {
+    public void testHandleGenericException() {
         // Arrange
         Exception ex = new RuntimeException("Something went wrong");
 

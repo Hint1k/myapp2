@@ -76,8 +76,8 @@ public class TransactionServiceImpl implements TransactionService {
                 accountPublisher.publishAccountDetailsEvent(accountDestination);
             }
         } catch (TransactionProcessingException exception) {
-            // TODO check later how to handle it in web-service in case of failure
             log.error("Transaction deletion failed: {}", exception.getMessage());
+            transactionPublisher.publishTransactionFailedEvent(transactionId);
         }
     }
 

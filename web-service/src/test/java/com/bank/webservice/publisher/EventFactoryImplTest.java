@@ -20,13 +20,13 @@ import java.math.BigDecimal;
 import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(MockitoExtension.class)
-class EventFactoryImplTest {
+public class EventFactoryImplTest {
 
     @InjectMocks
     private EventFactoryImpl eventFactory;
 
     @Test
-    void testCreateCustomerCreatedEvent() {
+    public void testCreateCustomerCreatedEvent() {
         // Given
         Customer customer = new Customer(null, 1L, "John Doe", "john@example.com",
                 "1234567890", "123 Street", null);
@@ -41,7 +41,7 @@ class EventFactoryImplTest {
     }
 
     @Test
-    void testCreateTransactionCreatedEvent() {
+    public void testCreateTransactionCreatedEvent() {
         // Given
         Transaction transaction = new Transaction(null, new BigDecimal(100), null,
                 null, null, 123456L, 654321L);
@@ -56,7 +56,7 @@ class EventFactoryImplTest {
     }
 
     @Test
-    void testCreateUserCreatedEvent() {
+    public void testCreateUserCreatedEvent() {
         // Given
         User user = new User(1L, 1L, "John Doe", "password");
 
@@ -70,7 +70,7 @@ class EventFactoryImplTest {
     }
 
     @Test
-    void testCreateAccountCreatedEvent() {
+    public void testCreateAccountCreatedEvent() {
         // Given
         Account account = new Account(123456L, null, null, null,
                 null, null, 1L);
@@ -85,7 +85,7 @@ class EventFactoryImplTest {
     }
 
     @Test
-    void testThrowExceptionForUnsupportedOperation() {
+    public void testThrowExceptionForUnsupportedOperation() {
         // Given
         Account account = new Account(123456L, null, null, null,
                 null, null, null, 1L);

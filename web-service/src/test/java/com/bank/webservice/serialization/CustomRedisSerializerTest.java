@@ -28,7 +28,7 @@ public class CustomRedisSerializerTest {
     }
 
     @Test
-    void testSerialize_Success() {
+    public void testSerialize_Success() {
         try {
             // Given: Create a new CustomRedisSerializer instance with an empty typeMapping
             CustomRedisSerializer<TestObject> serializer = new CustomRedisSerializer<>(TestObject.class, Map.of());
@@ -55,7 +55,7 @@ public class CustomRedisSerializerTest {
     }
 
     @Test
-    void testSerialize_ThrowsException() {
+    public void testSerialize_ThrowsException() {
         try {
             // Given: Create a CustomRedisSerializer instance and override its ObjectMapper to simulate failure.
             CustomRedisSerializer<TestObject> serializer = new CustomRedisSerializer<>(TestObject.class, Map.of());
@@ -82,7 +82,7 @@ public class CustomRedisSerializerTest {
     }
 
     @Test
-    void testDeserialize_Success() {
+    public void testDeserialize_Success() {
         // Given: Create a CustomRedisSerializer instance with an empty type mapping and a valid TestObject.
         CustomRedisSerializer<TestObject> serializer = new CustomRedisSerializer<>(TestObject.class, Map.of());
         TestObject original = new TestObject("testValue");
@@ -99,7 +99,7 @@ public class CustomRedisSerializerTest {
     }
 
     @Test
-    void testDeserialize_HandlesTypeMapping() {
+    public void testDeserialize_HandlesTypeMapping() {
         // Given: Create a CustomRedisSerializer with a type mapping that maps "ExternalClass" to TestObject.class.
         Map<String, Class<?>> mapping = Map.of("ExternalClass", TestObject.class);
         CustomRedisSerializer<TestObject> serializer = new CustomRedisSerializer<>(TestObject.class, mapping);
@@ -118,7 +118,7 @@ public class CustomRedisSerializerTest {
     }
 
     @Test
-    void testDeserialize_ThrowsException() {
+    public void testDeserialize_ThrowsException() {
         // Given: An invalid JSON byte array that cannot be parsed.
         byte[] invalidJsonBytes = "invalid json".getBytes();
         CustomRedisSerializer<TestObject> serializer = new CustomRedisSerializer<>(TestObject.class, Map.of());
