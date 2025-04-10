@@ -43,13 +43,13 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public List<User> findAllUsers() {
         List<User> users = userRepository.findAll();
+        publisher.publishAllUsersEvent(users);
         return users;
     }
 
     @Override
     @Transactional
     public User findUserByUsername(String username) {
-        User user = userRepository.findUserByUsername(username);
-        return user;
+        return userRepository.findUserByUsername(username);
     }
 }

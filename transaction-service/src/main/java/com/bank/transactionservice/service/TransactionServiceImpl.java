@@ -26,6 +26,12 @@ public class TransactionServiceImpl implements TransactionService {
     @Override
     @Transactional
     public void saveTransaction(Transaction transaction) {
+        if (transaction.getAccountDestinationNumber() == null) {
+           transaction.setAccountDestinationNumber(transaction.getAccountSourceNumber());
+        }
+        if (transaction.getAccountSourceNumber() == null) {
+            transaction.setAccountSourceNumber(transaction.getAccountDestinationNumber());
+        }
         Transaction savedTransaction = repository.save(transaction);
         publisher.publishTransactionCreatedEvent(savedTransaction);
         log.info("Transaction saved: {}", savedTransaction);
@@ -34,6 +40,12 @@ public class TransactionServiceImpl implements TransactionService {
     @Override
     @Transactional
     public void updateTransaction(Transaction newTransaction) {
+        if (newTransaction.getAccountDestinationNumber() == null) {
+            newTransaction.setAccountDestinationNumber(newTransaction.getAccountSourceNumber());
+        }
+        if (newTransaction.getAccountSourceNumber() == null) {
+            newTransaction.setAccountSourceNumber(newTransaction.getAccountDestinationNumber());
+        }
         Long transactionId = newTransaction.getTransactionId();
         Transaction oldTransaction = repository.findById(transactionId).orElse(null);
         if (oldTransaction == null) {

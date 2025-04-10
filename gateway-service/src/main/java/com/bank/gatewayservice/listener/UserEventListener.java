@@ -36,7 +36,6 @@ public class UserEventListener {
             acknowledgment.acknowledge();
         } catch (Exception e) {
             log.error("Error finding all users: {}", e.getMessage());
-            // TODO implement error handling later
         }
     }
 }
