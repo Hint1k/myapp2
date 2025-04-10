@@ -3,23 +3,19 @@ package com.bank.transactionservice.listener;
 import com.bank.transactionservice.event.account.AccountUpdatedEvent;
 import com.bank.transactionservice.service.TransactionService;
 import com.bank.transactionservice.util.AccountStatus;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import com.bank.transactionservice.event.account.AccountDeletedEvent;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.support.Acknowledgment;
 import org.springframework.stereotype.Component;
 
 @Component
 @Slf4j
+@RequiredArgsConstructor
 public class AccountEventListener {
 
     private final TransactionService service;
-
-    @Autowired
-    public AccountEventListener(TransactionService service) {
-        this.service = service;
-    }
 
     @KafkaListener(topics = "account-deleted", groupId = "transaction-service")
     public void handleAccountDeletedEvent(AccountDeletedEvent event, Acknowledgment acknowledgment) {

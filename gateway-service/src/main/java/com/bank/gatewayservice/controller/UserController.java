@@ -3,8 +3,8 @@ package com.bank.gatewayservice.controller;
 import com.bank.gatewayservice.service.JwtService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,20 +22,13 @@ import java.util.stream.Collectors;
 
 @RestController
 @Slf4j
+@RequiredArgsConstructor
 @Tag(name = "User Authentication", description = "Endpoints for JWT token issuing and user authentication")
 public class UserController {
 
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
     private final RedisTemplate<String, Object> redisTemplate;
-
-    @Autowired
-    public UserController(JwtService jwtService, AuthenticationManager authenticationManager,
-                          RedisTemplate<String, Object> redisTemplate) {
-        this.jwtService = jwtService;
-        this.authenticationManager = authenticationManager;
-        this.redisTemplate = redisTemplate;
-    }
 
     @PostMapping("/login")
     @Operation(summary = "Authenticate user", description = "Validates user credentials and returns a JWT token.")

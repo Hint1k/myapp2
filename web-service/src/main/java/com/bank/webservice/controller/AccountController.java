@@ -8,8 +8,8 @@ import com.bank.webservice.service.RoleService;
 import com.bank.webservice.service.ValidationService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.propertyeditors.StringTrimmerEditor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -26,6 +26,7 @@ import java.util.concurrent.TimeUnit;
 @Controller
 @Slf4j
 @RequestMapping("/api")
+@RequiredArgsConstructor
 public class AccountController {
 
     private final LatchService latch;
@@ -34,16 +35,6 @@ public class AccountController {
     private final ValidationService validator;
     private final RoleService role;
     private static final int MAX_RESPONSE_TIME = 3; // seconds
-
-    @Autowired
-    public AccountController(LatchService latch, GenericEventPublisher publisher, AccountCache cache,
-                             ValidationService validator, RoleService role) {
-        this.latch = latch;
-        this.publisher = publisher;
-        this.cache = cache;
-        this.validator = validator;
-        this.role = role;
-    }
 
     // Cutting off the spaces entered by user to avoid errors
     @InitBinder

@@ -3,8 +3,8 @@ package com.bank.transactionservice.publisher;
 import com.bank.transactionservice.entity.Transaction;
 import com.bank.transactionservice.event.transaction.*;
 import com.bank.transactionservice.util.TransactionType;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 
@@ -13,14 +13,10 @@ import java.util.List;
 
 @Component
 @Slf4j
+@RequiredArgsConstructor
 public class TransactionEventPublisherImpl implements TransactionEventPublisher {
 
     private final KafkaTemplate<String, Object> kafkaTemplate;
-
-    @Autowired
-    public TransactionEventPublisherImpl(KafkaTemplate<String, Object> kafkaTemplate) {
-        this.kafkaTemplate = kafkaTemplate;
-    }
 
     @Override
     public void publishTransactionCreatedEvent(Transaction transaction) {

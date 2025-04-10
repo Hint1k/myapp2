@@ -3,22 +3,18 @@ package com.bank.transactionservice.listener;
 import com.bank.transactionservice.entity.Transaction;
 import com.bank.transactionservice.event.transaction.*;
 import com.bank.transactionservice.service.TransactionService;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.support.Acknowledgment;
 import org.springframework.stereotype.Component;
 
 @Component
 @Slf4j
+@RequiredArgsConstructor
 public class TransactionEventListener {
 
     private final TransactionService service;
-
-    @Autowired
-    public TransactionEventListener(TransactionService service) {
-        this.service = service;
-    }
 
     @KafkaListener(topics = "transaction-creation-requested", groupId = "transaction-service")
     public void handleTransactionCreatedEvent(TransactionCreatedEvent event, Acknowledgment acknowledgment) {
@@ -38,7 +34,6 @@ public class TransactionEventListener {
         } catch (
                 Exception exception) {
             log.error("Error saving transaction: {}", exception.getMessage());
-            // TODO handle exception here later
         }
     }
 
@@ -67,7 +62,6 @@ public class TransactionEventListener {
             acknowledgment.acknowledge();
         } catch (Exception exception) {
             log.error("Error deleting transaction: {}", exception.getMessage());
-            // TODO implement error handling later
         }
     }
 
@@ -79,7 +73,6 @@ public class TransactionEventListener {
             acknowledgment.acknowledge();
         } catch (Exception e) {
             log.error("Error finding all transactions: {}", e.getMessage());
-            // TODO implement error handling later
         }
     }
 
@@ -92,7 +85,6 @@ public class TransactionEventListener {
             acknowledgment.acknowledge();
         } catch (Exception e) {
             log.error("Error finding transaction by id: {}", e.getMessage());
-            // TODO implement error handling later
         }
     }
 
@@ -105,7 +97,6 @@ public class TransactionEventListener {
             acknowledgment.acknowledge();
         } catch (Exception e) {
             log.error("Error handling transaction failure {}", e.getMessage());
-            // TODO implement error handling later
         }
     }
 
@@ -118,7 +109,6 @@ public class TransactionEventListener {
             acknowledgment.acknowledge();
         } catch (Exception e) {
             log.error("Error handling transaction approval {}", e.getMessage());
-            // TODO implement error handling later
         }
     }
 }

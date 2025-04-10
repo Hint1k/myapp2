@@ -5,8 +5,8 @@ import com.bank.webservice.dto.User;
 import com.bank.webservice.event.user.AllUsersEvent;
 import com.bank.webservice.event.user.UserCreatedEvent;
 import com.bank.webservice.service.LatchService;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.support.Acknowledgment;
 import org.springframework.stereotype.Component;
@@ -16,16 +16,11 @@ import java.util.concurrent.CountDownLatch;
 
 @Component
 @Slf4j
+@RequiredArgsConstructor
 public class UserEventListener {
 
     private final LatchService latch;
     private final UserCache cache;
-
-    @Autowired
-    public UserEventListener(LatchService latch, UserCache cache) {
-        this.latch = latch;
-        this.cache = cache;
-    }
 
     @KafkaListener(topics = "user-created", groupId = "web-service")
     public void handleUserCreatedEvent(UserCreatedEvent event, Acknowledgment acknowledgment) {

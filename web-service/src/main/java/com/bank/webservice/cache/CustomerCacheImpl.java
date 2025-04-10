@@ -2,8 +2,8 @@ package com.bank.webservice.cache;
 
 import com.bank.webservice.dto.Customer;
 import com.bank.webservice.service.CacheService;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
@@ -12,18 +12,13 @@ import java.util.Set;
 
 @Component
 @Slf4j
+@RequiredArgsConstructor
 public class CustomerCacheImpl implements CustomerCache {
 
     // objects of different classes with the same id in cache cause errors
     private static final String PREFIX = "customer:";
     private final CacheService service;
     private final RedisTemplate<String, Object> redisTemplate;
-
-    @Autowired
-    public CustomerCacheImpl(CacheService service, RedisTemplate<String, Object> redisTemplate) {
-        this.service = service;
-        this.redisTemplate = redisTemplate;
-    }
 
     @Override
     public void addCustomerToCache(Long customerId, Customer customer) {
@@ -44,7 +39,6 @@ public class CustomerCacheImpl implements CustomerCache {
             redisTemplate.opsForValue().set(key, customer);
         } else {
             log.error("customer with id {} not found", customerId);
-            // TODO handle cases when customer is not found.
         }
     }
 

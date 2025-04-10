@@ -5,8 +5,8 @@ import com.bank.accountservice.event.transaction.TransactionDeletedEvent;
 import com.bank.accountservice.event.transaction.TransactionUpdatedEvent;
 import com.bank.accountservice.service.TransactionService;
 import com.bank.accountservice.util.TransactionType;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.support.Acknowledgment;
 import org.springframework.stereotype.Component;
@@ -15,14 +15,10 @@ import java.math.BigDecimal;
 
 @Component
 @Slf4j
+@RequiredArgsConstructor
 public class TransactionEventListener {
 
     private final TransactionService service;
-
-    @Autowired
-    public TransactionEventListener(TransactionService service) {
-        this.service = service;
-    }
 
     @KafkaListener(topics = "transaction-created", groupId = "account-service")
     public void handleTransactionCreatedEvent(TransactionCreatedEvent event, Acknowledgment acknowledgment) {

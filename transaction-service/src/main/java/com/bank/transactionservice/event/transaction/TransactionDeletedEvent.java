@@ -16,13 +16,4 @@ public class TransactionDeletedEvent {
     private TransactionType transactionType;
     private Long accountSourceNumber;
     private Long accountDestinationNumber;
-
-    // no transaction id
-    public TransactionDeletedEvent(BigDecimal amount, TransactionType transactionType,
-                                   Long accountSourceNumber, Long accountDestinationNumber) {
-        this.amount = amount;
-        this.transactionType = transactionType;
-        this.accountSourceNumber = accountSourceNumber;
-        this.accountDestinationNumber = accountDestinationNumber;
-    }
 }

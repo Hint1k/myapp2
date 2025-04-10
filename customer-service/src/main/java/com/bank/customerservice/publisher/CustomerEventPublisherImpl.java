@@ -33,13 +33,11 @@ public class CustomerEventPublisherImpl implements CustomerEventPublisher {
         );
         kafkaTemplate.send("customer-created", event);
         log.info("Published customer-created event for customer id: {}", event.getCustomerId());
-        //TODO add check later with completableFuture
     }
 
     @Override
     public void publishCustomerUpdatedEvent(Customer customer) {
         CustomerUpdatedEvent event = new CustomerUpdatedEvent(
-                // TODO remove fields that cannot be updated later
                 customer.getCustomerId(),
                 customer.getCustomerNumber(),
                 customer.getName(),
@@ -50,7 +48,6 @@ public class CustomerEventPublisherImpl implements CustomerEventPublisher {
         );
         kafkaTemplate.send("customer-updated", event);
         log.info("Published customer-updated event for customer id: {}", event.getCustomerId());
-        // TODO add check later with completableFuture
     }
 
     @Override
@@ -61,7 +58,6 @@ public class CustomerEventPublisherImpl implements CustomerEventPublisher {
         );
         kafkaTemplate.send("customer-deleted", event);
         log.info("Published customer-deleted event for customer id: {}", event.getCustomerId());
-        // TODO add check later with completableFuture
     }
 
     @Override
@@ -69,7 +65,6 @@ public class CustomerEventPublisherImpl implements CustomerEventPublisher {
         AllCustomersEvent event = new AllCustomersEvent(customers);
         kafkaTemplate.send("all-customers-received", event);
         log.info("Published all-customers-received event with {} customers", customers.size());
-        // TODO add check later with completableFuture
     }
 
     @Override
@@ -85,6 +80,5 @@ public class CustomerEventPublisherImpl implements CustomerEventPublisher {
         );
         kafkaTemplate.send("customer-details-received", event);
         log.info("Published customer-details-received event for customer id: {}", event.getCustomerId());
-        // TODO add check later with completableFuture
     }
 }

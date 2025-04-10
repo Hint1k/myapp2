@@ -5,20 +5,16 @@ import com.bank.accountservice.exception.TransactionProcessingException;
 import com.bank.accountservice.service.BalanceService;
 import com.bank.accountservice.strategy.TransactionUpdateStrategy;
 import com.bank.accountservice.util.TransactionType;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
 
 @Component
+@RequiredArgsConstructor
 public class DeletingTransactionStrategy implements TransactionUpdateStrategy {
 
     private final BalanceService service;
-
-    @Autowired
-    public DeletingTransactionStrategy(BalanceService service) {
-        this.service = service;
-    }
 
     public void execute(Long oldAccountSourceNumber, Long newAccountSourceNumber,
                         Long oldAccountDestinationNumber, Long newAccountDestinationNumber,

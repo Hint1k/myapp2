@@ -6,22 +6,18 @@ import com.bank.customerservice.event.customer.CustomerDeletedEvent;
 import com.bank.customerservice.event.customer.CustomerDetailsEvent;
 import com.bank.customerservice.event.customer.CustomerUpdatedEvent;
 import com.bank.customerservice.service.CustomerService;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.support.Acknowledgment;
 import org.springframework.stereotype.Component;
 
 @Component
 @Slf4j
+@RequiredArgsConstructor
 public class CustomerEventListener {
 
     private final CustomerService service;
-
-    @Autowired
-    public CustomerEventListener(CustomerService service) {
-        this.service = service;
-    }
 
     @KafkaListener(topics = "customer-creation-requested", groupId = "customer-service")
     public void handleCustomerCreatedEvent(CustomerCreatedEvent event, Acknowledgment acknowledgment) {
@@ -41,7 +37,6 @@ public class CustomerEventListener {
             acknowledgment.acknowledge();
         } catch (Exception e) {
             log.error("Error saving customer: {}", e.getMessage());
-            // TODO implement error handling later
         }
     }
 
@@ -62,7 +57,6 @@ public class CustomerEventListener {
             acknowledgment.acknowledge();
         } catch (Exception e) {
             log.error("Error updating customer by id: {}", e.getMessage());
-            // TODO implement error handling later
         }
     }
 
@@ -75,7 +69,6 @@ public class CustomerEventListener {
             acknowledgment.acknowledge();
         } catch (Exception e) {
             log.error("Error deleting customer by id: {}", e.getMessage());
-            // TODO implement error handling later
         }
     }
 
@@ -87,7 +80,6 @@ public class CustomerEventListener {
             acknowledgment.acknowledge();
         } catch (Exception e) {
             log.error("Error finding all customers: {}", e.getMessage());
-            // TODO implement error handling later
         }
     }
 
@@ -100,7 +92,6 @@ public class CustomerEventListener {
             acknowledgment.acknowledge();
         } catch (Exception e) {
             log.error("Error finding customer by id: {}", e.getMessage());
-            // TODO implement error handling later
         }
     }
 }

@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class TransactionCreatedEvent {
-    // TODO combine later with classes TransactionDetailsEvent and TransactionUpdatedEvent
+
     private Long transactionId;
     private BigDecimal amount;
     private LocalDateTime transactionTime;

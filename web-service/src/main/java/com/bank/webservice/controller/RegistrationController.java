@@ -6,8 +6,8 @@ import com.bank.webservice.dto.Customer;
 import com.bank.webservice.dto.User;
 import com.bank.webservice.publisher.GenericEventPublisher;
 import com.bank.webservice.service.LatchService;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.propertyeditors.StringTrimmerEditor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -21,6 +21,7 @@ import java.util.stream.Collectors;
 
 @Controller
 @Slf4j
+@RequiredArgsConstructor
 public class RegistrationController {
 
     private final GenericEventPublisher publisher;
@@ -28,15 +29,6 @@ public class RegistrationController {
     private final UserCache userCache;
     private final LatchService latch;
     private static final int MAX_RESPONSE_TIME = 3; // seconds
-
-    @Autowired
-    public RegistrationController(GenericEventPublisher publisher, CustomerCache customerCache, UserCache userCache,
-                                  LatchService latch) {
-        this.publisher = publisher;
-        this.customerCache = customerCache;
-        this.userCache = userCache;
-        this.latch = latch;
-    }
 
     // Cutting off the spaces entered by user to avoid errors
     @InitBinder

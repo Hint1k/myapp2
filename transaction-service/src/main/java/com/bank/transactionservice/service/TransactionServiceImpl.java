@@ -6,8 +6,8 @@ import com.bank.transactionservice.repository.TransactionRepository;
 import com.bank.transactionservice.util.TransactionStatus;
 import com.bank.transactionservice.util.TransactionType;
 import jakarta.persistence.EntityNotFoundException;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,17 +17,11 @@ import java.util.Objects;
 
 @Service
 @Slf4j
+@RequiredArgsConstructor
 public class TransactionServiceImpl implements TransactionService {
 
     private final TransactionEventPublisher publisher;
     private final TransactionRepository repository;
-
-    @Autowired
-    public TransactionServiceImpl(TransactionEventPublisher publisher,
-                                  TransactionRepository repository) {
-        this.publisher = publisher;
-        this.repository = repository;
-    }
 
     @Override
     @Transactional
@@ -159,7 +153,6 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     private void handleNullTransaction(Long transactionId) {
-        // TODO return message to the web-service
         log.error("Transaction with id {} not found", transactionId);
         throw new EntityNotFoundException("Transaction with id " + transactionId + " not found");
     }

@@ -1,8 +1,8 @@
 package com.bank.gatewayservice.config;
 
-import com.bank.gatewayservice.service.FilterServiceImpl;
+import com.bank.gatewayservice.filter.FilterService;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -24,16 +24,11 @@ import javax.sql.DataSource;
 @Configuration
 @EnableWebSecurity
 @Slf4j
+@RequiredArgsConstructor
 public class SecurityConfig {
 
-    private final FilterServiceImpl filterServiceImpl;
+    private final FilterService filterService;
     private final DataSource securityDataSource;
-
-    @Autowired
-    public SecurityConfig(FilterServiceImpl filterServiceImpl, DataSource securityDataSource) {
-        this.filterServiceImpl = filterServiceImpl;
-        this.securityDataSource = securityDataSource;
-    }
 
     @Bean
     public JdbcUserDetailsManager user() {
@@ -55,7 +50,7 @@ public class SecurityConfig {
                                     "/swagger-ui.html", "/actuator/health").permitAll()
                             .anyRequest().authenticated()
                     )
-                    .addFilterBefore(filterServiceImpl, UsernamePasswordAuthenticationFilter.class);
+                    .addFilterBefore(filterService, UsernamePasswordAuthenticationFilter.class);
             return http.build();
         } catch (Exception e) {
             log.error("Error configuring security filter chain", e);

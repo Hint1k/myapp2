@@ -1,12 +1,27 @@
 package com.bank.gatewayservice.entity;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
+
+import java.util.Objects;
 
 @Entity
 @Table(name = "authorities")
-@Data
+@Setter
+@Getter
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString(onlyExplicitlyIncluded = true) // Exclude the user to avoid cyclic references
@@ -33,16 +48,16 @@ public class Role {
     @JoinColumn(name = "user_id")
     private User user;
 
-    // no roleId
-    public Role(String username, String authority, User user) {
-        this.username = username;
-        this.authority = authority;
-        this.user = user;
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        Role role = (Role) o;
+        return Objects.equals(roleId, role.roleId) && Objects.equals(username, role.username)
+                && Objects.equals(authority, role.authority) && Objects.equals(user, role.user);
     }
 
-    // no roleId, no user
-    public Role(String username, String authority) {
-        this.username = username;
-        this.authority = authority;
+    @Override
+    public int hashCode() {
+        return Objects.hash(roleId, username, authority, user);
     }
 }

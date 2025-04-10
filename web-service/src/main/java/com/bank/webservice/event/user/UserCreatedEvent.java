@@ -16,11 +16,4 @@ public class UserCreatedEvent extends BaseEvent {
     private Long customerNumber;
     private String username;
     private String password;
-
-    // no userId
-    public UserCreatedEvent(Long customerNumber, String username, String password) {
-        this.customerNumber = customerNumber;
-        this.username = username;
-        this.password = password;
-    }
 }

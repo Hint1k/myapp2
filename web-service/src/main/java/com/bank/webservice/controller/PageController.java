@@ -4,38 +4,30 @@ import com.bank.webservice.dto.Account;
 import com.bank.webservice.dto.Customer;
 import com.bank.webservice.dto.Transaction;
 import com.bank.webservice.publisher.GenericEventPublisher;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 
 @Controller
 @Slf4j
+@RequiredArgsConstructor
 public class PageController {
 
     private final GenericEventPublisher publisher;
 
-    @Autowired
-    public PageController(GenericEventPublisher publisher) {
-        this.publisher = publisher;
-
-    }
-
     @GetMapping("/admin/index")
     public String showAdminIndexPage() {
-        //TODO make a separate page for admins
         return "home";
     }
 
     @GetMapping("/manager/index")
     public String showManagerIndexPage() {
-        //TODO make a separate page for managers
         return "home";
     }
 
     @GetMapping("/user/index")
     public String showUserIndexPage() {
-        //TODO make a separate page for users
         return "home";
     }
 

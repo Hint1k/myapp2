@@ -4,23 +4,18 @@ import com.bank.customerservice.entity.Customer;
 import com.bank.customerservice.publisher.CustomerEventPublisher;
 import com.bank.customerservice.repository.CustomerRepository;
 import jakarta.persistence.EntityNotFoundException;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Slf4j
+@RequiredArgsConstructor
 public class AccountServiceImpl implements AccountService {
 
     private final CustomerRepository repository;
     private final CustomerEventPublisher publisher;
-
-    @Autowired
-    public AccountServiceImpl(CustomerRepository repository, CustomerEventPublisher publisher) {
-        this.repository = repository;
-        this.publisher = publisher;
-    }
 
     @Override
     @Transactional
@@ -49,7 +44,7 @@ public class AccountServiceImpl implements AccountService {
     private void assignAccountNumberToCustomer(Long customerNumber, String accountNumber) {
         Customer customer = repository.findCustomerByCustomerNumber(customerNumber);
         if (customer != null) {
-            String accountNumbers = "";
+            String accountNumbers;
             if (customer.getAccountNumbers() == null || customer.getAccountNumbers().isEmpty()) {
                 accountNumbers = accountNumber; // to avoid having "null," or "," as one of account numbers
             } else {
@@ -58,7 +53,6 @@ public class AccountServiceImpl implements AccountService {
             customer.setAccountNumbers(accountNumbers);
             updateCustomer(customer);
         } else {
-            // TODO return message to the web-service
             log.error("Customer with customer number {} not found", customerNumber);
             throw new EntityNotFoundException("Customer with customer number " + customerNumber + " not found");
         }

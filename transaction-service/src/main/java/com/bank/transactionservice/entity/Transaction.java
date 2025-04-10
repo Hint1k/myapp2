@@ -2,17 +2,28 @@ package com.bank.transactionservice.entity;
 
 import com.bank.transactionservice.util.TransactionStatus;
 import com.bank.transactionservice.util.TransactionType;
-import jakarta.persistence.*;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 @Entity
 @Table(name = "transaction")
-@Data
+@Setter
+@Getter
 @NoArgsConstructor
 @AllArgsConstructor
 public class Transaction {
@@ -52,5 +63,35 @@ public class Transaction {
         this.transactionStatus = transactionStatus;
         this.accountDestinationNumber = accountDestinationNumber;
         this.accountSourceNumber = accountSourceNumber;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        Transaction that = (Transaction) o;
+        return Objects.equals(transactionId, that.transactionId) && Objects.equals(amount, that.amount)
+                && Objects.equals(transactionTime, that.transactionTime) && transactionType == that.transactionType
+                && transactionStatus == that.transactionStatus
+                && Objects.equals(accountSourceNumber, that.accountSourceNumber)
+                && Objects.equals(accountDestinationNumber, that.accountDestinationNumber);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(transactionId, amount, transactionTime, transactionType, transactionStatus,
+                accountSourceNumber, accountDestinationNumber);
+    }
+
+    @Override
+    public String toString() {
+        return "Transaction{" +
+                "transactionId=" + transactionId +
+                ", amount=" + amount +
+                ", transactionTime=" + transactionTime +
+                ", transactionType=" + transactionType +
+                ", transactionStatus=" + transactionStatus +
+                ", accountSourceNumber=" + accountSourceNumber +
+                ", accountDestinationNumber=" + accountDestinationNumber +
+                '}';
     }
 }

@@ -4,8 +4,8 @@ import com.bank.customerservice.entity.Customer;
 import com.bank.customerservice.publisher.CustomerEventPublisher;
 import com.bank.customerservice.repository.CustomerRepository;
 import jakarta.persistence.EntityNotFoundException;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -13,16 +13,11 @@ import java.util.List;
 
 @Service
 @Slf4j
+@RequiredArgsConstructor
 public class CustomerServiceImpl implements CustomerService {
 
     private final CustomerRepository repository;
     private final CustomerEventPublisher publisher;
-
-    @Autowired
-    public CustomerServiceImpl(CustomerRepository repository, CustomerEventPublisher publisher) {
-        this.repository = repository;
-        this.publisher = publisher;
-    }
 
     @Override
     @Transactional

@@ -17,7 +17,9 @@ import org.springframework.kafka.core.KafkaTemplate;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 public class GenericEventPublisherImplTest {

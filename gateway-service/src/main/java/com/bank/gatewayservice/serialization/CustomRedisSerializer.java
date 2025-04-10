@@ -15,7 +15,6 @@ import java.io.IOException;
 import java.util.Map;
 
 @Slf4j
-// TODO add the code later handling all potential problems correctly
 public class CustomRedisSerializer<T> implements RedisSerializer<T> {
 
     private final ObjectMapper redisObjectMapper;

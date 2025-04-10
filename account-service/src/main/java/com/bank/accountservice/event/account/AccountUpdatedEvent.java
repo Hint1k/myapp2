@@ -15,7 +15,6 @@ import java.time.LocalDate;
 @AllArgsConstructor
 public class AccountUpdatedEvent {
 
-    // TODO remove the fields that cannot be updated later
     private Long accountId;  // this field can't be removed
     private Long accountNumber;
     private BigDecimal balance; // this field can be updated

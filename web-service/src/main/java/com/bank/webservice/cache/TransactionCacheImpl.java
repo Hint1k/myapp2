@@ -2,8 +2,8 @@ package com.bank.webservice.cache;
 
 import com.bank.webservice.dto.Transaction;
 import com.bank.webservice.service.CacheService;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
@@ -13,18 +13,13 @@ import java.util.stream.Collectors;
 
 @Component
 @Slf4j
+@RequiredArgsConstructor
 public class TransactionCacheImpl implements TransactionCache {
 
     // objects of different classes with the same id in cache cause errors
     private static final String PREFIX = "transaction:";
     private final CacheService service;
     private final RedisTemplate<String, Object> redisTemplate;
-
-    @Autowired
-    public TransactionCacheImpl(CacheService service, RedisTemplate<String, Object> redisTemplate) {
-        this.service = service;
-        this.redisTemplate = redisTemplate;
-    }
 
     @Override
     public void addTransactionToCache(Long transactionId, Transaction transaction) {
@@ -45,7 +40,6 @@ public class TransactionCacheImpl implements TransactionCache {
             redisTemplate.opsForValue().set(key, transaction);
         } else {
             log.error("Transaction id {} not found", transactionId);
-            // TODO handle cases when transaction is not found.
         }
     }
 

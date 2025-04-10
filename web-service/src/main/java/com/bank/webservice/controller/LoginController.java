@@ -1,8 +1,8 @@
 package com.bank.webservice.controller;
 
 import jakarta.servlet.http.HttpSession;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
@@ -17,15 +17,11 @@ import java.util.Map;
 
 @Controller
 @Slf4j
+@RequiredArgsConstructor
 public class LoginController {
 
     private final RestTemplate restTemplate; // Synchronous RestTemplate
     private static final String URL = "http://gateway-service:8080/login";
-
-    @Autowired
-    public LoginController(RestTemplate restTemplate) {
-        this.restTemplate = restTemplate;
-    }
 
     @PostMapping("/login")
     public String login(@RequestParam String username, @RequestParam String password, Model model,

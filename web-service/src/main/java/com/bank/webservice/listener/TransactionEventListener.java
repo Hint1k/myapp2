@@ -4,8 +4,8 @@ import com.bank.webservice.cache.TransactionCache;
 import com.bank.webservice.dto.Transaction;
 import com.bank.webservice.event.transaction.*;
 import com.bank.webservice.service.LatchService;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.support.Acknowledgment;
 import org.springframework.stereotype.Component;
@@ -15,16 +15,11 @@ import java.util.concurrent.CountDownLatch;
 
 @Component
 @Slf4j
+@RequiredArgsConstructor
 public class TransactionEventListener {
 
     private final TransactionCache cache;
     private final LatchService latch;
-
-    @Autowired
-    public TransactionEventListener(TransactionCache cache, LatchService latch) {
-        this.cache = cache;
-        this.latch = latch;
-    }
 
     @KafkaListener(topics = "transaction-created", groupId = "web-service")
     public void handleTransactionCreatedEvent(TransactionCreatedEvent event, Acknowledgment acknowledgment) {

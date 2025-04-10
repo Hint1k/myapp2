@@ -10,8 +10,8 @@ import com.bank.webservice.service.ValidationService;
 import com.bank.webservice.util.TransactionStatus;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.propertyeditors.StringTrimmerEditor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -28,6 +28,7 @@ import java.util.concurrent.CountDownLatch;
 @Controller
 @Slf4j
 @RequestMapping("/api")
+@RequiredArgsConstructor
 public class TransactionController {
 
     private final GenericEventPublisher publisher;
@@ -37,17 +38,6 @@ public class TransactionController {
     private final ValidationService validator;
     private final RoleService role;
     private static final int MAX_RESPONSE_TIME = 3; // seconds
-
-    @Autowired
-    public TransactionController(GenericEventPublisher publisher, AccountCache accountCache, RoleService role,
-                                 LatchService latch, ValidationService validator, TransactionCache transactionCache) {
-        this.publisher = publisher;
-        this.transactionCache = transactionCache;
-        this.accountCache = accountCache;
-        this.latch = latch;
-        this.validator = validator;
-        this.role = role;
-    }
 
     // Cutting off the spaces entered by user to avoid errors
     @InitBinder

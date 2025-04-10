@@ -5,8 +5,8 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,15 +18,11 @@ import java.util.Map;
 
 @RestController
 @Slf4j
+@RequiredArgsConstructor
 @Tag(name = "User Authorization", description = "Endpoints for JWT token verification and user authorization")
 public class TokenController {
 
     private final JwtService jwtService;
-
-    @Autowired
-    public TokenController(JwtService jwtService) {
-        this.jwtService = jwtService;
-    }
 
     @GetMapping("/verify")
     @Operation(summary = "Verify JWT token",

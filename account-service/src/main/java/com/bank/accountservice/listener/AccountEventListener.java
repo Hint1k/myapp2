@@ -6,22 +6,18 @@ import com.bank.accountservice.event.account.AccountDeletedEvent;
 import com.bank.accountservice.event.account.AccountDetailsEvent;
 import com.bank.accountservice.event.account.AccountUpdatedEvent;
 import com.bank.accountservice.service.AccountService;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.support.Acknowledgment;
 import org.springframework.stereotype.Component;
 
 @Component
 @Slf4j
+@RequiredArgsConstructor
 public class AccountEventListener {
 
     private final AccountService service;
-
-    @Autowired
-    public AccountEventListener(AccountService service) {
-        this.service = service;
-    }
 
     @KafkaListener(topics = "account-creation-requested", groupId = "account-service")
     public void handleAccountCreatedEvent(AccountCreatedEvent event, Acknowledgment acknowledgment) {
@@ -41,7 +37,6 @@ public class AccountEventListener {
             acknowledgment.acknowledge();
         } catch (Exception e) {
             log.error("Error saving account: {}", e.getMessage());
-            // TODO implement error handling later
         }
     }
 
@@ -63,7 +58,6 @@ public class AccountEventListener {
             acknowledgment.acknowledge();
         } catch (Exception e) {
             log.error("Error updating account by id: {}", e.getMessage());
-            // TODO implement error handling later
         }
     }
 
@@ -76,7 +70,6 @@ public class AccountEventListener {
             acknowledgment.acknowledge();
         } catch (Exception e) {
             log.error("Error deleting account by id: {}", e.getMessage());
-            // TODO implement error handling later
         }
     }
 
@@ -88,7 +81,6 @@ public class AccountEventListener {
             acknowledgment.acknowledge();
         } catch (Exception e) {
             log.error("Error finding all accounts: {}", e.getMessage());
-            // TODO implement error handling later
         }
     }
 
@@ -101,7 +93,6 @@ public class AccountEventListener {
             acknowledgment.acknowledge();
         } catch (Exception e) {
             log.error("Error finding account by id: {}", e.getMessage());
-            // TODO implement error handling later
         }
     }
 }

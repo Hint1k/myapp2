@@ -1,13 +1,22 @@
 package com.bank.customerservice.entity;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Table;
+import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+import java.util.Objects;
 
 @Entity
 @Table(name = "customer")
-@Data
+@Setter
+@Getter
 @NoArgsConstructor
 @AllArgsConstructor
 public class Customer {
@@ -44,5 +53,34 @@ public class Customer {
         this.phone = phone;
         this.address = address;
         this.accountNumbers = accountNumbers;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        Customer customer = (Customer) o;
+        return Objects.equals(customerId, customer.customerId)
+                && Objects.equals(customerNumber, customer.customerNumber)
+                && Objects.equals(name, customer.name) && Objects.equals(email, customer.email)
+                && Objects.equals(phone, customer.phone) && Objects.equals(address, customer.address)
+                && Objects.equals(accountNumbers, customer.accountNumbers);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(customerId, customerNumber, name, email, phone, address, accountNumbers);
+    }
+
+    @Override
+    public String toString() {
+        return "Customer{" +
+                "customerId=" + customerId +
+                ", customerNumber=" + customerNumber +
+                ", name='" + name + '\'' +
+                ", email='" + email + '\'' +
+                ", phone='" + phone + '\'' +
+                ", address='" + address + '\'' +
+                ", accountNumbers='" + accountNumbers + '\'' +
+                '}';
     }
 }

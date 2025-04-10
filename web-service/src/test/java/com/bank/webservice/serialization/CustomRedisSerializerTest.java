@@ -13,8 +13,11 @@ import org.springframework.data.redis.serializer.SerializationException;
 import java.io.IOException;
 import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.spy;
 
 @Slf4j
 public class CustomRedisSerializerTest {

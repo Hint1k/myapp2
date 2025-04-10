@@ -2,23 +2,18 @@ package com.bank.webservice.publisher;
 
 import com.bank.webservice.event.BaseEvent;
 import com.bank.webservice.util.Operation;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 
 @Component
 @Slf4j
+@RequiredArgsConstructor
 public class GenericEventPublisherImpl implements GenericEventPublisher {
 
     private final KafkaTemplate<String, Object> kafkaTemplate;
     private final EventFactory eventFactory;
-
-    @Autowired
-    public GenericEventPublisherImpl(KafkaTemplate<String, Object> kafkaTemplate, EventFactory eventFactory) {
-        this.kafkaTemplate = kafkaTemplate;
-        this.eventFactory = eventFactory;
-    }
 
     @Override
     public <T> void publishCreatedEvent(T entity) {
